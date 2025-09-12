@@ -1,7 +1,38 @@
-def login_admin(usuario, contrasena):
-    # se encarga de validar el inicio de sesión del administrador.
-    pass
+admins = {}
 
+def registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad):
+    """
+    Funcion encargada de registrar a un usuario como adminsitrador
+    """
+    if usuario in admins:
+        print(f"El usuario {usuario} que quiere registrar ya existe. Por favor incie sesión con ese usuario")
+        return False
+    else:
+        admins[usuario] = {
+            "Contraseña": contrasenia,
+            "Mail": mail,
+            "Nombre": nombre,
+            "Apellido": apellido,
+            "Edad": edad, 
+        }
+        
+        print(f"¡Bienvenido {usuario}! Usted se ha registrado como administrador correctamente.")
+        return True
+
+def login_admin(usuario, contrasenia):
+    """
+    Función encargada de validar el inicio de sesión del administrador.
+    """
+    if usuario not in admins:
+        print(f"El usuario {usuario} no existe. Por favor, regístrese primero antes de realziar el log in.")
+        return False
+    elif admins[usuario]["Contraseña"] != contrasenia:
+        print("Contraseña incorrecta")
+        return False
+    else:
+        print(f"¡Bienvenido {usuario}! Se ha inciado sesión correctamente.")
+        return True
+    
 def agregar_pelicula(pelicula):
     # se encarga de agregar una nueva película al sistema.
     pass
@@ -60,4 +91,8 @@ def modificar_pelicula(pelicula, datos_nuevos):
 
 def eliminar_pelicula(pelicula):
     # se encarga de dar de baja una película y sus funciones asociadas.
+    pass
+
+def main():
+    #Menú para el registro de usuario y otras funciones
     pass
