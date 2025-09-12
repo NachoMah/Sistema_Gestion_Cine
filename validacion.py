@@ -1,4 +1,3 @@
-
 def validar_usuario_y_contrasena(usuario, contrasena):
     # se encarga de validar las credenciales del administrador o usuario.
     pass
