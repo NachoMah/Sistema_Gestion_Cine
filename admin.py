@@ -34,11 +34,12 @@ def login_admin(usuario, contrasenia):
         print(f"¡Bienvenido {usuario}! Se ha inciado sesión correctamente.")
         return True
     
-def agregar_pelicula(pelicula, genero, duracion):
+def agregar_pelicula(pelicula, genero, duracion, fecha):
     if not pelicula_existente_sistema(pelicula):
         peliculas[pelicula] = {
-            "Genero": genero, 
-            "Duración": duracion
+            "Género": genero, 
+            "Duración": duracion,
+            "Fecha": fecha,
         }
         print(f"La pelicula '{pelicula}' se agregó correctamente al sistema")
         return True
@@ -58,9 +59,30 @@ def eliminar_pelicula(pelicula):
         print(f"La película '{pelicula}' fue eliminada correctamente del sistema.")
         return True
 
+def modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha):
+    """
+    Función que permite editar información de películas existentes (duracion, genero, fecha).
+    """
+    if not pelicula_existente_sistema(pelicula):
+        print(f"La película '{pelicula}' no existe en el sistema por lo que no se puede modificar.")
+        return False
+    else:
+        if nuevo_genero:
+            peliculas[pelicula]["Género"] = nuevo_genero
+            
+        if nueva_duracion:
+            peliculas[pelicula]["Duración"] = nueva_duracion
+        
+        if nueva_fecha:
+            peliculas[pelicula]["Fecha"] = nueva_fecha
+        
+        print(f"¡Los datos de la película '{pelicula}' se puedieron modificar correctamente!.")
+        return True
+
+
 def pelicula_existente_sistema(pelicula):
     """
-    Función auxiliar para verificar si la película ya existe en el sistema.
+    Función auxiliar para verificar si la película ya existe en el sistema (ayuda a las funciones que gestionan las peliculas).
     """
     if pelicula in peliculas:
         return True
@@ -113,12 +135,8 @@ def guardar_datos():
 
 def cargar_datos():
     # se encarga de cargar la información desde archivos .txt al sistema.
-    pass
-
-def modificar_pelicula(pelicula, datos_nuevos):
-    # permite editar información de películas existentes (duracion, genero, fecha)
-    pass
+    pass     
 
 def main():
-    #Menú para el registro de usuario y otras funciones
+    #Menú para el registro/logueo del administrador y otras funcionalidades que va a poder realizar
     pass
