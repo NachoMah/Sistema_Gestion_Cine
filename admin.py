@@ -140,3 +140,6 @@ def cargar_datos():
 def main():
     #Menú para el registro/logueo del administrador y otras funcionalidades que va a poder realizar
     pass
+
+#Programa principal 
+main()
