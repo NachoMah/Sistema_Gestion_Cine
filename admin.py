@@ -126,16 +126,19 @@ def cargar_funcion(pelicula, fecha, hora, sala):
             
             return True
 
+def consultar_funciones():
+    if not funciones:
+        print("No se puede, consultar las funciones porque no hay ninguna cargada.")
+    else:
+        for datos_funcion, datos in funciones.items():
+            print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
+
 def agregar_promocion(promocion):
     # se encarga de registrar una promoción o descuento.
     pass
 
 def ver_disponibilidad_funcion(funcion):
     # se encarga de mostrar la disponibilidad de butacas.
-    pass
-
-def consultar_funciones():
-    # devuelve el listado de las funciones programadas.
     pass
 
 def consultar_reservas_por_funcion(funcion):
