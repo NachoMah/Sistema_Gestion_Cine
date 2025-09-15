@@ -1,6 +1,3 @@
-admins = {}
-peliculas = {}
-
 def registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad):
     """
     Funcion encargada de registrar a un usuario como adminsitrador
@@ -88,13 +85,49 @@ def pelicula_existente_sistema(pelicula):
         return True
     else:
         return False
+    
+def crear_butacas(filas, asientos):
+    """
+    Funcion encaragda de crear las butacas
+    """
+    butacas = []
+    for fila in range(filas):
+        fila_butacas = []
+        for asiento in range(asientos):
+            fila_butacas.append("Libre")
+        butacas.append(fila_butacas)
+    return butacas
+
+def cargar_funcion(pelicula, fecha, hora, sala):
+    """
+    Funcion que se encarga de crear una nueva función para una película ya existente.
+    """ 
+    if not pelicula_existente_sistema(pelicula):
+        print(f"La pelicula '{pelicula} no esta registrada. Antes de cargar la funcion debe registrar la pelicula.")
+        return False
+    else:
+        datos_funcion = f"{pelicula}_{fecha}_{hora}_{sala}"
+        
+        if datos_funcion in funciones:
+            print(f"La función de la película '{pelicula}' ya está programada para tal fecha y hora")
+            return False
+        
+        else:
+           
+            butacas = crear_butacas(6,6)
+            
+            funciones[datos_funcion] = {
+                "Película": pelicula,
+                "Fecha": fecha,
+                "Hora": hora,
+                "Sala": sala,
+                "Butacas": butacas
+                }
+            
+            return True
 
 def agregar_promocion(promocion):
     # se encarga de registrar una promoción o descuento.
-    pass
-
-def cargar_funcion(pelicula, fecha, hora, sala):
-    # se encarga de crear una nueva función para una película ya existente.
     pass
 
 def ver_disponibilidad_funcion(funcion):
@@ -142,4 +175,7 @@ def main():
     pass
 
 #Programa principal 
+admins = {}
+peliculas = {}
+funciones = {}
 main()
