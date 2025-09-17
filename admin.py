@@ -1,3 +1,5 @@
+import json
+
 def registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad):
     """
     Funcion encargada de registrar a un usuario como adminsitrador
@@ -137,9 +139,31 @@ def agregar_promocion(promocion):
     # se encarga de registrar una promoción o descuento.
     pass
 
-def ver_disponibilidad_funcion(funcion):
-    # se encarga de mostrar la disponibilidad de butacas.
-    pass
+def ver_disponibilidad_funcion(funcion_id):
+    """
+    Muestra la disponibilidad de butacas de una función.
+    Imprime 'L' para Libre y 'O' para Ocupada.
+    """
+    if funcion_id not in funciones:
+        print(f"La función '{funcion_id}' no existe en el sistema.")
+        return False
+    
+    butacas = funciones[funcion_id]["Butacas"]
+    print(f"\nDisponibilidad de la función: {funciones[funcion_id]['Película']} "
+          f"- {funciones[funcion_id]['Fecha']} "
+          f"- {funciones[funcion_id]['Hora']} "
+          f"- Sala {funciones[funcion_id]['Sala']}")
+    print("   " + "  ".join([f"A{col+1}" for col in range(len(butacas[0]))]))
+
+    for i, fila in enumerate(butacas):
+        fila_impresa = []
+        for asiento in fila:
+            if asiento == "Libre":
+                fila_impresa.append("L")
+            else:
+                fila_impresa.append("O")
+        print(f"F{i+1} " + "  ".join(fila_impresa))
+    return True
 
 def consultar_reservas_por_funcion(funcion):
     # devuelve todas las reservas asociadas a una función.
@@ -166,16 +190,125 @@ def generar_reporte_ocupacion():
     pass
 
 def guardar_datos():
-    # se encarga de guardar toda la información del sistema en archivos .txt.
-    pass
+    """
+    Guarda los diccionarios del sistema (admins, peliculas, funciones)
+    en archivos .txt usando formato JSON.
+    """
+    try:
+        with open("admins.txt", "w", encoding="utf-8") as f:
+            json.dump(admins, f, indent=4, ensure_ascii=False)
+
+        with open("peliculas.txt", "w", encoding="utf-8") as f:
+            json.dump(peliculas, f, indent=4, ensure_ascii=False)
+
+        with open("funciones.txt", "w", encoding="utf-8") as f:
+            json.dump(funciones, f, indent=4, ensure_ascii=False)
+
+        print("Datos guardados.")
+        return True
+    except Exception as e:
+        print(f"Error al guardar los datos: {e}")
+        return False
+
 
 def cargar_datos():
-    # se encarga de cargar la información desde archivos .txt al sistema.
-    pass     
+    """
+    Carga los diccionarios del sistema desde archivos .txt.
+    Si no existen los archivos, inicializa los diccionarios vacíos.
+    """
+    global admins, peliculas, funciones
+    try:
+        with open("admins.txt", "r", encoding="utf-8") as f:
+            admins = json.load(f)
+    except FileNotFoundError:
+        admins = {}
+
+    try:
+        with open("peliculas.txt", "r", encoding="utf-8") as f:
+            peliculas = json.load(f)
+    except FileNotFoundError:
+        peliculas = {}
+
+    try:
+        with open("funciones.txt", "r", encoding="utf-8") as f:
+            funciones = json.load(f)
+    except FileNotFoundError:
+        funciones = {}
+
+    print("Datos cargados.")
+    return True
 
 def main():
-    #Menú para el registro/logueo del administrador y otras funcionalidades que va a poder realizar
-    pass
+    cargar_datos()
+    while True:
+        print("\n--- Menú Administrativo ---")
+        print("1. Registrar administrador")
+        print("2. Iniciar sesión administrador")
+        print("3. Agregar película")
+        print("4. Modificar película")
+        print("5. Eliminar película")
+        print("6. Cargar función de película")
+        print("7. Consultar funciones programadas")
+        print("8. Ver disponibilidad de butacas")
+        print("9. Guardar datos")
+        print("0. Salir")
+        opcion = input("Seleccione una opción: ")
+        
+        if opcion == "1":
+            usuario = input("Usuario: ")
+            contrasenia = input("Contraseña: ")
+            mail = input("Mail: ")
+            nombre = input("Nombre: ")
+            apellido = input("Apellido: ")
+            edad = input("Edad: ")
+            registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad)
+
+        elif opcion == "2":
+            usuario = input("Usuario: ")
+            contrasenia = input("Contraseña: ")
+            login_admin(usuario, contrasenia)
+
+        elif opcion == "3":
+            pelicula = input("Título de la película: ")
+            genero = input("Género: ")
+            duracion = input("Duración (minutos): ")
+            fecha = input("Fecha de estreno (DD-MM-YYYY): ")
+            agregar_pelicula(pelicula, genero, duracion, fecha)
+
+        elif opcion == "4":
+            pelicula = input("Película a modificar: ")
+            nuevo_genero = input("Nuevo género (Enter para no cambiar): ")
+            nueva_duracion = input("Nueva duración (Enter para no cambiar): ")
+            nueva_fecha = input("Nueva fecha (Enter para no cambiar): ")
+            modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha)
+
+        elif opcion == "5":
+            pelicula = input("Película a eliminar: ")
+            eliminar_pelicula(pelicula)
+
+        elif opcion == "6":
+            pelicula = input("Película: ")
+            fecha = input("Fecha (DD-MM-YYYY): ")
+            hora = input("Hora (HH:MM): ")
+            sala = input("Sala: ")
+            cargar_funcion(pelicula, fecha, hora, sala)
+
+        elif opcion == "7":
+            consultar_funciones()
+
+        elif opcion == "8":
+            funcion_id = input("Ingrese el ID de la función (pelicula_fecha_hora_sala): ")
+            ver_disponibilidad_funcion(funcion_id)
+
+        elif opcion == "9":
+            guardar_datos()
+
+        elif opcion == "0":
+            print("Saliendo del sistema.")
+            break
+
+        else:
+            print("Error, intente nuevamente.")
 
 #Programa principal 
 admins = {}
