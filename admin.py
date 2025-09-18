@@ -335,9 +335,41 @@ def cambiar_butaca(reserva, nueva_butaca):
 
 
 
-def cancelar_compra(reserva):
-    # se encarga de cancelar una compra y liberar la butaca correspondiente.
-    pass
+#Funcion para cancelar compra
+def cancelar_compra(reserva_id):
+    """
+    Cancela una compra y libera la butaca correspondiente.
+    Cambia el estado de la reserva a 'Cancelada' y marca la butaca como 'Libre'.
+    """
+    #1 Validar existencia de la reserva
+    if reserva_id not in reservas:
+        print(f"La reserva '{reserva_id}' no existe.")
+        return False
+
+    #2 Validar estado actual
+    estado_actual = reservas[reserva_id].get("Estado")
+    if estado_actual != "Activa":
+        print(f"La reserva '{reserva_id}' no está activa (estado: {estado_actual}).")
+        return False
+
+    #3 Obtener datos
+    funcion_id = reservas[reserva_id]["FuncionID"]
+    fila = reservas[reserva_id]["Butaca"]["Fila"]
+    columna = reservas[reserva_id]["Butaca"]["Columna"]
+
+    #4 Intentar liberar butaca en la función (si existe)
+    if funcion_id in funciones:
+        if asiento_existe(funcion_id, fila, columna):
+            funciones[funcion_id]["Butacas"][fila - 1][columna - 1] = "Libre"
+        else:
+            print("Atención: la butaca de la reserva no existe en la función (no se pudo liberar en la matriz).")
+    else:
+        print(f"Atención: la función '{funcion_id}' no existe (se cancela igual, sin liberar matriz).")
+
+    #5 Marcar reserva como cancelada
+    reservas[reserva_id]["Estado"] = "Cancelada"
+    print(f"Reserva '{reserva_id}' cancelada. Butaca F{fila}A{columna} liberada en función {funcion_id}.")
+    return True
 
 
 def generar_reporte_ocupacion():
@@ -421,6 +453,7 @@ def main():
         print("10. Crear reserva")
         print("11. Consultar reservas por función")
         print("12. Consultar reservas por usuario")
+        print("13. Cancelar compra")
         print("0. Salir")
         opcion = input("Seleccione una opción: ")
         
@@ -494,6 +527,11 @@ def main():
             # Consultar reservas por usuario
             usuario = input("Usuario (nombre o mail): ")
             consultar_reservas_por_usuario(usuario)
+        
+        elif opcion == "13":
+            # Cancelar compra (libera butaca y marca reserva cancelada)
+            reserva_id = input("ID de la reserva (ej.: R0001): ")
+            cancelar_compra(reserva_id)
             
         elif opcion == "15":
             nombre_promocion = input("Ingrese el nombre de la promoción: ")
