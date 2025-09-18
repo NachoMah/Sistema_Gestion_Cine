@@ -1,5 +1,6 @@
 import json
 
+#Funcion para registrar administrador
 def registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad):
     """
     Funcion encargada de registrar a un usuario como adminsitrador
@@ -19,6 +20,7 @@ def registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad):
         print(f"¡Bienvenido {usuario}! Usted se ha registrado como administrador correctamente.")
         return True
 
+#Funcion para iniciar sesión de administrador
 def login_admin(usuario, contrasenia):
     """
     Función encargada de validar el inicio de sesión del administrador.
@@ -33,12 +35,13 @@ def login_admin(usuario, contrasenia):
         print(f"¡Bienvenido {usuario}! Se ha inciado sesión correctamente.")
         return True
     
+#Funcion para agregar película
 def agregar_pelicula(pelicula, genero, duracion, fecha):
     if not pelicula_existente_sistema(pelicula):
         peliculas[pelicula] = {
             "Género": genero, 
             "Duración": duracion,
-            "Fecha": fecha,
+            "Fecha": fecha,  # DD-MM-YY
         }
         print(f"La pelicula '{pelicula}' se agregó correctamente al sistema")
         return True
@@ -46,6 +49,7 @@ def agregar_pelicula(pelicula, genero, duracion, fecha):
         print(f"La pelicula '{pelicula}' que intenta agregar ya existe en el sistema") 
         return False
 
+#Funcion para eliminar película
 def eliminar_pelicula(pelicula):
     """
     Funcion que se encarga de dar de baja una película y sus funciones asociadas.
@@ -58,6 +62,7 @@ def eliminar_pelicula(pelicula):
         print(f"La película '{pelicula}' fue eliminada correctamente del sistema.")
         return True
 
+#Funcion para modificar película
 def modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha):
     """
     Función que permite editar información de películas existentes (duracion, genero, fecha).
@@ -73,86 +78,88 @@ def modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha):
             peliculas[pelicula]["Duración"] = nueva_duracion
         
         if nueva_fecha:
-            peliculas[pelicula]["Fecha"] = nueva_fecha
+            peliculas[pelicula]["Fecha"] = nueva_fecha  # DD-MM-YY
         
         print(f"¡Los datos de la película '{pelicula}' se puedieron modificar correctamente!.")
         return True
 
-
+#Funcion para verificar si la pelicula existe en el sistema
 def pelicula_existente_sistema(pelicula):
     """
-    Función auxiliar para verificar si la película ya existe en el sistema (ayuda a las funciones que gestionan las peliculas).
+    Verifica si la película ya existe en el sistema
     """
     if pelicula in peliculas:
         return True
     else:
         return False
     
+#Funcion para crear butacas
 def crear_butacas(filas, asientos):
     """
-    Funcion encaragda de crear las butacas
+    Crea la matriz de butacas (Libre/Ocupada)
     """
     butacas = []
-    for fila in range(filas):
+    for _ in range(filas):
         fila_butacas = []
-        for asiento in range(asientos):
+        for _ in range(asientos):
             fila_butacas.append("Libre")
         butacas.append(fila_butacas)
     return butacas
 
+#Funcion para cargar funcion
 def cargar_funcion(pelicula, fecha, hora, sala):
     """
     Crea una nueva función para una película existente.
     Bloquea solapamientos en la misma sala, fecha y hora (independiente de la película).
     """
-    # Normalizo tipos para evitar choques str/int en 'Sala'
     sala = str(sala)
 
-    # 1) Validar que la película exista
     if not pelicula_existente_sistema(pelicula):
         print(f"La película '{pelicula}' no está registrada. Antes de cargar la función debe registrar la película.")
         return False
 
-    # 2) Chequeo de SOLAPAMIENTO: misma sala + misma fecha + misma hora (sin importar la película)
+    #Se verifica que no haya solapamientos en la misma sala, fecha y hora
     for _, datos in funciones.items():
         misma_sala = str(datos.get("Sala")) == sala
         misma_fecha = datos.get("Fecha") == fecha
         misma_hora = datos.get("Hora") == hora
         if misma_sala and misma_fecha and misma_hora:
             print(f"No se puede cargar la función: ya existe otra función en la sala {sala} el {fecha} a las {hora}.")
-            return False  # corta la función sin usar 'break'
+            return False
 
-    # 3) (Opcional) Evitar duplicado exacto de la misma película en ese slot
     clave_nueva = f"{pelicula}_{fecha}_{hora}_{sala}"
-    if clave_nueva in funciones:
+    if clave_nueva in funciones: 
         print(f"La función de '{pelicula}' ya está programada para esa fecha, hora y sala.")
         return False
 
-    # 4) Crear butacas (por ahora tamaño fijo; luego tomar de 'salas')
     butacas = crear_butacas(6, 6)
 
-    # 5) Alta de la función
     funciones[clave_nueva] = {
         "Película": pelicula,
-        "Fecha": fecha,
-        "Hora": hora,
+        "Fecha": fecha,  # DD-MM-YY
+        "Hora": hora,    # HH:MM
         "Sala": sala,
         "Butacas": butacas
     }
+    print("Función cargada exitosamente.")
     return True
 
 
+#Funcion para consultar funciones
 def consultar_funciones():
     if not funciones:
         print("No se puede, consultar las funciones porque no hay ninguna cargada.")
     else:
-        for datos_funcion, datos in funciones.items():
+        for _, datos in funciones.items():
             print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
 
+
+#Funcion para agregar promoción
 def agregar_promocion(promocion):
     # se encarga de registrar una promoción o descuento.
     pass
 
+#Funcion para ver disponibilidad de butacas
 def ver_disponibilidad_funcion(funcion_id):
     """
     Muestra la disponibilidad de butacas de una función.
@@ -179,33 +186,148 @@ def ver_disponibilidad_funcion(funcion_id):
         print(f"F{i+1} " + "  ".join(fila_impresa))
     return True
 
-def consultar_reservas_por_funcion(funcion):
-    # devuelve todas las reservas asociadas a una función.
-    pass
+#Funcion para generar id de reserva
+def generar_id_reserva():
+    """
+    Genera un ID incremental tipo R0001, R0002, ...
+    """
+    siguiente = len(reservas) + 1
+    if siguiente < 10:
+        return f"R000{siguiente}"
+    elif siguiente < 100:
+        return f"R00{siguiente}"
+    elif siguiente < 1000:
+        return f"R0{siguiente}"
+    else:
+        return f"R{siguiente}"
 
+#Funcion para verificar si el asiento existe
+def asiento_existe(funcion_id, fila, columna):
+    """
+    True si (fila, columna) existe en la matriz de butacas de la función (índices 1-based).
+    """
+    if funcion_id not in funciones:
+        return False
+    butacas = funciones[funcion_id]["Butacas"]
+    total_filas = len(butacas)
+    total_cols = len(butacas[0]) if total_filas > 0 else 0
+    if fila < 1 or columna < 1:
+        return False
+    if fila > total_filas:
+        return False
+    if columna > total_cols:
+        return False
+    return True
+
+
+#Funcion para verificar si el asiento esta libre
+def asiento_esta_libre(funcion_id, fila, columna):
+    """
+    True si la butaca está 'Libre'. Índices 1-based.
+    """
+    butacas = funciones[funcion_id]["Butacas"]
+    return butacas[fila - 1][columna - 1] == "Libre"
+
+
+#Funcion para crear reserva
+def crear_reserva(usuario, funcion_id, fila, columna, precio_base):
+    """
+    Crea una reserva si la función existe y la butaca está libre.
+    Marca la butaca como 'Ocupada' y guarda la reserva en 'reservas'.
+    Retorna el id de reserva si se crea, o None si falla.
+    """
+    if funcion_id not in funciones:
+        print(f"La función '{funcion_id}' no existe.")
+        return None
+
+    if not asiento_existe(funcion_id, fila, columna):
+        print("Butaca inexistente para esa función.")
+        return None
+
+    if not asiento_esta_libre(funcion_id, fila, columna):
+        print("La butaca ya está ocupada.")
+        return None
+
+    funciones[funcion_id]["Butacas"][fila - 1][columna - 1] = "Ocupada"
+
+    reserva_id = generar_id_reserva()
+    reservas[reserva_id] = {
+        "Usuario": usuario,
+        "FuncionID": funcion_id,
+        "Butaca": {"Fila": fila, "Columna": columna},
+        "Precio": precio_base,
+        "Estado": "Activa"
+    }
+
+    print(f"Reserva creada. ID: {reserva_id} - Usuario: {usuario} - Función: {funcion_id} - Butaca F{fila}A{columna}")
+    return reserva_id
+
+
+#Funcion para consultar reservas por funcion
+def consultar_reservas_por_funcion(funcion_id):
+    """
+    Imprime todas las reservas asociadas a una función.
+    """
+    if funcion_id not in funciones:
+        print(f"La función '{funcion_id}' no existe.")
+        return False
+
+    hay = False
+    for rid, r in reservas.items():
+        if r["FuncionID"] == funcion_id:
+            if not hay:
+                print(f"\nReservas de la función {funcion_id}:")
+                hay = True
+            print(f"- {rid} | Usuario: {r['Usuario']} | Butaca: F{r['Butaca']['Fila']}A{r['Butaca']['Columna']} | "
+                  f"Precio: {r['Precio']} | Estado: {r['Estado']}")
+    if not hay:
+        print("No hay reservas para esta función.")
+    return True
+
+
+#Funcion para consultar reservas por usuario
 def consultar_reservas_por_usuario(usuario):
-    # se encarga de devolver todas las reservas realizadas por un usuario.
-    pass
+    """
+    Imprime todas las reservas realizadas por un usuario.
+    """
+    hay = False
+    for rid, r in reservas.items():
+        if r["Usuario"] == usuario:
+            if not hay:
+                print(f"\nReservas del usuario '{usuario}':")
+                hay = True
+            print(f"- {rid} | Función: {r['FuncionID']} | Butaca: F{r['Butaca']['Fila']}A{r['Butaca']['Columna']} | "
+                  f"Precio: {r['Precio']} | Estado: {r['Estado']}")
+    if not hay:
+        print(f"El usuario '{usuario}' no tiene reservas registradas.")
+    return True
+
 
 def calcular_ingresos(filtro=None):
     # se encarga de calcular/consultar el total de ingresos según un filtro (película, sala, día, semana).
     pass
 
+
 def cambiar_butaca(reserva, nueva_butaca):
     # se encarga de cambiar la butaca de una reserva si está disponible.
     pass
+
+
 
 def cancelar_compra(reserva):
     # se encarga de cancelar una compra y liberar la butaca correspondiente.
     pass
 
+
 def generar_reporte_ocupacion():
     # se encarga de generar un reporte simple de ocupación de salas.
     pass
 
+
+#Funcion para guardar datos
 def guardar_datos():
     """
-    Guarda los diccionarios del sistema (admins, peliculas, funciones)
+    Guarda los diccionarios del sistema (admins, peliculas, funciones, reservas)
     en archivos .txt usando formato JSON.
     """
     try:
@@ -218,19 +340,22 @@ def guardar_datos():
         with open("funciones.txt", "w", encoding="utf-8") as f:
             json.dump(funciones, f, indent=4, ensure_ascii=False)
 
+        with open("reservas.txt", "w", encoding="utf-8") as f:
+            json.dump(reservas, f, indent=4, ensure_ascii=False)
+
         print("Datos guardados.")
         return True
     except Exception as e:
         print(f"Error al guardar los datos: {e}")
         return False
 
-
+#Funcion para cargar datos
 def cargar_datos():
     """
     Carga los diccionarios del sistema desde archivos .txt.
     Si no existen los archivos, inicializa los diccionarios vacíos.
     """
-    global admins, peliculas, funciones
+    global admins, peliculas, funciones, reservas
     try:
         with open("admins.txt", "r", encoding="utf-8") as f:
             admins = json.load(f)
@@ -249,13 +374,20 @@ def cargar_datos():
     except FileNotFoundError:
         funciones = {}
 
+    try:
+        with open("reservas.txt", "r", encoding="utf-8") as f:
+            reservas = json.load(f)
+    except FileNotFoundError:
+        reservas = {}
+
     print("Datos cargados.")
     return True
+
 
 def main():
     cargar_datos()
     while True:
-        print("\n--- Menú Administrativo ---")
+        print("\n--- MENÚ ADMIN ---")
         print("1. Registrar administrador")
         print("2. Iniciar sesión administrador")
         print("3. Agregar película")
@@ -265,6 +397,9 @@ def main():
         print("7. Consultar funciones programadas")
         print("8. Ver disponibilidad de butacas")
         print("9. Guardar datos")
+        print("10. Crear reserva")
+        print("11. Consultar reservas por función")
+        print("12. Consultar reservas por usuario")
         print("0. Salir")
         opcion = input("Seleccione una opción: ")
         
@@ -286,14 +421,14 @@ def main():
             pelicula = input("Título de la película: ")
             genero = input("Género: ")
             duracion = input("Duración (minutos): ")
-            fecha = input("Fecha de estreno (DD-MM-YYYY): ")
+            fecha = input("Fecha de estreno (DD-MM-YY): ")
             agregar_pelicula(pelicula, genero, duracion, fecha)
 
         elif opcion == "4":
             pelicula = input("Película a modificar: ")
             nuevo_genero = input("Nuevo género (Enter para no cambiar): ")
             nueva_duracion = input("Nueva duración (Enter para no cambiar): ")
-            nueva_fecha = input("Nueva fecha (Enter para no cambiar): ")
+            nueva_fecha = input("Nueva fecha (DD-MM-YY, Enter para no cambiar): ")
             modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha)
 
         elif opcion == "5":
@@ -302,7 +437,7 @@ def main():
 
         elif opcion == "6":
             pelicula = input("Película: ")
-            fecha = input("Fecha (DD-MM-YYYY): ")
+            fecha = input("Fecha (DD-MM-YY): ")
             hora = input("Hora (HH:MM): ")
             sala = input("Sala: ")
             cargar_funcion(pelicula, fecha, hora, sala)
@@ -311,11 +446,33 @@ def main():
             consultar_funciones()
 
         elif opcion == "8":
-            funcion_id = input("Ingrese el ID de la función (pelicula_fecha_hora_sala): ")
+            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
+            funcion_id = input("Ingrese el ID de la función: ")
             ver_disponibilidad_funcion(funcion_id)
 
         elif opcion == "9":
             guardar_datos()
+
+        elif opcion == "10":
+            # Crear reserva (usa helpers de butacas y marca ocupación)
+            usuario = input("Usuario (nombre o mail): ")
+            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
+            funcion_id = input("ID de la función: ")
+            fila = int(input("Fila (número empezando en 1): "))
+            columna = int(input("Asiento (número empezando en 1): "))
+            precio = float(input("Precio base: "))
+            crear_reserva(usuario, funcion_id, fila, columna, precio)
+
+        elif opcion == "11":
+            # Consultar reservas por función
+            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
+            funcion_id = input("ID de la función: ")
+            consultar_reservas_por_funcion(funcion_id)
+
+        elif opcion == "12":
+            # Consultar reservas por usuario
+            usuario = input("Usuario (nombre o mail): ")
+            consultar_reservas_por_usuario(usuario)
 
         elif opcion == "0":
             print("Saliendo del sistema.")
@@ -328,4 +485,5 @@ def main():
 admins = {}
 peliculas = {}
 funciones = {}
+reservas = {}
 main()
