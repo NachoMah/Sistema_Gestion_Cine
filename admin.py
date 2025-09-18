@@ -329,20 +329,118 @@ def calcular_ingresos(filtro=None):
     pass
 
 
-def cambiar_butaca(reserva, nueva_butaca):
-    # se encarga de cambiar la butaca de una reserva si está disponible.
-    pass
+def cambiar_butaca(reserva_id, nueva_fila, nueva_columna):
+    # 1) Validar reserva
+    if reserva_id not in reservas:
+        print(f"La reserva '{reserva_id}' no existe.")
+        return False
+
+    # 2) Validar estado
+    if reservas[reserva_id].get("Estado") != "Activa":
+        print(f"La reserva '{reserva_id}' no está activa (estado: {reservas[reserva_id].get('Estado')}).")
+        return False
+
+    # 3) Datos actuales
+    funcion_id = reservas[reserva_id]["FuncionID"]
+    fila_actual = reservas[reserva_id]["Butaca"]["Fila"]
+    col_actual  = reservas[reserva_id]["Butaca"]["Columna"]
+
+    # Si pide la misma butaca, no hacemos nada
+    misma_fila = (nueva_fila == fila_actual)
+    misma_col  = (nueva_columna == col_actual)
+    if misma_fila and misma_col:
+        print("La nueva butaca es la misma que la actual. No se realizaron cambios.")
+        return False
+
+    # 4) Validar función y existencia de la nueva butaca
+    if funcion_id not in funciones:
+        print(f"La función '{funcion_id}' no existe.")
+        return False
+
+    if not asiento_existe(funcion_id, nueva_fila, nueva_columna):
+        print("La nueva butaca no existe para esta función.")
+        return False
+
+    # 5) Verificar disponibilidad de la nueva butaca
+    if not asiento_esta_libre(funcion_id, nueva_fila, nueva_columna):
+        print("La nueva butaca está ocupada.")
+        return False
+
+    # 6) Efectuar el cambio: liberar vieja y ocupar nueva
+    funciones[funcion_id]["Butacas"][fila_actual - 1][col_actual - 1] = "Libre"
+    funciones[funcion_id]["Butacas"][nueva_fila - 1][nueva_columna - 1] = "Ocupada"
+
+    # 7) Actualizar la reserva
+    reservas[reserva_id]["Butaca"]["Fila"] = nueva_fila
+    reservas[reserva_id]["Butaca"]["Columna"] = nueva_columna
+
+    print(f"Butaca cambiada: reserva {reserva_id} -> F{fila_actual}A{col_actual} -> F{nueva_fila}A{nueva_columna}")
+    return True
 
 
 
-def cancelar_compra(reserva):
-    # se encarga de cancelar una compra y liberar la butaca correspondiente.
-    pass
+#Funcion para cancelar compra
+def cancelar_compra(reserva_id):
+    """
+    Cancela una compra y libera la butaca correspondiente.
+    Cambia el estado de la reserva a 'Cancelada' y marca la butaca como 'Libre'.
+    """
+    #1 Validar existencia de la reserva
+    if reserva_id not in reservas:
+        print(f"La reserva '{reserva_id}' no existe.")
+        return False
+
+    #2 Validar estado actual
+    estado_actual = reservas[reserva_id].get("Estado")
+    if estado_actual != "Activa":
+        print(f"La reserva '{reserva_id}' no está activa (estado: {estado_actual}).")
+        return False
+
+    #3 Obtener datos
+    funcion_id = reservas[reserva_id]["FuncionID"]
+    fila = reservas[reserva_id]["Butaca"]["Fila"]
+    columna = reservas[reserva_id]["Butaca"]["Columna"]
+
+    #4 Intentar liberar butaca en la función (si existe)
+    if funcion_id in funciones:
+        if asiento_existe(funcion_id, fila, columna):
+            funciones[funcion_id]["Butacas"][fila - 1][columna - 1] = "Libre"
+        else:
+            print("Atención: la butaca de la reserva no existe en la función (no se pudo liberar en la matriz).")
+    else:
+        print(f"Atención: la función '{funcion_id}' no existe (se cancela igual, sin liberar matriz).")
+
+    #5 Marcar reserva como cancelada
+    reservas[reserva_id]["Estado"] = "Cancelada"
+    print(f"Reserva '{reserva_id}' cancelada. Butaca F{fila}A{columna} liberada en función {funcion_id}.")
+    return True
 
 
+#Función para egenrar un reporte de ocupación
 def generar_reporte_ocupacion():
-    # se encarga de generar un reporte simple de ocupación de salas.
-    pass
+    """
+    Función encaragada de generar un reporte simple de ocupación de salas.
+    """
+    if not funciones:
+        print("No hay funciones cargadas en el sistema.")
+        return False
+    else:
+        for func_id, datos in funciones.items():
+            butacas = datos["Butacas"]
+            total = len(butacas) * len(butacas[0])
+
+            ocupadas = 0
+            for fila in butacas:
+                for asiento in fila:
+                    if asiento == "Ocupada":
+                        ocupadas += 1
+
+            porcentaje = (ocupadas / total) * 100 if total > 0 else 0
+
+            print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
+            print(f"  Butacas ocupadas: {ocupadas}/{total} ({porcentaje: }%)")
+
+        return True
 
 
 #Funcion para guardar datos
@@ -421,6 +519,11 @@ def main():
         print("10. Crear reserva")
         print("11. Consultar reservas por función")
         print("12. Consultar reservas por usuario")
+        print("13. Cancelar compra")
+        print("14. Cambiar butaca")
+        print("15. Agregar promoción")
+        print("16. Consultar promociones")
+        print("17. Generar reporte de ocupación")
         print("0. Salir")
         opcion = input("Seleccione una opción: ")
         
@@ -494,6 +597,18 @@ def main():
             # Consultar reservas por usuario
             usuario = input("Usuario (nombre o mail): ")
             consultar_reservas_por_usuario(usuario)
+        
+        elif opcion == "13":
+            # Cancelar compra (libera butaca y marca reserva cancelada)
+            reserva_id = input("ID de la reserva (ej.: R0001): ")
+            cancelar_compra(reserva_id)
+            
+        elif opcion == "14":
+            # Cambiar butaca de una reserva activa
+            reserva_id = input("ID de la reserva (ej.: R0001): ")
+            nueva_fila = int(input("Nueva fila (número empezando en 1): "))
+            nueva_col  = int(input("Nuevo asiento (número empezando en 1): "))
+            cambiar_butaca(reserva_id, nueva_fila, nueva_col)
             
         elif opcion == "15":
             nombre_promocion = input("Ingrese el nombre de la promoción: ")
@@ -504,6 +619,9 @@ def main():
             
         elif opcion == "16":
             consultar_promocion()
+        
+        elif opcion == "17":
+            generar_reporte_ocupacion()
 
         elif opcion == "0":
             print("Saliendo del sistema.")
