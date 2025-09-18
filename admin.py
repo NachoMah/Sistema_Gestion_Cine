@@ -498,7 +498,7 @@ def main():
         elif opcion == "15":
             nombre_promocion = input("Ingrese el nombre de la promoción: ")
             tipo = input("Tipo de promoción (Ejemplo: descuento, 2x1, etc. ): ")
-            valor = input("Valor de la promocion (ej: 50 o 0.5 para 50%, 2 entradas para 2x1): ")
+            valor = int(input("Valor de la promocion (ej: 50 o 0.5 para 50%, 2 entradas para 2x1): "))
             condicion = input("Condición para que se cumpla (Ejemplo: 'miercoles', 'fecha festiva'): ")
             agregar_promocion(nombre_promocion, tipo, valor, condicion)
             
