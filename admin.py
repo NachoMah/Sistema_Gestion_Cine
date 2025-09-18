@@ -154,10 +154,31 @@ def consultar_funciones():
             print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
 
 
-#Funcion para agregar promoción
-def agregar_promocion(promocion):
-    # se encarga de registrar una promoción o descuento.
-    pass
+def agregar_promocion(promocion, tipo, valor, condicion):
+    """
+    Función que registra una promoción en el sistema.
+    """
+    if promocion in promociones:
+        print(f"La promoción '{promocion}' ya está cargda.")
+        return False
+    else:
+        promociones[promocion] = {
+            "Tipo": tipo,
+            "Valor": valor,
+            "Condición": condicion,  
+        }
+        print(f"La promoción {promocion} fue cargada correctamente")
+        return True
+    
+def consultar_promocion():
+    """
+    Función que muestra todas las promociones registradas.
+    """
+    if not promociones: 
+        print("No hay promociones registradas. Se deben cargar")
+    else:
+        for nombre, datos in promociones.items():
+            print(f"- {nombre}: Tipo={datos['Tipo']}, Valor={datos['Valor']}, Condición={datos['Condición']}")
 
 #Funcion para ver disponibilidad de butacas
 def ver_disponibilidad_funcion(funcion_id):
@@ -473,6 +494,16 @@ def main():
             # Consultar reservas por usuario
             usuario = input("Usuario (nombre o mail): ")
             consultar_reservas_por_usuario(usuario)
+            
+        elif opcion == "15":
+            nombre_promocion = input("Ingrese el nombre de la promoción: ")
+            tipo = input("Tipo de promoción (Ejemplo: descuento, 2x1, etc. ): ")
+            valor = input("Valor de la promocion (ej: 50 o 0.5 para 50%, 2 entradas para 2x1): ")
+            condicion = input("Condición para que se cumpla (Ejemplo: 'miercoles', 'fecha festiva'): ")
+            agregar_promocion(nombre_promocion, tipo, valor, condicion)
+            
+        elif opcion == "16":
+            consultar_promocion()
 
         elif opcion == "0":
             print("Saliendo del sistema.")
@@ -485,5 +516,6 @@ def main():
 admins = {}
 peliculas = {}
 funciones = {}
+promociones = {}
 reservas = {}
 main()
