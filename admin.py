@@ -99,9 +99,9 @@ def crear_butacas(filas, asientos):
     Crea la matriz de butacas (Libre/Ocupada)
     """
     butacas = []
-    for _ in range(filas):
+    for i in range(filas):
         fila_butacas = []
-        for _ in range(asientos):
+        for j in range(asientos):
             fila_butacas.append("Libre")
         butacas.append(fila_butacas)
     return butacas
