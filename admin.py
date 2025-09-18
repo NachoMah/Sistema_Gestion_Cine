@@ -102,31 +102,45 @@ def crear_butacas(filas, asientos):
 
 def cargar_funcion(pelicula, fecha, hora, sala):
     """
-    Funcion que se encarga de crear una nueva función para una película ya existente.
-    """ 
+    Crea una nueva función para una película existente.
+    Bloquea solapamientos en la misma sala, fecha y hora (independiente de la película).
+    """
+    # Normalizo tipos para evitar choques str/int en 'Sala'
+    sala = str(sala)
+
+    # 1) Validar que la película exista
     if not pelicula_existente_sistema(pelicula):
-        print(f"La pelicula '{pelicula} no esta registrada. Antes de cargar la funcion debe registrar la pelicula.")
+        print(f"La película '{pelicula}' no está registrada. Antes de cargar la función debe registrar la película.")
         return False
-    else:
-        datos_funcion = f"{pelicula}_{fecha}_{hora}_{sala}"
-        
-        if datos_funcion in funciones:
-            print(f"La función de la película '{pelicula}' ya está programada para tal fecha y hora")
-            return False
-        
-        else:
-           
-            butacas = crear_butacas(6,6)
-            
-            funciones[datos_funcion] = {
-                "Película": pelicula,
-                "Fecha": fecha,
-                "Hora": hora,
-                "Sala": sala,
-                "Butacas": butacas
-                }
-            
-            return True
+
+    # 2) Chequeo de SOLAPAMIENTO: misma sala + misma fecha + misma hora (sin importar la película)
+    for _, datos in funciones.items():
+        misma_sala = str(datos.get("Sala")) == sala
+        misma_fecha = datos.get("Fecha") == fecha
+        misma_hora = datos.get("Hora") == hora
+        if misma_sala and misma_fecha and misma_hora:
+            print(f"No se puede cargar la función: ya existe otra función en la sala {sala} el {fecha} a las {hora}.")
+            return False  # corta la función sin usar 'break'
+
+    # 3) (Opcional) Evitar duplicado exacto de la misma película en ese slot
+    clave_nueva = f"{pelicula}_{fecha}_{hora}_{sala}"
+    if clave_nueva in funciones:
+        print(f"La función de '{pelicula}' ya está programada para esa fecha, hora y sala.")
+        return False
+
+    # 4) Crear butacas (por ahora tamaño fijo; luego tomar de 'salas')
+    butacas = crear_butacas(6, 6)
+
+    # 5) Alta de la función
+    funciones[clave_nueva] = {
+        "Película": pelicula,
+        "Fecha": fecha,
+        "Hora": hora,
+        "Sala": sala,
+        "Butacas": butacas
+    }
+    return True
+
 
 def consultar_funciones():
     if not funciones:
