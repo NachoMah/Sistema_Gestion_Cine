@@ -416,9 +416,31 @@ def cancelar_compra(reserva_id):
     return True
 
 
+#Función para egenrar un reporte de ocupación
 def generar_reporte_ocupacion():
-    # se encarga de generar un reporte simple de ocupación de salas.
-    pass
+    """
+    Función encaragada de generar un reporte simple de ocupación de salas.
+    """
+    if not funciones:
+        print("No hay funciones cargadas en el sistema.")
+        return False
+    else:
+        for func_id, datos in funciones.items():
+            butacas = datos["Butacas"]
+            total = len(butacas) * len(butacas[0])
+
+            ocupadas = 0
+            for fila in butacas:
+                for asiento in fila:
+                    if asiento == "Ocupada":
+                        ocupadas += 1
+
+            porcentaje = (ocupadas / total) * 100 if total > 0 else 0
+
+            print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
+            print(f"  Butacas ocupadas: {ocupadas}/{total} ({porcentaje: }%)")
+
+        return True
 
 
 #Funcion para guardar datos
@@ -501,6 +523,7 @@ def main():
         print("14. Cambiar butaca")
         print("15. Agregar promoción")
         print("16. Consultar promociones")
+        print("17. Generar reporte de ocupación")
         print("0. Salir")
         opcion = input("Seleccione una opción: ")
         
@@ -596,6 +619,9 @@ def main():
             
         elif opcion == "16":
             consultar_promocion()
+        
+        elif opcion == "17":
+            generar_reporte_ocupacion()
 
         elif opcion == "0":
             print("Saliendo del sistema.")
