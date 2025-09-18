@@ -329,9 +329,53 @@ def calcular_ingresos(filtro=None):
     pass
 
 
-def cambiar_butaca(reserva, nueva_butaca):
-    # se encarga de cambiar la butaca de una reserva si está disponible.
-    pass
+def cambiar_butaca(reserva_id, nueva_fila, nueva_columna):
+    # 1) Validar reserva
+    if reserva_id not in reservas:
+        print(f"La reserva '{reserva_id}' no existe.")
+        return False
+
+    # 2) Validar estado
+    if reservas[reserva_id].get("Estado") != "Activa":
+        print(f"La reserva '{reserva_id}' no está activa (estado: {reservas[reserva_id].get('Estado')}).")
+        return False
+
+    # 3) Datos actuales
+    funcion_id = reservas[reserva_id]["FuncionID"]
+    fila_actual = reservas[reserva_id]["Butaca"]["Fila"]
+    col_actual  = reservas[reserva_id]["Butaca"]["Columna"]
+
+    # Si pide la misma butaca, no hacemos nada
+    misma_fila = (nueva_fila == fila_actual)
+    misma_col  = (nueva_columna == col_actual)
+    if misma_fila and misma_col:
+        print("La nueva butaca es la misma que la actual. No se realizaron cambios.")
+        return False
+
+    # 4) Validar función y existencia de la nueva butaca
+    if funcion_id not in funciones:
+        print(f"La función '{funcion_id}' no existe.")
+        return False
+
+    if not asiento_existe(funcion_id, nueva_fila, nueva_columna):
+        print("La nueva butaca no existe para esta función.")
+        return False
+
+    # 5) Verificar disponibilidad de la nueva butaca
+    if not asiento_esta_libre(funcion_id, nueva_fila, nueva_columna):
+        print("La nueva butaca está ocupada.")
+        return False
+
+    # 6) Efectuar el cambio: liberar vieja y ocupar nueva
+    funciones[funcion_id]["Butacas"][fila_actual - 1][col_actual - 1] = "Libre"
+    funciones[funcion_id]["Butacas"][nueva_fila - 1][nueva_columna - 1] = "Ocupada"
+
+    # 7) Actualizar la reserva
+    reservas[reserva_id]["Butaca"]["Fila"] = nueva_fila
+    reservas[reserva_id]["Butaca"]["Columna"] = nueva_columna
+
+    print(f"Butaca cambiada: reserva {reserva_id} -> F{fila_actual}A{col_actual} -> F{nueva_fila}A{nueva_columna}")
+    return True
 
 
 
@@ -454,6 +498,9 @@ def main():
         print("11. Consultar reservas por función")
         print("12. Consultar reservas por usuario")
         print("13. Cancelar compra")
+        print("14. Cambiar butaca")
+        print("15. Agregar promoción")
+        print("16. Consultar promociones")
         print("0. Salir")
         opcion = input("Seleccione una opción: ")
         
@@ -532,6 +579,13 @@ def main():
             # Cancelar compra (libera butaca y marca reserva cancelada)
             reserva_id = input("ID de la reserva (ej.: R0001): ")
             cancelar_compra(reserva_id)
+            
+        elif opcion == "14":
+            # Cambiar butaca de una reserva activa
+            reserva_id = input("ID de la reserva (ej.: R0001): ")
+            nueva_fila = int(input("Nueva fila (número empezando en 1): "))
+            nueva_col  = int(input("Nuevo asiento (número empezando en 1): "))
+            cambiar_butaca(reserva_id, nueva_fila, nueva_col)
             
         elif opcion == "15":
             nombre_promocion = input("Ingrese el nombre de la promoción: ")
