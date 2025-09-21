@@ -570,8 +570,11 @@ def main():
             consultar_funciones()
 
         elif opcion == "8":
-            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
-            funcion_id = input("Ingrese el ID de la función: ")
+            pelicula = input("Pelicula: ")
+            fecha = input("Fecha (DD-MM-YY): ")
+            hora = input("Hora (HH:MM): ")
+            sala = input("Sala: ")
+            funcion_id = f"{pelicula}_{fecha}_{hora}_{sala}"
             ver_disponibilidad_funcion(funcion_id)
 
         elif opcion == "9":
