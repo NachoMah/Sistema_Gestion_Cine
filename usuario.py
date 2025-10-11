@@ -1,6 +1,21 @@
+usuarios = {}
+peliculas_disponibles = [
+    {"titulo": "Gladiador", "genero": "accion", "duracion": 155},
+    {"titulo": "Batman", "genero": "superheroes", "duracion": 176},
+    {"titulo": "Saw", "genero": "terror", "duracion": 100},
+]
+
 def registrar_usuario(usuario):
-    # se encarga de registrar un nuevo usuario en el sistema.
-    pass
+    try:
+        if usuario in usuarios:
+            print("El usuario ya existe")
+            return False
+        usuarios[usuario] = {"reservas": []}
+        print(f"Usuario '{usuario} registrado correctamente.")
+        return True
+    except Exception as e:
+        print(f"Error al registrar usuario: {e}")
+        return False
 
 def login_usuario(usuario, contrasena):
     # se encarga de validar el inicio de sesión de un usuario.
@@ -39,8 +54,31 @@ def borrar_cuenta(usuario):
     pass
 
 def buscar_peliculas(filtros):
-    # se encarga de buscar películas según filtros (género, nombre, etc.).
-    pass
+    """
+    Busca peliculas segun filtros (por ejemplo, genero o duracion menor a un valor).
+    Se usa lambda y listas por comprension.
+    """
+    try:
+        genero = filtros.get("genero", None)
+        max_duracion = filtros.get("max_duracion", None)
+
+        resultado = [
+            p for p in peliculas_disponibles
+            if (not genero or p["genero"].lower() == genero.lower()) and (not max_duracion or p["duracion"] <= max_duracion)
+        ]
+
+        resultado = sorted(resultado, key=lambda x: x["titulo"])
+
+        if not resultado:
+            print("No se encontraron peliculas con esos filtros.")
+        else:
+            print("Peliculas encontradas:")
+            for p in resultado:
+                print(f"- {p['titulo']} ({p['genero']}, {p['duracion']} min)")
+        return resultado
+    except Exception as e:
+        print(f"Ocurrio un error al buscar peliculas: {e}")
+        return[]
 
 def generar_comprobante(compra):
     # se encarga de generar un comprobante de la compra con todos los datos necesarios.

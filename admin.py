@@ -54,13 +54,17 @@ def eliminar_pelicula(pelicula):
     """
     Funcion que se encarga de dar de baja una película y sus funciones asociadas.
     """
-    if not pelicula_existente_sistema(pelicula):
-        print(f"La película '{pelicula}' no se puede eliminar porque no existe en el sistema.")
+    try:
+        if not pelicula_existente_sistema(pelicula):
+            print(f"La película '{pelicula}' no se puede eliminar porque no existe en el sistema.")
+            return False
+        else:
+            del peliculas[pelicula]
+            print(f"La película '{pelicula}' fue eliminada correctamente del sistema.")
+            return True
+    except Exception as e:
+        print(f"Ocurrio un error al intentar eliminar la pelicula: {e}")
         return False
-    else:
-        del peliculas[pelicula]
-        print(f"La película '{pelicula}' fue eliminada correctamente del sistema.")
-        return True
 
 #Funcion para modificar película
 def modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha):
@@ -425,15 +429,11 @@ def generar_reporte_ocupacion():
         print("No hay funciones cargadas en el sistema.")
         return False
     else:
-        for func_id, datos in funciones.items():
+        for func_id, datos in sorted(funciones.items(), key=lambda x: x[1]["Pelicula"]):
             butacas = datos["Butacas"]
             total = len(butacas) * len(butacas[0])
 
-            ocupadas = 0
-            for fila in butacas:
-                for asiento in fila:
-                    if asiento == "Ocupada":
-                        ocupadas += 1
+            ocupadas = sum([1 for fila in butacas for asiento in fila if asiento == "Ocupada"])
 
             porcentaje = (ocupadas / total) * 100 if total > 0 else 0
 
