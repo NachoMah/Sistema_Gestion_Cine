@@ -439,7 +439,7 @@ def generar_reporte_ocupacion():
                 porcentaje = (ocupadas / total) * 100 if total > 0 else 0
 
                 print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
-                print(f"  Butacas ocupadas: {ocupadas}/{total} ({porcentaje:.2f}%)")
+                print(f"Butacas ocupadas: {ocupadas}/{total} ({porcentaje:.2f}%)")
 
             return True
     except KeyError as e:

@@ -6,6 +6,9 @@ peliculas_disponibles = [
 ]
 
 def registrar_usuario(usuario):
+    """
+    Registra un nuevo usuario en el sistema
+    """
     try:
         if usuario in usuarios:
             print("El usuario ya existe")
@@ -18,12 +21,37 @@ def registrar_usuario(usuario):
         return False
 
 def login_usuario(usuario, contrasena):
-    # se encarga de validar el inicio de sesión de un usuario.
-    pass
+    """
+    Validamos el inicio de sesion de un usuario
+    """
+    try:
+        if usuario not in usuarios:
+            print("El usuario no existe.")
+            return False
+        if usuarios[usuario]["contraseña"] != contrasena:
+            print("Contraseña incorrecta.")
+            return False
+        print(f"¡Bienvenido {usuario}!")
+        return True
+    except Exception as e:
+        print(f"Error en el inicio de sesión: {e}")
+        return False
 
 def ver_cartelera():
-    # se encarga de devolver el listado de películas disponibles en cartelera.
-    pass
+    """
+    Devuelve el listado de películas disponibles
+    """
+    try:
+        if not peliculas_disponibles:
+            print("No hay películas en cartelera.")
+            return []
+        print("\nCartelera actual:")
+        for p in sorted(peliculas_disponibles, key=lambda x: x["titulo"]):
+            print(f"- {p['titulo']} ({p['genero']}, {p['duracion']} min)")
+        return peliculas_disponibles
+    except Exception as e:
+        print(f"Error al mostrar la cartelera: {e}")
+        return []
 
 def ver_horarios_pelicula(pelicula, fecha=None):
     # se encarga de devolver los horarios de una película según el día.
@@ -34,12 +62,41 @@ def consultar_butacas(funcion):
     pass
 
 def comprar_entrada(usuario, funcion, butaca):
-    # se encarga de permitir la compra de una entrada (seleccionando función y butaca).
-    pass
+    """
+    Permite comprar una entrada ficticia (simulada)
+    """
+    try:
+        if usuario not in usuarios:
+            print("Debe registrarse antes de comprar una entrada.")
+            return False
+
+        if not any(p["titulo"].lower() == pelicula.lower() for p in peliculas_disponibles):
+            print(f"La película '{pelicula}' no existe en cartelera.")
+            return False
+
+        usuarios[usuario]["reservas"].append({"pelicula": pelicula, "butaca": butaca})
+        print(f"Entrada comprada para '{pelicula}' en la butaca {butaca}.")
+        return True
+    except Exception as e:
+        print(f"Error al comprar entrada: {e}")
+        return False
 
 def ver_reservas_usuario(usuario):
-    # se encarga de devolver todas las reservas activas de un usuario.
-    pass
+    """
+    Devuelve las reservas activas del usuario
+    """
+    try:
+        reservas = usuarios.get(usuario, {}).get("reservas", [])
+        if not reservas:
+            print(f"El usuario '{usuario}' no tiene reservas activas.")
+            return []
+        print(f"\nReservas de {usuario}:")
+        for r in reservas:
+            print(f"- {r['pelicula']} | Butaca: {r['butaca']}")
+        return reservas
+    except Exception as e:
+        print(f"Error al ver reservas: {e}")
+        return []
 
 def ver_historial_compras(usuario):
     # se encarga de devolver el historial completo de compras de un usuario.
@@ -50,36 +107,58 @@ def modificar_datos_usuario(usuario, datos_nuevos):
     pass
 
 def borrar_cuenta(usuario):
-    # se encarga de eliminar la cuenta del usuario y sus datos asociados.
-    pass
+    """
+    Elimina la cuenta del usuario y sus datos asociados
+    """
+    try:
+        if usuario not in usuarios:
+            print("El usuario no existe.")
+            return False
+        del usuarios[usuario]
+        print(f"Cuenta de '{usuario}' eliminada correctamente.")
+        return True
+    except Exception as e:
+        print(f"Error al borrar cuenta: {e}")
+        return False
 
 def buscar_peliculas(filtros):
     """
-    Busca peliculas segun filtros (por ejemplo, genero o duracion menor a un valor).
-    Se usa lambda y listas por comprension.
+    Busca películas según filtros (por ejemplo, género o duración máxima)
+    Usa lista por comprensión + lambda
     """
     try:
-        genero = filtros.get("genero", None)
-        max_duracion = filtros.get("max_duracion", None)
+        genero = filtros.get("genero")
+        max_duracion = filtros.get("max_duracion")
 
         resultado = [
             p for p in peliculas_disponibles
-            if (not genero or p["genero"].lower() == genero.lower()) and (not max_duracion or p["duracion"] <= max_duracion)
+            if (not genero or p["genero"].lower() == genero.lower())
+            and (not max_duracion or p["duracion"] <= max_duracion)
         ]
 
         resultado = sorted(resultado, key=lambda x: x["titulo"])
 
         if not resultado:
-            print("No se encontraron peliculas con esos filtros.")
+            print("No se encontraron películas con esos filtros.")
         else:
-            print("Peliculas encontradas:")
+            print("\nPelículas encontradas:")
             for p in resultado:
                 print(f"- {p['titulo']} ({p['genero']}, {p['duracion']} min)")
         return resultado
     except Exception as e:
-        print(f"Ocurrio un error al buscar peliculas: {e}")
-        return[]
+        print(f"Error al buscar películas: {e}")
+        return []
 
 def generar_comprobante(compra):
-    # se encarga de generar un comprobante de la compra con todos los datos necesarios.
-    pass
+    """
+    Genera un comprobante de compra en formato JSON
+    """
+    try:
+        archivo = f"comprobante_{compra['pelicula']}.txt"
+        with open(archivo, "w", encoding="utf-8") as f:
+            json.dump(compra, f, indent=4, ensure_ascii=False)
+        print(f"Comprobante generado: {archivo}")
+        return True
+    except Exception as e:
+        print(f"Error al generar comprobante: {e}")
+        return False
