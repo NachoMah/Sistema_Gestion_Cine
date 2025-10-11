@@ -425,22 +425,29 @@ def generar_reporte_ocupacion():
     """
     Función encaragada de generar un reporte simple de ocupación de salas.
     """
-    if not funciones:
-        print("No hay funciones cargadas en el sistema.")
+    try:
+        if not funciones:
+            print("No hay funciones cargadas en el sistema.")
+            return False
+        else:
+            for func_id, datos in sorted(funciones.items(), key=lambda x: x[1]["Película"]):
+                butacas = datos["Butacas"]
+                total = len(butacas) * len(butacas[0])
+
+                ocupadas = sum([1 for fila in butacas for asiento in fila if asiento == "Ocupada"])
+
+                porcentaje = (ocupadas / total) * 100 if total > 0 else 0
+
+                print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
+                print(f"  Butacas ocupadas: {ocupadas}/{total} ({porcentaje:.2f}%)")
+
+            return True
+    except KeyError as e:
+        print(f"Error: falta la clave {e} en alguna función.")
         return False
-    else:
-        for func_id, datos in sorted(funciones.items(), key=lambda x: x[1]["Pelicula"]):
-            butacas = datos["Butacas"]
-            total = len(butacas) * len(butacas[0])
-
-            ocupadas = sum([1 for fila in butacas for asiento in fila if asiento == "Ocupada"])
-
-            porcentaje = (ocupadas / total) * 100 if total > 0 else 0
-
-            print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
-            print(f"  Butacas ocupadas: {ocupadas}/{total} ({porcentaje: }%)")
-
-        return True
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
+        return False
 
 
 #Funcion para guardar datos
