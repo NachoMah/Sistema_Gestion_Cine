@@ -53,9 +53,55 @@ def ver_cartelera():
         print(f"Error al mostrar la cartelera: {e}")
         return []
 
-def ver_horarios_pelicula(pelicula, fecha=None):
-    # se encarga de devolver los horarios de una película según el día.
-    pass
+# usuarios.py
+
+def ver_horarios_pelicula(pelicula, fecha=None, funciones_dict=None):
+    """
+    Devuelve los horarios/salas de una película.
+    Si se pasa 'fecha' (DD-MM-YY), filtra por ese día.
+    Retorna lista de dicts: [{'funcion_id','fecha','hora','sala'}, ...]
+    """
+    try:
+        if not isinstance(pelicula, str) or not pelicula.strip():
+            print("Debe indicar el título de la película.")
+            return []
+
+        if not funciones_dict:
+            print("No hay funciones cargadas.")
+            return []
+
+        resultados = []
+        titulo = pelicula.strip().lower()
+
+        for fid, datos in funciones_dict.items():
+            if str(datos.get("Película", "")).strip().lower() == titulo:
+                if fecha is None or datos.get("Fecha") == fecha:
+                    resultados.append({
+                        "funcion_id": fid,
+                        "fecha": datos.get("Fecha"),
+                        "hora": datos.get("Hora"),
+                        "sala": str(datos.get("Sala")),
+                    })
+
+        if not resultados:
+            if fecha:
+                print(f"No hay funciones para '{pelicula}' el {fecha}.")
+            else:
+                print(f"No hay funciones programadas para '{pelicula}'.")
+            return []
+
+        resultados.sort(key=lambda x: (x["fecha"], x["hora"], x["sala"]))
+
+        print(f"\nHorarios para '{pelicula}'" + (f" - {fecha}" if fecha else "") + ":")
+        for r in resultados:
+            print(f"- {r['fecha']} {r['hora']} | Sala {r['sala']} | ID: {r['funcion_id']}")
+
+        return resultados
+
+    except Exception as e:
+        print(f"Error al consultar horarios: {e}")
+        return []
+
 
 def consultar_butacas(funcion):
     # se encarga de devolver la disponibilidad de butacas en una función.

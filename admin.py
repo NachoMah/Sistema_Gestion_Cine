@@ -1,3 +1,4 @@
+from usuario import ver_horarios_pelicula
 import json
 
 #Funcion para registrar administrador
@@ -531,6 +532,7 @@ def main():
         print("15. Agregar promoción")
         print("16. Consultar promociones")
         print("17. Generar reporte de ocupación")
+        print("18. Ver horarios por película")
         print("0. Salir")
         opcion = input("Seleccione una opción: ")
         
@@ -588,7 +590,6 @@ def main():
             guardar_datos()
 
         elif opcion == "10":
-            # Crear reserva (usa helpers de butacas y marca ocupación)
             usuario = input("Usuario (nombre o mail): ")
             print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
             funcion_id = input("ID de la función: ")
@@ -598,23 +599,19 @@ def main():
             crear_reserva(usuario, funcion_id, fila, columna, precio)
 
         elif opcion == "11":
-            # Consultar reservas por función
             print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
             funcion_id = input("ID de la función: ")
             consultar_reservas_por_funcion(funcion_id)
 
         elif opcion == "12":
-            # Consultar reservas por usuario
             usuario = input("Usuario (nombre o mail): ")
             consultar_reservas_por_usuario(usuario)
         
         elif opcion == "13":
-            # Cancelar compra (libera butaca y marca reserva cancelada)
             reserva_id = input("ID de la reserva (ej.: R0001): ")
             cancelar_compra(reserva_id)
             
         elif opcion == "14":
-            # Cambiar butaca de una reserva activa
             reserva_id = input("ID de la reserva (ej.: R0001): ")
             nueva_fila = int(input("Nueva fila (número empezando en 1): "))
             nueva_col  = int(input("Nuevo asiento (número empezando en 1): "))
@@ -636,7 +633,6 @@ def main():
         elif opcion == "0":
             print("Saliendo del sistema.")
             break
-
         else:
             print("Error, intente nuevamente.")
 
