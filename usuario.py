@@ -1,3 +1,6 @@
+#from usuario import consultar_butacas
+#from admin import funciones            ------------> (Posibles imports para sacar datos de las funciones de admin.py)
+
 usuarios = {}
 peliculas_disponibles = [
     {"titulo": "Gladiador", "genero": "accion", "duracion": 155},
@@ -103,9 +106,31 @@ def ver_horarios_pelicula(pelicula, fecha=None, funciones_dict=None):
         return []
 
 
-def consultar_butacas(funcion):
-    # se encarga de devolver la disponibilidad de butacas en una función.
-    pass
+def consultar_butacas(funcion_id, funciones):
+    """
+    Funcion encaragada de mostrar la disponibilidad de butacas.
+    """
+    try:
+        if funcion_id not in funciones:
+            print(f"La función '{funcion_id}' no existe.")
+            return False
+        
+        datos_funcion = funciones[funcion_id]
+        butacas = datos_funcion["Butacas"]
+        
+        print(f"Disponibilidad de butacas - {datos_funcion['Película']}")
+        print(f"Fecha: {datos_funcion['Fecha']} | Hora: {datos_funcion['Hora']} | Sala: {datos_funcion['Sala']}")
+        print("   " + "  ".join([f"A{col+1}" for col in range(len(butacas[0]))]))
+        
+        for i, fila in enumerate(butacas):
+            fila_impresa = ["L" if asiento == "Libre" else "O" for asiento in fila]
+            print(f"F{i+1} " + "  ".join(fila_impresa))
+            
+        return butacas
+    
+    except Exception as e:
+        print(f"Error al consultar butacas: {e}")
+        return False
 
 def comprar_entrada(usuario, funcion, butaca):
     """
@@ -208,3 +233,11 @@ def generar_comprobante(compra):
     except Exception as e:
         print(f"Error al generar comprobante: {e}")
         return False
+    
+def mainUsuario():
+    """
+    Funcion encaragada de mostrar un menú interactivo para navegar y utilziar otdas las funciones creadas en su modulo.
+    """
+    
+
+    pass
