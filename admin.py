@@ -1,4 +1,3 @@
-from usuario import ver_horarios_pelicula
 import json
 
 #Funcion para registrar administrador
@@ -55,17 +54,13 @@ def eliminar_pelicula(pelicula):
     """
     Funcion que se encarga de dar de baja una película y sus funciones asociadas.
     """
-    try:
-        if not pelicula_existente_sistema(pelicula):
-            print(f"La película '{pelicula}' no se puede eliminar porque no existe en el sistema.")
-            return False
-        else:
-            del peliculas[pelicula]
-            print(f"La película '{pelicula}' fue eliminada correctamente del sistema.")
-            return True
-    except Exception as e:
-        print(f"Ocurrio un error al intentar eliminar la pelicula: {e}")
+    if not pelicula_existente_sistema(pelicula):
+        print(f"La película '{pelicula}' no se puede eliminar porque no existe en el sistema.")
         return False
+    else:
+        del peliculas[pelicula]
+        print(f"La película '{pelicula}' fue eliminada correctamente del sistema.")
+        return True
 
 #Funcion para modificar película
 def modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha):
@@ -205,6 +200,7 @@ def ver_disponibilidad_funcion(funcion_id):
     for i, fila in enumerate(butacas):
         fila_impresa = []
         for asiento in fila:
+            
             if asiento == "Libre":
                 fila_impresa.append("L")
             else:
@@ -426,29 +422,26 @@ def generar_reporte_ocupacion():
     """
     Función encaragada de generar un reporte simple de ocupación de salas.
     """
-    try:
-        if not funciones:
-            print("No hay funciones cargadas en el sistema.")
-            return False
-        else:
-            for func_id, datos in sorted(funciones.items(), key=lambda x: x[1]["Película"]):
-                butacas = datos["Butacas"]
-                total = len(butacas) * len(butacas[0])
-
-                ocupadas = sum([1 for fila in butacas for asiento in fila if asiento == "Ocupada"])
-
-                porcentaje = (ocupadas / total) * 100 if total > 0 else 0
-
-                print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
-                print(f"Butacas ocupadas: {ocupadas}/{total} ({porcentaje:.2f}%)")
-
-            return True
-    except KeyError as e:
-        print(f"Error: falta la clave {e} en alguna función.")
+    if not funciones:
+        print("No hay funciones cargadas en el sistema.")
         return False
-    except Exception as e:
-        print(f"Ocurrió un error inesperado: {e}")
-        return False
+    else:
+        for func_id, datos in funciones.items():
+            butacas = datos["Butacas"]
+            total = len(butacas) * len(butacas[0])
+
+            ocupadas = 0
+            for fila in butacas:
+                for asiento in fila:
+                    if asiento == "Ocupada":
+                        ocupadas += 1
+
+            porcentaje = (ocupadas / total) * 100 if total > 0 else 0
+
+            print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
+            print(f"  Butacas ocupadas: {ocupadas}/{total} ({porcentaje: }%)")
+
+        return True
 
 
 #Funcion para guardar datos
@@ -532,7 +525,6 @@ def main():
         print("15. Agregar promoción")
         print("16. Consultar promociones")
         print("17. Generar reporte de ocupación")
-        print("18. Ver horarios por película")
         print("0. Salir")
         opcion = input("Seleccione una opción: ")
         
@@ -579,17 +571,15 @@ def main():
             consultar_funciones()
 
         elif opcion == "8":
-            pelicula = input("Pelicula: ")
-            fecha = input("Fecha (DD-MM-YY): ")
-            hora = input("Hora (HH:MM): ")
-            sala = input("Sala: ")
-            funcion_id = f"{pelicula}_{fecha}_{hora}_{sala}"
+            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
+            funcion_id = input("Ingrese el ID de la función: ")
             ver_disponibilidad_funcion(funcion_id)
 
         elif opcion == "9":
             guardar_datos()
 
         elif opcion == "10":
+            # Crear reserva (usa helpers de butacas y marca ocupación)
             usuario = input("Usuario (nombre o mail): ")
             print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
             funcion_id = input("ID de la función: ")
@@ -599,19 +589,23 @@ def main():
             crear_reserva(usuario, funcion_id, fila, columna, precio)
 
         elif opcion == "11":
+            # Consultar reservas por función
             print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
             funcion_id = input("ID de la función: ")
             consultar_reservas_por_funcion(funcion_id)
 
         elif opcion == "12":
+            # Consultar reservas por usuario
             usuario = input("Usuario (nombre o mail): ")
             consultar_reservas_por_usuario(usuario)
         
         elif opcion == "13":
+            # Cancelar compra (libera butaca y marca reserva cancelada)
             reserva_id = input("ID de la reserva (ej.: R0001): ")
             cancelar_compra(reserva_id)
             
         elif opcion == "14":
+            # Cambiar butaca de una reserva activa
             reserva_id = input("ID de la reserva (ej.: R0001): ")
             nueva_fila = int(input("Nueva fila (número empezando en 1): "))
             nueva_col  = int(input("Nuevo asiento (número empezando en 1): "))
@@ -633,6 +627,7 @@ def main():
         elif opcion == "0":
             print("Saliendo del sistema.")
             break
+
         else:
             print("Error, intente nuevamente.")
 
