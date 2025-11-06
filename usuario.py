@@ -1,5 +1,8 @@
 #from usuario import consultar_butacas
 #from admin import funciones            ------------> (Posibles imports para sacar datos de las funciones de admin.py)
+import json
+from validacion import validar_usuario_registrado, validar_pelicula_existente, validar_butaca_disponible, validar_edad
+
 
 usuarios = {}
 peliculas_disponibles = [
@@ -132,42 +135,48 @@ def consultar_butacas(funcion_id, funciones):
         print(f"Error al consultar butacas: {e}")
         return False
 
-def comprar_entrada(usuario, funcion, butaca):
+def comprar_entrada(usuario, funcion_id, butaca, funciones):
     """
-    Permite comprar una entrada ficticia (simulada)
+    Permite comprar una entrada simulada con validaciones.
     """
     try:
-        if usuario not in usuarios:
-            print("Debe registrarse antes de comprar una entrada.")
+        if not validar_usuario_registrado(usuario):
+            print("El usuario no está registrado.")
             return False
 
-        if not any(p["titulo"].lower() == pelicula.lower() for p in peliculas_disponibles):
-            print(f"La película '{pelicula}' no existe en cartelera.")
+        if funcion_id not in funciones:
+            print(f"La función '{funcion_id}' no existe.")
             return False
 
-        usuarios[usuario]["reservas"].append({"pelicula": pelicula, "butaca": butaca})
-        print(f"Entrada comprada para '{pelicula}' en la butaca {butaca}.")
+        datos_funcion = funciones[funcion_id]
+        pelicula = datos_funcion["Película"]
+
+        if not validar_pelicula_existente(pelicula):
+            print(f"La película '{pelicula}' no está en cartelera.")
+            return False
+        
+        if not validar_edad(usuario, pelicula):
+            print(f"El usuario no cumple con la edad mínima para '{pelicula}'.")
+            return False
+
+        if not validar_butaca_disponible(datos_funcion, butaca):
+            print("La butaca seleccionada no está disponible.")
+            return False
+
+        fila, columna = butaca
+        funciones[funcion_id]["Butacas"][fila][columna] = "Ocupada"
+        usuarios[usuario]["reservas"].append({
+            "pelicula": pelicula,
+            "funcion_id": funcion_id,
+            "butaca": f"F{fila+1}-A{columna+1}"
+        })
+
+        print(f"Entrada comprada para '{pelicula}' - Butaca F{fila+1}-A{columna+1}")
         return True
+
     except Exception as e:
         print(f"Error al comprar entrada: {e}")
         return False
-
-def ver_reservas_usuario(usuario):
-    """
-    Devuelve las reservas activas del usuario
-    """
-    try:
-        reservas = usuarios.get(usuario, {}).get("reservas", [])
-        if not reservas:
-            print(f"El usuario '{usuario}' no tiene reservas activas.")
-            return []
-        print(f"\nReservas de {usuario}:")
-        for r in reservas:
-            print(f"- {r['pelicula']} | Butaca: {r['butaca']}")
-        return reservas
-    except Exception as e:
-        print(f"Error al ver reservas: {e}")
-        return []
 
 def ver_historial_compras(usuario):
     # se encarga de devolver el historial completo de compras de un usuario.
@@ -238,6 +247,4 @@ def mainUsuario():
     """
     Funcion encaragada de mostrar un menú interactivo para navegar y utilziar otdas las funciones creadas en su modulo.
     """
-    
-
     pass
