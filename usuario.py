@@ -185,7 +185,7 @@ def ver_historial_compras(usuario):
 def modificar_datos_usuario(usuario, datos_nuevos):
     """
     Funcion encaragada de modifciar datos 
-    (SE DEBE MEJROAR CUANDO SE COMPELTE EL MDULO DE VALDIACIONES, POR EL MOMENTO QUEDA SIMPLE)
+    (SE DEBE MEJORAR CUANDO SE COMPLETE EL MODULO DE VALDIACIONES, POR EL MOMENTO QUEDA SIMPLE)
     """
     try:
         if usuario not in usuarios:
