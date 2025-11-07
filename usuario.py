@@ -260,4 +260,72 @@ def mainUsuario():
     """
     Funcion encaragada de mostrar un menú interactivo para navegar y utilziar otdas las funciones creadas en su modulo.
     """
-    pass
+    logueado = False  # Bandera: False = no logueado, True = logueado
+
+    while True:
+        print("\n--- MENÚ USUARIO ---")
+
+        if not logueado:
+            print("1. Registrar usuario")
+            print("2. Iniciar sesión")
+            print("3. Ver cartelera")
+            print("0. Salir")
+
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "1":
+                usuario = input("Ingrese nombre de usuario: ")
+                registrar_usuario(usuario)
+
+            elif opcion == "2":
+                usuario = input("Usuario: ")
+                contrasenia = input("Contraseña: ")
+                if login_usuario(usuario, contrasenia):  
+                    print("Inicio de sesión exitoso.")
+                    logueado = True  #Bandera
+                else:
+                    print("Usuario o contraseña incorrectos.")
+
+            elif opcion == "3":
+                ver_cartelera()
+
+            elif opcion == "0":
+                print("Saliendo del sistema.")
+                break
+
+            else:
+                print("Opción no válida.")
+
+        else:
+           
+            print("1. Consultar butacas")
+            print("2. Comprar entrada")
+            print("3. Consultar mis reservas")
+            print("4. Borrar cuenta")
+            print("5. Cerrar sesión")
+
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "1":
+                funcion_id = input("Ingrese el ID de la función: ")
+                consultar_butacas(funcion_id, funciones={})  
+
+            elif opcion == "2":
+                funcion_id = input("Ingrese el ID de la función: ")
+                fila = int(input("Fila (número): ")) - 1
+                columna = int(input("Columna (número): ")) - 1
+                comprar_entrada(usuario, funcion_id, (fila, columna), funciones={})
+
+            elif opcion == "3":
+                ver_historial_compras(usuario)
+
+            elif opcion == "4":
+                borrar_cuenta(usuario)
+                logueado = False  
+
+            elif opcion == "5":
+                print("Sesión cerrada.")
+                logueado = False  #Bandera
+
+            else:
+                print("Opción no válida.")
