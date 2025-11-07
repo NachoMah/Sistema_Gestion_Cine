@@ -183,8 +183,21 @@ def ver_historial_compras(usuario):
     pass
 
 def modificar_datos_usuario(usuario, datos_nuevos):
-    # se encarga de permitir modificar los datos personales de un usuario.
-    pass
+    """
+    Funcion encaragada de modifciar datos 
+    (SE DEBE MEJROAR CUANDO SE COMPELTE EL MDULO DE VALDIACIONES, POR EL MOMENTO QUEDA SIMPLE)
+    """
+    try:
+        if usuario not in usuarios:
+            print("El usuario no existe.")
+            return False
+        
+        usuarios[usuario].update(datos_nuevos)
+        print(f"Datos de '{usuario}' actualizados correctamente.")
+        return True
+    except Exception as e:
+        print(f"Error al modificar los datos: {e}")
+        return False
 
 def borrar_cuenta(usuario):
     """
@@ -235,8 +248,8 @@ def generar_comprobante(compra):
     """
     try:
         archivo = f"comprobante_{compra['pelicula']}.txt"
-        with open(archivo, "w", encoding="utf-8") as f:
-            json.dump(compra, f, indent=4, ensure_ascii=False)
+        with open(archivo, "w", encoding="utf-8") as archivo:
+            json.dump(compra, archivo, indent=4, ensure_ascii=False)
         print(f"Comprobante generado: {archivo}")
         return True
     except Exception as e:
