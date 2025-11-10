@@ -21,6 +21,7 @@ def registrar_usuario(nombre_usuario, nombre, apellido, edad, mail, contrasenia)
             "contraseña": contrasenia,
             "reservas": []
         }
+        guardar_usuarios()
         print(f"Usuario '{nombre_usuario}' registrado correctamente.")
         return True
     except Exception as e:
@@ -166,6 +167,9 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
             "butaca": f"F{fila_1based}-A{columna_1based}",
             "reserva_id": reserva_id
         })
+        
+        # Guardar usuarios actualizados
+        guardar_usuarios()
 
         print(f"Entrada comprada para '{pelicula}' - Butaca F{fila_1based}-A{columna_1based} - Reserva ID: {reserva_id}")
         return True
@@ -220,6 +224,7 @@ def modificar_datos_usuario(usuario, datos_nuevos):
             if campos_cambiados:
                 print(f"Datos actualizados: {', '.join(campos_cambiados)}")
         
+        guardar_usuarios()
         print(f"Datos de '{usuario}' actualizados correctamente.")
         return nuevo_nombre_usuario if nuevo_nombre_usuario else usuario
         
@@ -238,6 +243,7 @@ def borrar_cuenta(usuario):
             print("El usuario no existe.")
             return False
         del usuarios[usuario]
+        guardar_usuarios()
         print(f"Cuenta de '{usuario}' eliminada correctamente.")
         return True
     except Exception as e:
@@ -304,6 +310,31 @@ def guardar_funciones(funciones):
         return True
     except Exception as e:
         print(f"Error al guardar funciones: {e}")
+        return False
+
+#Funcion para cargar usuarios
+def cargar_usuarios():
+    global usuarios
+    try:
+        with open("usuarios.txt", "r", encoding="utf-8") as f:
+            usuarios = json.load(f)
+        return True
+    except FileNotFoundError:
+        usuarios = {}
+        return True
+    except Exception as e:
+        print(f"Error al cargar usuarios: {e}")
+        usuarios = {}
+        return False
+
+#Funcion para guardar usuarios
+def guardar_usuarios():
+    try:
+        with open("usuarios.txt", "w", encoding="utf-8") as f:
+            json.dump(usuarios, f, indent=4, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"Error al guardar usuarios: {e}")
         return False
 
 #Funcion para cargar reservas
@@ -448,6 +479,7 @@ def mainUsuario(usuario_actual):
 
 #Funcion de login usuario y menu
 def login_usuario_menu():
+    cargar_usuarios()  # Cargar usuarios al inicio
     funciones = cargar_funciones()  # Cargar funciones para opciones sin login
 
     while True:
