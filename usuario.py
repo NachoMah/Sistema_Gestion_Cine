@@ -1,8 +1,4 @@
-#from usuario import consultar_butacas
-#from admin import funciones            ------------> (Posibles imports para sacar datos de las funciones de admin.py)
 import json
-# from validacion import validar_butaca_disponible  # No implementada aún
-
 
 usuarios = {}
 peliculas_disponibles = [
@@ -11,10 +7,8 @@ peliculas_disponibles = [
     {"titulo": "Saw", "genero": "terror", "duracion": 100},
 ]
 
+#Funcion para registrar usuario
 def registrar_usuario(nombre_usuario, nombre, apellido, edad, mail, contrasenia):
-    """
-    Registra un nuevo usuario en el sistema con todos sus datos.
-    """
     try:
         if nombre_usuario in usuarios:
             print("El usuario ya existe")
@@ -33,10 +27,9 @@ def registrar_usuario(nombre_usuario, nombre, apellido, edad, mail, contrasenia)
         print(f"Error al registrar usuario: {e}")
         return False
 
+
+#Funcion para login de usuario
 def login_usuario(usuario, contrasena):
-    """
-    Validamos el inicio de sesion de un usuario
-    """
     try:
         if usuario not in usuarios:
             print("El usuario no existe.")
@@ -50,10 +43,9 @@ def login_usuario(usuario, contrasena):
         print(f"Error en el inicio de sesión: {e}")
         return False
 
+
+#Funcion para ver cartelera
 def ver_cartelera():
-    """
-    Devuelve el listado de películas disponibles
-    """
     try:
         if not peliculas_disponibles:
             print("No hay películas en cartelera.")
@@ -66,14 +58,9 @@ def ver_cartelera():
         print(f"Error al mostrar la cartelera: {e}")
         return []
 
-# usuarios.py
 
+#Funcion para ver horarios de pelicula
 def ver_horarios_pelicula(pelicula, fecha=None, funciones_dict=None):
-    """
-    Devuelve los horarios/salas de una película.
-    Si se pasa 'fecha' (DD-MM-YY), filtra por ese día.
-    Retorna lista de dicts: [{'funcion_id','fecha','hora','sala'}, ...]
-    """
     try:
         if not isinstance(pelicula, str) or not pelicula.strip():
             print("Debe indicar el título de la película.")
@@ -116,10 +103,8 @@ def ver_horarios_pelicula(pelicula, fecha=None, funciones_dict=None):
         return []
 
 
+#Funcion para consultar butacas
 def consultar_butacas(funcion_id, funciones):
-    """
-    Funcion encaragada de mostrar la disponibilidad de butacas.
-    """
     try:
         if funcion_id not in funciones:
             print(f"La función '{funcion_id}' no existe.")
@@ -142,10 +127,8 @@ def consultar_butacas(funcion_id, funciones):
         print(f"Error al consultar butacas: {e}")
         return False
 
+#Funcion para comprar entrada
 def comprar_entrada(usuario, funcion_id, butaca, funciones):
-    """
-    Permite comprar una entrada.
-    """
     try:
         datos_funcion = funciones[funcion_id]
         pelicula = datos_funcion["Película"]
@@ -165,27 +148,61 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
         print(f"Error al comprar entrada: {e}")
         return False
 
+#Funcion para ver historial de compras
 def ver_historial_compras(usuario):
-    # se encarga de devolver el historial completo de compras de un usuario.
     pass
 
+
+#Funcion para modificar datos usuario
 def modificar_datos_usuario(usuario, datos_nuevos):
-    """
-    Funcion encaragada de modifciar datos 
-    (SE DEBE MEJORAR CUANDO SE COMPLETE EL MODULO DE VALDIACIONES, POR EL MOMENTO QUEDA SIMPLE)
-    """
     try:
         if usuario not in usuarios:
             print("El usuario no existe.")
-            return False
+            return None
         
-        usuarios[usuario].update(datos_nuevos)
+        nuevo_nombre_usuario = None
+        
+        # Si se cambia el nombre de usuario, mover los datos a la nueva clave
+        if "usuario" in datos_nuevos:
+            nuevo_nombre_usuario = datos_nuevos["usuario"].strip()
+            if nuevo_nombre_usuario != usuario:
+                # Verificar que el nuevo nombre no esté en uso
+                if nuevo_nombre_usuario in usuarios:
+                    print(f"El nombre de usuario '{nuevo_nombre_usuario}' ya está en uso.")
+                    return None
+                # Mover los datos a la nueva clave
+                usuarios[nuevo_nombre_usuario] = usuarios[usuario].copy()
+                del usuarios[usuario]
+                usuario = nuevo_nombre_usuario  # Actualizar referencia
+                print(f"Nombre de usuario cambiado a '{nuevo_nombre_usuario}'.")
+                # Eliminar "usuario" de datos_nuevos para no intentar actualizarlo como campo
+                del datos_nuevos["usuario"]
+        
+        # Actualizar los demás campos
+        if datos_nuevos:
+            usuarios[usuario].update(datos_nuevos)
+            campos_cambiados = []
+            if "mail" in datos_nuevos:
+                campos_cambiados.append("mail")
+            if "contraseña" in datos_nuevos:
+                campos_cambiados.append("contraseña")
+            if "nombre" in datos_nuevos:
+                campos_cambiados.append("nombre")
+            if "apellido" in datos_nuevos:
+                campos_cambiados.append("apellido")
+            
+            if campos_cambiados:
+                print(f"Datos actualizados: {', '.join(campos_cambiados)}")
+        
         print(f"Datos de '{usuario}' actualizados correctamente.")
-        return True
+        return nuevo_nombre_usuario if nuevo_nombre_usuario else usuario
+        
     except Exception as e:
         print(f"Error al modificar los datos: {e}")
-        return False
+        return None
 
+
+#Funcion para borrar la cuenta
 def borrar_cuenta(usuario):
     """
     Elimina la cuenta del usuario y sus datos asociados
@@ -201,11 +218,9 @@ def borrar_cuenta(usuario):
         print(f"Error al borrar cuenta: {e}")
         return False
 
+
+#Funcion para buscar peliculas por filtros
 def buscar_peliculas(filtros):
-    """
-    Busca películas según filtros (por ejemplo, género o duración máxima)
-    Usa lista por comprensión + lambda
-    """
     try:
         genero = filtros.get("genero")
         max_duracion = filtros.get("max_duracion")
@@ -229,10 +244,9 @@ def buscar_peliculas(filtros):
         print(f"Error al buscar películas: {e}")
         return []
 
+
+#Funcion para generar comprobante
 def generar_comprobante(compra):
-    """
-    Genera un comprobante de compra en formato JSON
-    """
     try:
         archivo = f"comprobante_{compra['pelicula']}.txt"
         with open(archivo, "w", encoding="utf-8") as archivo:
@@ -243,12 +257,9 @@ def generar_comprobante(compra):
         print(f"Error al generar comprobante: {e}")
         return False
 
+
+#Funcion para cargar funciones
 def cargar_funciones():
-    """
-    Carga el diccionario de funciones desde el archivo funciones.txt.
-    Si no existe el archivo, inicializa un diccionario vacío.
-    Retorna el diccionario de funciones.
-    """
     try:
         with open("funciones.txt", "r", encoding="utf-8") as f:
             funciones = json.load(f)
@@ -259,10 +270,8 @@ def cargar_funciones():
         print(f"Error al cargar funciones: {e}")
         return {}
 
+#Funcion para guardar funciones
 def guardar_funciones(funciones):
-    """
-    Guarda el diccionario de funciones en el archivo funciones.txt.
-    """
     try:
         with open("funciones.txt", "w", encoding="utf-8") as f:
             json.dump(funciones, f, indent=4, ensure_ascii=False)
@@ -271,10 +280,9 @@ def guardar_funciones(funciones):
         print(f"Error al guardar funciones: {e}")
         return False
     
+    
+#Main usuario
 def mainUsuario(usuario_actual):
-    """
-    Menú principal del usuario después de iniciar sesión.
-    """
     funciones = cargar_funciones()  # Cargar funciones al inicio
 
     while True:
@@ -335,17 +343,25 @@ def mainUsuario(usuario_actual):
         elif opcion == "7":
             print("Modificar datos personales (dejar en blanco para no cambiar):")
             nuevo_usuario = input("Nuevo nombre de usuario: ")
+            nuevo_nombre = input("Nuevo nombre: ")
+            nuevo_apellido = input("Nuevo apellido: ")
             nuevo_mail = input("Nuevo mail: ")
             nueva_contrasenia = input("Nueva contraseña: ")
             datos_nuevos = {}
             if nuevo_usuario.strip():
                 datos_nuevos["usuario"] = nuevo_usuario.strip()
+            if nuevo_nombre.strip():
+                datos_nuevos["nombre"] = nuevo_nombre.strip()
+            if nuevo_apellido.strip():
+                datos_nuevos["apellido"] = nuevo_apellido.strip()
             if nuevo_mail.strip():
                 datos_nuevos["mail"] = nuevo_mail.strip()
             if nueva_contrasenia.strip():
                 datos_nuevos["contraseña"] = nueva_contrasenia.strip()
             if datos_nuevos:
-                modificar_datos_usuario(usuario_actual, datos_nuevos)
+                nuevo_usuario_actual = modificar_datos_usuario(usuario_actual, datos_nuevos)
+                if nuevo_usuario_actual:
+                    usuario_actual = nuevo_usuario_actual  # Actualizar variable si cambió el nombre
             else:
                 print("No se ingresaron cambios.")
 
@@ -367,10 +383,8 @@ def mainUsuario(usuario_actual):
     
     return False
 
+#Funcion de login usuario y menu
 def login_usuario_menu():
-    """
-    Menú de login y registro para usuarios.
-    """
     funciones = cargar_funciones()  # Cargar funciones para opciones sin login
 
     while True:

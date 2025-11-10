@@ -1,15 +1,7 @@
-"""
-Sistema de Gestión de Cine
-Punto de entrada principal del sistema
-"""
-
 from admin import login_admin_menu
 from usuario import login_usuario_menu
 
 def main():
-    """
-    Función principal que determina el tipo de usuario y redirige al menú correspondiente.
-    """
     while True:
         print("\n" + "="*50)
         print("    SISTEMA DE GESTIÓN DE CINE")
@@ -31,7 +23,6 @@ def main():
             break
         else:
             print("\nOpción no válida. Por favor, seleccione una opción correcta.")
-
 
 
 main()
