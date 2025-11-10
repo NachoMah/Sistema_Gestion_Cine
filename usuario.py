@@ -132,16 +132,42 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
     try:
         datos_funcion = funciones[funcion_id]
         pelicula = datos_funcion["Película"]
-        fila, columna = butaca
+        fila, columna = butaca  # Índices 0-based recibidos del menú
         
+        # Marcar butaca como ocupada
         funciones[funcion_id]["Butacas"][fila][columna] = "Ocupada"
+        
+        # Cargar reservas existentes
+        reservas = cargar_reservas()
+        
+        # Generar ID de reserva
+        reserva_id = generar_id_reserva(reservas)
+        
+        # Convertir índices a 1-based para el sistema de reservas (formato admin)
+        fila_1based = fila + 1
+        columna_1based = columna + 1
+        
+        # Crear reserva en el sistema de admin
+        reservas[reserva_id] = {
+            "Usuario": usuario,
+            "FuncionID": funcion_id,
+            "Butaca": {"Fila": fila_1based, "Columna": columna_1based},
+            "Precio": 0,  # Se puede agregar precio después si es necesario
+            "Estado": "Activa"
+        }
+        
+        # Guardar reservas
+        guardar_reservas(reservas)
+        
+        # Agregar a la lista de reservas del usuario (para compatibilidad)
         usuarios[usuario]["reservas"].append({
             "pelicula": pelicula,
             "funcion_id": funcion_id,
-            "butaca": f"F{fila+1}-A{columna+1}"
+            "butaca": f"F{fila_1based}-A{columna_1based}",
+            "reserva_id": reserva_id
         })
 
-        print(f"Entrada comprada para '{pelicula}' - Butaca F{fila+1}-A{columna+1}")
+        print(f"Entrada comprada para '{pelicula}' - Butaca F{fila_1based}-A{columna_1based} - Reserva ID: {reserva_id}")
         return True
 
     except Exception as e:
@@ -279,6 +305,43 @@ def guardar_funciones(funciones):
     except Exception as e:
         print(f"Error al guardar funciones: {e}")
         return False
+
+#Funcion para cargar reservas
+def cargar_reservas():
+    try:
+        with open("reservas.txt", "r", encoding="utf-8") as f:
+            reservas = json.load(f)
+        return reservas
+    except FileNotFoundError:
+        return {}
+    except Exception as e:
+        print(f"Error al cargar reservas: {e}")
+        return {}
+
+#Funcion para guardar reservas
+def guardar_reservas(reservas):
+    try:
+        with open("reservas.txt", "w", encoding="utf-8") as f:
+            json.dump(reservas, f, indent=4, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"Error al guardar reservas: {e}")
+        return False
+
+#Funcion para generar id de reserva
+def generar_id_reserva(reservas):
+    """
+    Genera un ID incremental tipo R0001, R0002, ...
+    """
+    siguiente = len(reservas) + 1
+    if siguiente < 10:
+        return f"R000{siguiente}"
+    elif siguiente < 100:
+        return f"R00{siguiente}"
+    elif siguiente < 1000:
+        return f"R0{siguiente}"
+    else:
+        return f"R{siguiente}"
     
     
 #Main usuario
