@@ -248,10 +248,10 @@ def buscar_peliculas(filtros):
 #Funcion para generar comprobante
 def generar_comprobante(compra):
     try:
-        archivo = f"comprobante_{compra['pelicula']}.txt"
-        with open(archivo, "w", encoding="utf-8") as archivo:
+        nombre_archivo = f"comprobante_{compra['pelicula']}.txt"
+        with open(nombre_archivo, "w", encoding="utf-8") as archivo:
             json.dump(compra, archivo, indent=4, ensure_ascii=False)
-        print(f"Comprobante generado: {archivo}")
+        print(f"Comprobante generado: {nombre_archivo}")
         return True
     except Exception as e:
         print(f"Error al generar comprobante: {e}")
