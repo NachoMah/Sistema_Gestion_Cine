@@ -1,4 +1,3 @@
-from usuario import ver_horarios_pelicula
 import json
 
 #Funcion para registrar administrador
@@ -511,30 +510,206 @@ def cargar_datos():
     return True
 
 
-def main():
-    cargar_datos()
+def menu_gestion_peliculas():
+    """Menú para gestionar películas"""
     while True:
-        print("\n--- MENÚ ADMIN ---")
-        print("1. Registrar administrador")
-        print("2. Iniciar sesión administrador")
-        print("3. Agregar película")
-        print("4. Modificar película")
-        print("5. Eliminar película")
-        print("6. Cargar función de película")
-        print("7. Consultar funciones programadas")
-        print("8. Ver disponibilidad de butacas")
-        print("9. Guardar datos")
-        print("10. Crear reserva")
-        print("11. Consultar reservas por función")
-        print("12. Consultar reservas por usuario")
-        print("13. Cancelar compra")
-        print("14. Cambiar butaca")
-        print("15. Agregar promoción")
-        print("16. Consultar promociones")
-        print("17. Generar reporte de ocupación")
-        print("18. Ver horarios por película")
-        print("0. Salir")
+        print("\n--- GESTIÓN DE PELÍCULAS ---")
+        print("1. Agregar película")
+        print("2. Modificar película")
+        print("3. Eliminar película")
+        print("0. Volver al menú principal")
+        
         opcion = input("Seleccione una opción: ")
+        
+        if opcion == "1":
+            pelicula = input("Título de la película: ")
+            genero = input("Género: ")
+            duracion = input("Duración (minutos): ")
+            fecha = input("Fecha de estreno (DD-MM-YY): ")
+            agregar_pelicula(pelicula, genero, duracion, fecha)
+        
+        elif opcion == "2":
+            pelicula = input("Película a modificar: ")
+            nuevo_genero = input("Nuevo género (Enter para no cambiar): ")
+            nueva_duracion = input("Nueva duración (Enter para no cambiar): ")
+            nueva_fecha = input("Nueva fecha (DD-MM-YY, Enter para no cambiar): ")
+            modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha)
+        
+        elif opcion == "3":
+            pelicula = input("Película a eliminar: ")
+            eliminar_pelicula(pelicula)
+        
+        elif opcion == "0":
+            break
+        else:
+            print("Opción no válida.")
+
+def menu_gestion_funciones():
+    """Menú para gestionar funciones"""
+    while True:
+        print("\n--- GESTIÓN DE FUNCIONES ---")
+        print("1. Cargar función de película")
+        print("2. Consultar funciones programadas")
+        print("3. Ver disponibilidad de butacas")
+        print("4. Ver horarios por película")
+        print("0. Volver al menú principal")
+        
+        opcion = input("Seleccione una opción: ")
+        
+        if opcion == "1":
+            pelicula = input("Película: ")
+            fecha = input("Fecha (DD-MM-YY): ")
+            hora = input("Hora (HH:MM): ")
+            sala = input("Sala: ")
+            cargar_funcion(pelicula, fecha, hora, sala)
+        
+        elif opcion == "2":
+            consultar_funciones()
+        
+        elif opcion == "3":
+            pelicula = input("Pelicula: ")
+            fecha = input("Fecha (DD-MM-YY): ")
+            hora = input("Hora (HH:MM): ")
+            sala = input("Sala: ")
+            funcion_id = f"{pelicula}_{fecha}_{hora}_{sala}"
+            ver_disponibilidad_funcion(funcion_id)
+        
+        elif opcion == "4":
+            from usuario import ver_horarios_pelicula
+            pelicula = input("Ingrese el título de la película: ")
+            fecha = input("Ingrese la fecha (DD-MM-YY) o presione \"Enter\" para ver todos los horarios: ")
+            fecha = fecha if fecha.strip() else None
+            ver_horarios_pelicula(pelicula, fecha, funciones)
+        
+        elif opcion == "0":
+            break
+        else:
+            print("Opción no válida.")
+
+def menu_gestion_reservas():
+    """Menú para gestionar reservas"""
+    while True:
+        print("\n--- GESTIÓN DE RESERVAS ---")
+        print("1. Crear reserva")
+        print("2. Consultar reservas por función")
+        print("3. Consultar reservas por usuario")
+        print("4. Cancelar compra")
+        print("5. Cambiar butaca")
+        print("0. Volver al menú principal")
+        
+        opcion = input("Seleccione una opción: ")
+        
+        if opcion == "1":
+            usuario = input("Usuario (nombre o mail): ")
+            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
+            funcion_id = input("ID de la función: ")
+            fila = int(input("Fila (número empezando en 1): "))
+            columna = int(input("Asiento (número empezando en 1): "))
+            precio = float(input("Precio base: "))
+            crear_reserva(usuario, funcion_id, fila, columna, precio)
+        
+        elif opcion == "2":
+            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
+            funcion_id = input("ID de la función: ")
+            consultar_reservas_por_funcion(funcion_id)
+        
+        elif opcion == "3":
+            usuario = input("Usuario (nombre o mail): ")
+            consultar_reservas_por_usuario(usuario)
+        
+        elif opcion == "4":
+            reserva_id = input("ID de la reserva (ej.: R0001): ")
+            cancelar_compra(reserva_id)
+        
+        elif opcion == "5":
+            reserva_id = input("ID de la reserva (ej.: R0001): ")
+            nueva_fila = int(input("Nueva fila (número empezando en 1): "))
+            nueva_col = int(input("Nuevo asiento (número empezando en 1): "))
+            cambiar_butaca(reserva_id, nueva_fila, nueva_col)
+        
+        elif opcion == "0":
+            break
+        else:
+            print("Opción no válida.")
+
+def menu_promociones():
+    """Menú para gestionar promociones"""
+    while True:
+        print("\n--- GESTIÓN DE PROMOCIONES ---")
+        print("1. Agregar promoción")
+        print("2. Consultar promociones")
+        print("0. Volver al menú principal")
+        
+        opcion = input("Seleccione una opción: ")
+        
+        if opcion == "1":
+            nombre_promocion = input("Ingrese el nombre de la promoción: ")
+            tipo = input("Tipo de promoción (Ejemplo: descuento, 2x1, etc. ): ")
+            valor = int(input("Valor de la promocion (ej: 50 o 0.5 para 50%, 2 entradas para 2x1): "))
+            condicion = input("Condición para que se cumpla (Ejemplo: 'miercoles', 'fecha festiva'): ")
+            agregar_promocion(nombre_promocion, tipo, valor, condicion)
+        
+        elif opcion == "2":
+            consultar_promocion()
+        
+        elif opcion == "0":
+            break
+        else:
+            print("Opción no válida.")
+
+def mainAdmin():
+    """
+    Menú principal del administrador después de iniciar sesión.
+    """
+    cargar_datos()
+    
+    while True:
+        print("\n" + "="*50)
+        print("    MENÚ ADMINISTRADOR")
+        print("="*50)
+        print("1. Gestión de Películas")
+        print("2. Gestión de Funciones")
+        print("3. Gestión de Reservas")
+        print("4. Gestión de Promociones")
+        print("5. Generar reporte de ocupación")
+        print("6. Guardar datos")
+        print("0. Cerrar sesión")
+        
+        opcion = input("\nSeleccione una opción: ")
+        
+        if opcion == "1":
+            menu_gestion_peliculas()
+        elif opcion == "2":
+            menu_gestion_funciones()
+        elif opcion == "3":
+            menu_gestion_reservas()
+        elif opcion == "4":
+            menu_promociones()
+        elif opcion == "5":
+            generar_reporte_ocupacion()
+        elif opcion == "6":
+            guardar_datos()
+        elif opcion == "0":
+            print("Sesión cerrada.")
+            return  # Volver al menú principal
+        else:
+            print("Opción no válida.")
+
+def login_admin_menu():
+    """
+    Menú de login y registro para administradores.
+    """
+    cargar_datos()
+    
+    while True:
+        print("\n" + "="*50)
+        print("    ACCESO ADMINISTRADOR")
+        print("="*50)
+        print("1. Registrar administrador")
+        print("2. Iniciar sesión")
+        print("0. Volver al menú principal")
+        
+        opcion = input("\nSeleccione una opción: ")
         
         if opcion == "1":
             usuario = input("Usuario: ")
@@ -544,102 +719,23 @@ def main():
             apellido = input("Apellido: ")
             edad = input("Edad: ")
             registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad)
-
+        
         elif opcion == "2":
             usuario = input("Usuario: ")
             contrasenia = input("Contraseña: ")
-            login_admin(usuario, contrasenia)
-
-        elif opcion == "3":
-            pelicula = input("Título de la película: ")
-            genero = input("Género: ")
-            duracion = input("Duración (minutos): ")
-            fecha = input("Fecha de estreno (DD-MM-YY): ")
-            agregar_pelicula(pelicula, genero, duracion, fecha)
-
-        elif opcion == "4":
-            pelicula = input("Película a modificar: ")
-            nuevo_genero = input("Nuevo género (Enter para no cambiar): ")
-            nueva_duracion = input("Nueva duración (Enter para no cambiar): ")
-            nueva_fecha = input("Nueva fecha (DD-MM-YY, Enter para no cambiar): ")
-            modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha)
-
-        elif opcion == "5":
-            pelicula = input("Película a eliminar: ")
-            eliminar_pelicula(pelicula)
-
-        elif opcion == "6":
-            pelicula = input("Película: ")
-            fecha = input("Fecha (DD-MM-YY): ")
-            hora = input("Hora (HH:MM): ")
-            sala = input("Sala: ")
-            cargar_funcion(pelicula, fecha, hora, sala)
-
-        elif opcion == "7":
-            consultar_funciones()
-
-        elif opcion == "8":
-            pelicula = input("Pelicula: ")
-            fecha = input("Fecha (DD-MM-YY): ")
-            hora = input("Hora (HH:MM): ")
-            sala = input("Sala: ")
-            funcion_id = f"{pelicula}_{fecha}_{hora}_{sala}"
-            ver_disponibilidad_funcion(funcion_id)
-
-        elif opcion == "9":
-            guardar_datos()
-
-        elif opcion == "10":
-            usuario = input("Usuario (nombre o mail): ")
-            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
-            funcion_id = input("ID de la función: ")
-            fila = int(input("Fila (número empezando en 1): "))
-            columna = int(input("Asiento (número empezando en 1): "))
-            precio = float(input("Precio base: "))
-            crear_reserva(usuario, funcion_id, fila, columna, precio)
-
-        elif opcion == "11":
-            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
-            funcion_id = input("ID de la función: ")
-            consultar_reservas_por_funcion(funcion_id)
-
-        elif opcion == "12":
-            usuario = input("Usuario (nombre o mail): ")
-            consultar_reservas_por_usuario(usuario)
+            if login_admin(usuario, contrasenia):
+                mainAdmin()
+            else:
+                print("Credenciales incorrectas. Intente nuevamente.")
         
-        elif opcion == "13":
-            reserva_id = input("ID de la reserva (ej.: R0001): ")
-            cancelar_compra(reserva_id)
-            
-        elif opcion == "14":
-            reserva_id = input("ID de la reserva (ej.: R0001): ")
-            nueva_fila = int(input("Nueva fila (número empezando en 1): "))
-            nueva_col  = int(input("Nuevo asiento (número empezando en 1): "))
-            cambiar_butaca(reserva_id, nueva_fila, nueva_col)
-            
-        elif opcion == "15":
-            nombre_promocion = input("Ingrese el nombre de la promoción: ")
-            tipo = input("Tipo de promoción (Ejemplo: descuento, 2x1, etc. ): ")
-            valor = int(input("Valor de la promocion (ej: 50 o 0.5 para 50%, 2 entradas para 2x1): "))
-            condicion = input("Condición para que se cumpla (Ejemplo: 'miercoles', 'fecha festiva'): ")
-            agregar_promocion(nombre_promocion, tipo, valor, condicion)
-            
-        elif opcion == "16":
-            consultar_promocion()
-        
-        elif opcion == "17":
-            generar_reporte_ocupacion()
-
         elif opcion == "0":
-            print("Saliendo del sistema.")
             break
         else:
-            print("Error, intente nuevamente.")
+            print("Opción no válida.")
 
-#Programa principal 
+# Variables globales del sistema
 admins = {}
 peliculas = {}
 funciones = {}
 promociones = {}
 reservas = {}
-main()

@@ -1,7 +1,7 @@
 #from usuario import consultar_butacas
 #from admin import funciones            ------------> (Posibles imports para sacar datos de las funciones de admin.py)
 import json
-from validacion import validar_usuario_registrado, validar_pelicula_existente, validar_butaca_disponible, validar_edad
+# from validacion import validar_butaca_disponible  # No implementada aún
 
 
 usuarios = {}
@@ -11,16 +11,23 @@ peliculas_disponibles = [
     {"titulo": "Saw", "genero": "terror", "duracion": 100},
 ]
 
-def registrar_usuario(usuario):
+def registrar_usuario(nombre_usuario, nombre, apellido, edad, mail, contrasenia):
     """
-    Registra un nuevo usuario en el sistema
+    Registra un nuevo usuario en el sistema con todos sus datos.
     """
     try:
-        if usuario in usuarios:
+        if nombre_usuario in usuarios:
             print("El usuario ya existe")
             return False
-        usuarios[usuario] = {"reservas": []}
-        print(f"Usuario '{usuario} registrado correctamente.")
+        usuarios[nombre_usuario] = {
+            "nombre": nombre,
+            "apellido": apellido,
+            "edad": edad,
+            "mail": mail,
+            "contraseña": contrasenia,
+            "reservas": []
+        }
+        print(f"Usuario '{nombre_usuario}' registrado correctamente.")
         return True
     except Exception as e:
         print(f"Error al registrar usuario: {e}")
@@ -137,33 +144,13 @@ def consultar_butacas(funcion_id, funciones):
 
 def comprar_entrada(usuario, funcion_id, butaca, funciones):
     """
-    Permite comprar una entrada simulada con validaciones.
+    Permite comprar una entrada.
     """
     try:
-        if not validar_usuario_registrado(usuario):
-            print("El usuario no está registrado.")
-            return False
-
-        if funcion_id not in funciones:
-            print(f"La función '{funcion_id}' no existe.")
-            return False
-
         datos_funcion = funciones[funcion_id]
         pelicula = datos_funcion["Película"]
-
-        if not validar_pelicula_existente(pelicula):
-            print(f"La película '{pelicula}' no está en cartelera.")
-            return False
-        
-        if not validar_edad(usuario, pelicula):
-            print(f"El usuario no cumple con la edad mínima para '{pelicula}'.")
-            return False
-
-        if not validar_butaca_disponible(datos_funcion, butaca):
-            print("La butaca seleccionada no está disponible.")
-            return False
-
         fila, columna = butaca
+        
         funciones[funcion_id]["Butacas"][fila][columna] = "Ocupada"
         usuarios[usuario]["reservas"].append({
             "pelicula": pelicula,
@@ -255,77 +242,182 @@ def generar_comprobante(compra):
     except Exception as e:
         print(f"Error al generar comprobante: {e}")
         return False
+
+def cargar_funciones():
+    """
+    Carga el diccionario de funciones desde el archivo funciones.txt.
+    Si no existe el archivo, inicializa un diccionario vacío.
+    Retorna el diccionario de funciones.
+    """
+    try:
+        with open("funciones.txt", "r", encoding="utf-8") as f:
+            funciones = json.load(f)
+        return funciones
+    except FileNotFoundError:
+        return {}
+    except Exception as e:
+        print(f"Error al cargar funciones: {e}")
+        return {}
+
+def guardar_funciones(funciones):
+    """
+    Guarda el diccionario de funciones en el archivo funciones.txt.
+    """
+    try:
+        with open("funciones.txt", "w", encoding="utf-8") as f:
+            json.dump(funciones, f, indent=4, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"Error al guardar funciones: {e}")
+        return False
     
-def mainUsuario():
+def mainUsuario(usuario_actual):
     """
-    Funcion encaragada de mostrar un menú interactivo para navegar y utilziar otdas las funciones creadas en su modulo.
+    Menú principal del usuario después de iniciar sesión.
     """
-    logueado = False  # Bandera: False = no logueado, True = logueado
+    funciones = cargar_funciones()  # Cargar funciones al inicio
 
     while True:
-        print("\n--- MENÚ USUARIO ---")
+        # Recargar funciones antes de mostrar opciones (por si se actualizaron)
+        funciones = cargar_funciones()
+        
+        print("\n" + "="*50)
+        print("    MENÚ USUARIO")
+        print("="*50)
+        print("1. Ver cartelera")
+        print("2. Ver horarios de película")
+        print("3. Consultar butacas")
+        print("4. Comprar entrada")
+        print("5. Consultar mis reservas / Historial de compras")
+        print("6. Buscar películas por filtros")
+        print("7. Modificar datos personales")
+        print("8. Borrar cuenta")
+        print("0. Cerrar sesión")
 
-        if not logueado:
-            print("1. Registrar usuario")
-            print("2. Iniciar sesión")
-            print("3. Ver cartelera")
-            print("0. Salir")
+        opcion = input("\nSeleccione una opción: ")
 
-            opcion = input("Seleccione una opción: ")
+        if opcion == "1":
+            ver_cartelera()
+        
+        elif opcion == "2":
+            pelicula = input("Ingrese el título de la película: ")
+            fecha = input("Ingrese la fecha (DD-MM-YY) o presione \"Enter\" para ver todos los horarios: ")
+            fecha = fecha if fecha.strip() else None
+            ver_horarios_pelicula(pelicula, fecha, funciones)
 
-            if opcion == "1":
-                usuario = input("Ingrese nombre de usuario: ")
-                registrar_usuario(usuario)
+        elif opcion == "3":
+            funcion_id = input("Ingrese el ID de la función: ")
+            consultar_butacas(funcion_id, funciones)  
 
-            elif opcion == "2":
-                usuario = input("Usuario: ")
-                contrasenia = input("Contraseña: ")
-                if login_usuario(usuario, contrasenia):  
-                    print("Inicio de sesión exitoso.")
-                    logueado = True  #Bandera
-                else:
-                    print("Usuario o contraseña incorrectos.")
+        elif opcion == "4":
+            funcion_id = input("Ingrese el ID de la función: ")
+            fila = int(input("Fila (número): ")) - 1
+            columna = int(input("Columna (número): ")) - 1
+            if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
+                guardar_funciones(funciones)  # Guardar cambios después de comprar
 
-            elif opcion == "3":
-                ver_cartelera()
+        elif opcion == "5":
+            ver_historial_compras(usuario_actual)
 
-            elif opcion == "0":
-                print("Saliendo del sistema.")
-                break
+        elif opcion == "6":
+            genero = input("Género (Enter para omitir): ")
+            max_duracion = input("Duración máxima en minutos (Enter para omitir): ")
+            filtros = {}
+            if genero.strip():
+                filtros["genero"] = genero.strip()
+            if max_duracion.strip():
+                try:
+                    filtros["max_duracion"] = int(max_duracion.strip())
+                except ValueError:
+                    print("Duración inválida. Se omitirá este filtro.")
+            buscar_peliculas(filtros)
 
+        elif opcion == "7":
+            print("Modificar datos personales (dejar en blanco para no cambiar):")
+            nuevo_usuario = input("Nuevo nombre de usuario: ")
+            nuevo_mail = input("Nuevo mail: ")
+            nueva_contrasenia = input("Nueva contraseña: ")
+            datos_nuevos = {}
+            if nuevo_usuario.strip():
+                datos_nuevos["usuario"] = nuevo_usuario.strip()
+            if nuevo_mail.strip():
+                datos_nuevos["mail"] = nuevo_mail.strip()
+            if nueva_contrasenia.strip():
+                datos_nuevos["contraseña"] = nueva_contrasenia.strip()
+            if datos_nuevos:
+                modificar_datos_usuario(usuario_actual, datos_nuevos)
             else:
-                print("Opción no válida.")
+                print("No se ingresaron cambios.")
+
+        elif opcion == "8":
+            confirmar = input("¿Está seguro de que desea borrar su cuenta? (s/n): ")
+            if confirmar.lower() == "s":
+                if borrar_cuenta(usuario_actual):
+                    print("Cuenta eliminada. Saliendo del sistema...")
+                    return True  # Indica que se debe terminar la ejecución
+            else:
+                print("Operación cancelada.")
+
+        elif opcion == "0":
+            print("Sesión cerrada.")
+            return False  # Volver al menú principal
 
         else:
-           
-            print("1. Consultar butacas")
-            print("2. Comprar entrada")
-            print("3. Consultar mis reservas")
-            print("4. Borrar cuenta")
-            print("5. Cerrar sesión")
+            print("Opción no válida.")
+    
+    return False
 
-            opcion = input("Seleccione una opción: ")
+def login_usuario_menu():
+    """
+    Menú de login y registro para usuarios.
+    """
+    funciones = cargar_funciones()  # Cargar funciones para opciones sin login
 
-            if opcion == "1":
-                funcion_id = input("Ingrese el ID de la función: ")
-                consultar_butacas(funcion_id, funciones={})  
+    while True:
+        print("\n" + "="*50)
+        print("    ACCESO USUARIO")
+        print("="*50)
+        print("1. Registrar usuario")
+        print("2. Iniciar sesión")
+        print("3. Ver cartelera")
+        print("4. Ver horarios de película")
+        print("0. Volver al menú principal")
 
-            elif opcion == "2":
-                funcion_id = input("Ingrese el ID de la función: ")
-                fila = int(input("Fila (número): ")) - 1
-                columna = int(input("Columna (número): ")) - 1
-                comprar_entrada(usuario, funcion_id, (fila, columna), funciones={})
+        opcion = input("\nSeleccione una opción: ")
 
-            elif opcion == "3":
-                ver_historial_compras(usuario)
+        if opcion == "1":
+            nombre_usuario = input("Ingrese nombre de usuario: ")
+            nombre = input("Ingrese su nombre: ")
+            apellido = input("Ingrese su apellido: ")
+            edad = input("Ingrese su edad: ")
+            mail = input("Ingrese su mail: ")
+            contrasenia = input("Ingrese su contraseña: ")
+            registrar_usuario(nombre_usuario, nombre, apellido, edad, mail, contrasenia)
 
-            elif opcion == "4":
-                borrar_cuenta(usuario)
-                logueado = False  
-
-            elif opcion == "5":
-                print("Sesión cerrada.")
-                logueado = False  #Bandera
-
+        elif opcion == "2":
+            usuario = input("Usuario: ")
+            contrasenia = input("Contraseña: ")
+            if login_usuario(usuario, contrasenia):  
+                print("Inicio de sesión exitoso.")
+                terminar = mainUsuario(usuario)
+                if terminar:  # Si se borró la cuenta, terminar ejecución
+                    return True
             else:
-                print("Opción no válida.")
+                print("Usuario o contraseña incorrectos.")
+
+        elif opcion == "3":
+            ver_cartelera()
+        
+        elif opcion == "4":
+            pelicula = input("Ingrese el título de la película: ")
+            fecha = input("Ingrese la fecha (DD-MM-YY) o presione \"Enter\" para ver todos los horarios: ")
+            fecha = fecha if fecha.strip() else None
+            ver_horarios_pelicula(pelicula, fecha, funciones)
+
+        elif opcion == "0":
+            break
+
+        else:
+            print("Opción no válida.")
+    
+    return False
