@@ -1,11 +1,6 @@
 import json
 
 usuarios = {}
-peliculas_disponibles = [
-    {"titulo": "Gladiador", "genero": "accion", "duracion": 155},
-    {"titulo": "Batman", "genero": "superheroes", "duracion": 176},
-    {"titulo": "Saw", "genero": "terror", "duracion": 100},
-]
 
 #Funcion para registrar usuario
 def registrar_usuario(nombre_usuario, nombre, apellido, edad, mail, contrasenia):
@@ -48,6 +43,7 @@ def login_usuario(usuario, contrasena):
 #Funcion para ver cartelera
 def ver_cartelera():
     try:
+        peliculas_disponibles = cargar_peliculas()
         if not peliculas_disponibles:
             print("No hay películas en cartelera.")
             return []
@@ -254,6 +250,7 @@ def borrar_cuenta(usuario):
 #Funcion para buscar peliculas por filtros
 def buscar_peliculas(filtros):
     try:
+        peliculas_disponibles = cargar_peliculas()
         genero = filtros.get("genero")
         max_duracion = filtros.get("max_duracion")
 
@@ -336,6 +333,31 @@ def guardar_usuarios():
     except Exception as e:
         print(f"Error al guardar usuarios: {e}")
         return False
+
+#Funcion para cargar peliculas
+def cargar_peliculas():
+    """
+    Carga películas desde peliculas.txt (formato admin) y las convierte al formato usado en usuario.py
+    """
+    try:
+        with open("peliculas.txt", "r", encoding="utf-8") as f:
+            peliculas_admin = json.load(f)
+        
+        # Convertir formato admin a formato usuario
+        peliculas_disponibles = []
+        for titulo, datos in peliculas_admin.items():
+            peliculas_disponibles.append({
+                "titulo": titulo,
+                "genero": datos.get("Género", ""),
+                "duracion": datos.get("Duración", 0)
+            })
+        
+        return peliculas_disponibles
+    except FileNotFoundError:
+        return []
+    except Exception as e:
+        print(f"Error al cargar películas: {e}")
+        return []
 
 #Funcion para cargar reservas
 def cargar_reservas():
