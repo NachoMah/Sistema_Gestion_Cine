@@ -1,7 +1,7 @@
 import json
 
 #Funcion para registrar administrador
-def registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad):
+def registrar_admin(usuario, contrasenia, mail, nombre, apellido):
     if usuario in admins:
         print(f"El usuario {usuario} que quiere registrar ya existe. Por favor incie sesión con ese usuario")
         return False
@@ -11,7 +11,6 @@ def registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad):
             "Mail": mail,
             "Nombre": nombre,
             "Apellido": apellido,
-            "Edad": edad, 
         }
         guardar_admins()
         
@@ -676,19 +675,28 @@ def login_admin_menu():
         opcion = input("\nSeleccione una opción: ")
         
         if opcion == "1":
-            usuario = input("Usuario: ")
-            contrasenia = input("Contraseña: ")
-            mail = input("Mail: ")
-            nombre = input("Nombre: ")
-            apellido = input("Apellido: ")
-            edad = input("Edad: ")
-            registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad)
+            bandera = True
+            while bandera:
+                clave_registro = input("Clave de registro (o -1 para volver): ")
+                if clave_registro == "-1":
+                    bandera = False
+                elif clave_registro != "Uade123":
+                    print("Clave incorrecta.")
+                else:
+                    usuario = input("Usuario: ")
+                    contrasenia = input("Contraseña: ")
+                    mail = input("Mail: ")
+                    nombre = input("Nombre: ")
+                    apellido = input("Apellido: ")
+                    registrar_admin(usuario, contrasenia, mail, nombre, apellido)
+                    bandera = False
         
         elif opcion == "2":
             usuario = input("Usuario: ")
             contrasenia = input("Contraseña: ")
             if login_admin(usuario, contrasenia):
                 mainAdmin()
+                return
             else:
                 print("Credenciales incorrectas. Intente nuevamente.")
         
