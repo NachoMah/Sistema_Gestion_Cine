@@ -13,6 +13,7 @@ def registrar_admin(usuario, contrasenia, mail, nombre, apellido, edad):
             "Apellido": apellido,
             "Edad": edad, 
         }
+        guardar_admins()
         
         print(f"¡Bienvenido {usuario}! Usted se ha registrado como administrador correctamente.")
         return True
@@ -461,6 +462,16 @@ def cargar_datos():
 
     print("Datos cargados.")
     return True
+
+
+def guardar_admins():
+    try:
+        with open("admins.txt", "w", encoding="utf-8") as f:
+            json.dump(admins, f, indent=4, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"Error al guardar administradores: {e}")
+        return False
 
 
 #Menu gestion peliculas
