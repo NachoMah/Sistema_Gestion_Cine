@@ -221,6 +221,15 @@ def modificar_datos_usuario(usuario, datos_nuevos):
                 if nuevo_nombre_usuario in usuarios:
                     print(f"El nombre de usuario '{nuevo_nombre_usuario}' ya está en uso.")
                     return None
+                
+                # Actualizar referencias en el sistema de reservas de admin
+                reservas = cargar_reservas()
+                usuario_antiguo = usuario
+                for reserva_id, datos_reserva in reservas.items():
+                    if datos_reserva.get("Usuario") == usuario_antiguo:
+                        reservas[reserva_id]["Usuario"] = nuevo_nombre_usuario
+                guardar_reservas(reservas)
+                
                 # Mover los datos a la nueva clave
                 usuarios[nuevo_nombre_usuario] = usuarios[usuario].copy()
                 del usuarios[usuario]
