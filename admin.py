@@ -135,6 +135,17 @@ def consultar_funciones():
         for _, datos in funciones.items():
             print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
 
+def ver_todas_las_peliculas():
+    if not peliculas:
+        print("No hay películas registradas.")
+    else:
+        print("\nListado de películas registradas:")
+        for nombre, datos in sorted(peliculas.items()):
+            genero = datos.get("Género", "N/A")
+            duracion = datos.get("Duración", "N/A")
+            fecha = datos.get("Fecha", "N/A")
+            print(f"- {nombre} | Género: {genero} | Duración: {duracion} | Fecha: {fecha}")
+
 
 #Funcion para agregar promocion
 def agregar_promocion(promocion, tipo, valor, condicion):
@@ -480,6 +491,7 @@ def menu_gestion_peliculas():
         print("1. Agregar película")
         print("2. Modificar película")
         print("3. Eliminar película")
+        print("4. Ver todas las películas")
         print("0. Volver al menú principal")
         
         opcion = input("Seleccione una opción: ")
@@ -501,6 +513,8 @@ def menu_gestion_peliculas():
         elif opcion == "3":
             pelicula = input("Película a eliminar: ")
             eliminar_pelicula(pelicula)
+        elif opcion == "4":
+            ver_todas_las_peliculas()
         
         elif opcion == "0":
             break
@@ -692,13 +706,18 @@ def login_admin_menu():
                     bandera = False
         
         elif opcion == "2":
-            usuario = input("Usuario: ")
-            contrasenia = input("Contraseña: ")
-            if login_admin(usuario, contrasenia):
-                mainAdmin()
-                return
-            else:
-                print("Credenciales incorrectas. Intente nuevamente.")
+            bandera = True
+            while bandera:
+                usuario = input("Usuario (o -1 para volver): ")
+                if usuario == "-1":
+                    bandera = False
+                    continue
+                contrasenia = input("Contraseña: ")
+                if login_admin(usuario, contrasenia):
+                    mainAdmin()
+                    return
+                else:
+                    print("Credenciales incorrectas. Intente nuevamente o ingrese -1 para volver.")
         
         elif opcion == "0":
             break

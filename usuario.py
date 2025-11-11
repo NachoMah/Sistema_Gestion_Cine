@@ -3,7 +3,8 @@ import json
 usuarios = {}
 
 #Funcion para registrar usuario
-def registrar_usuario(nombre_usuario, nombre, apellido, edad, mail, contrasenia):
+def registrar_usuario(mail, nombre, apellido, edad, contrasenia):
+    nombre_usuario = mail
     try:
         if nombre_usuario in usuarios:
             print("El usuario ya existe")
@@ -485,14 +486,31 @@ def mainUsuario(usuario_actual):
 
         elif opcion == "3":
             funcion_id = input("Ingrese el ID de la función: ")
-            consultar_butacas(funcion_id, funciones)  
+            if consultar_butacas(funcion_id, funciones):
+                sub_menu_activo = True
+                while sub_menu_activo:
+                    print("\nOpciones disponibles:")
+                    print("1. Comprar entrada")
+                    print("2. Volver al menú principal")
+                    eleccion = input("Seleccione una opción: ")
+                    if eleccion == "1":
+                        fila = int(input("Fila (número): ")) - 1
+                        columna = int(input("Columna (número): ")) - 1
+                        if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
+                            guardar_funciones(funciones)
+                        sub_menu_activo = False
+                    elif eleccion == "2":
+                        sub_menu_activo = False
+                    else:
+                        print("Opción no válida. Intente nuevamente.")
 
         elif opcion == "4":
             funcion_id = input("Ingrese el ID de la función: ")
-            fila = int(input("Fila (número): ")) - 1
-            columna = int(input("Columna (número): ")) - 1
-            if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
-                guardar_funciones(funciones)  # Guardar cambios después de comprar
+            if consultar_butacas(funcion_id, funciones):
+                fila = int(input("Fila (número): ")) - 1
+                columna = int(input("Columna (número): ")) - 1
+                if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
+                    guardar_funciones(funciones)  # Guardar cambios después de comprar
 
         elif opcion == "5":
             ver_historial_compras(usuario_actual)
@@ -571,24 +589,29 @@ def login_usuario_menu():
         opcion = input("\nSeleccione una opción: ")
 
         if opcion == "1":
-            nombre_usuario = input("Ingrese nombre de usuario: ")
+            mail = input("Ingrese su mail: ")
             nombre = input("Ingrese su nombre: ")
             apellido = input("Ingrese su apellido: ")
             edad = input("Ingrese su edad: ")
-            mail = input("Ingrese su mail: ")
             contrasenia = input("Ingrese su contraseña: ")
-            registrar_usuario(nombre_usuario, nombre, apellido, edad, mail, contrasenia)
+            registrar_usuario(mail, nombre, apellido, edad, contrasenia)
 
         elif opcion == "2":
-            usuario = input("Usuario: ")
-            contrasenia = input("Contraseña: ")
-            if login_usuario(usuario, contrasenia):  
-                print("Inicio de sesión exitoso.")
-                terminar = mainUsuario(usuario)
-                if terminar:  # Si se borró la cuenta, terminar ejecución
-                    return True
-            else:
-                print("Usuario o contraseña incorrectos.")
+            bandera = True
+            while bandera:
+                usuario = input("Mail (o -1 para volver): ")
+                if usuario == "-1":
+                    bandera = False
+                    continue
+                contrasenia = input("Contraseña: ")
+                if login_usuario(usuario, contrasenia):  
+                    print("Inicio de sesión exitoso.")
+                    terminar = mainUsuario(usuario)
+                    if terminar:  # Si se borró la cuenta, terminar ejecución
+                        return True
+                    bandera = False
+                else:
+                    print("Usuario o contraseña incorrectos. Intente nuevamente o ingrese -1 para volver.")
 
         elif opcion == "3":
             ver_cartelera()
