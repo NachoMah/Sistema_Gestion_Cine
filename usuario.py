@@ -178,13 +178,21 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
 def ver_historial_compras(usuario):
     try:
         reservas = cargar_reservas()
+        funciones = cargar_funciones()
         
         reservas_usuario = []
         for reserva_id, datos_reserva in reservas.items():
             if datos_reserva.get("Usuario") == usuario:
+                funcion_id = datos_reserva.get("FuncionID", "")
+                datos_funcion = funciones.get(funcion_id, {})
+                
                 reservas_usuario.append({
                     "reserva_id": reserva_id,
-                    "funcion_id": datos_reserva.get("FuncionID", ""),
+                    "funcion_id": funcion_id,
+                    "pelicula": datos_funcion.get("Película", "N/A"),
+                    "fecha": datos_funcion.get("Fecha", "N/A"),
+                    "hora": datos_funcion.get("Hora", "N/A"),
+                    "sala": datos_funcion.get("Sala", "N/A"),
                     "butaca": f"F{datos_reserva['Butaca']['Fila']}-A{datos_reserva['Butaca']['Columna']}",
                     "precio": datos_reserva.get("Precio", 0),
                     "estado": datos_reserva.get("Estado", "")
@@ -195,8 +203,13 @@ def ver_historial_compras(usuario):
             return []
         
         print(f"\nHistorial de compras de '{usuario}':")
+        print("=" * 80)
         for r in reservas_usuario:
-            print(f"- ID: {r['reserva_id']} | Función: {r['funcion_id']} | Butaca: {r['butaca']} | Precio: ${r['precio']} | Estado: {r['estado']}")
+            print(f"ID: {r['reserva_id']}")
+            print(f"  Película: {r['pelicula']}")
+            print(f"  Fecha: {r['fecha']} | Hora: {r['hora']} | Sala: {r['sala']}")
+            print(f"  Butaca: {r['butaca']} | Precio: ${r['precio']} | Estado: {r['estado']}")
+            print("-" * 80)
         
         return reservas_usuario
     except Exception as e:
