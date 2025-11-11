@@ -188,9 +188,6 @@ def ver_disponibilidad_funcion(funcion_id):
 
 #Funcion para generar id de reserva
 def generar_id_reserva():
-    """
-    Genera un ID incremental tipo R0001, R0002, ...
-    """
     siguiente = len(reservas) + 1
     if siguiente < 10:
         return f"R000{siguiente}"
@@ -203,9 +200,6 @@ def generar_id_reserva():
 
 #Funcion para verificar si el asiento existe
 def asiento_existe(funcion_id, fila, columna):
-    """
-    True si (fila, columna) existe en la matriz de butacas de la función (índices 1-based).
-    """
     if funcion_id not in funciones:
         return False
     butacas = funciones[funcion_id]["Butacas"]

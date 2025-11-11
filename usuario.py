@@ -176,7 +176,32 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
 
 #Funcion para ver historial de compras
 def ver_historial_compras(usuario):
-    pass
+    try:
+        reservas = cargar_reservas()
+        
+        reservas_usuario = []
+        for reserva_id, datos_reserva in reservas.items():
+            if datos_reserva.get("Usuario") == usuario:
+                reservas_usuario.append({
+                    "reserva_id": reserva_id,
+                    "funcion_id": datos_reserva.get("FuncionID", ""),
+                    "butaca": f"F{datos_reserva['Butaca']['Fila']}-A{datos_reserva['Butaca']['Columna']}",
+                    "precio": datos_reserva.get("Precio", 0),
+                    "estado": datos_reserva.get("Estado", "")
+                })
+        
+        if not reservas_usuario:
+            print(f"No hay reservas registradas para el usuario '{usuario}'.")
+            return []
+        
+        print(f"\nHistorial de compras de '{usuario}':")
+        for r in reservas_usuario:
+            print(f"- ID: {r['reserva_id']} | Función: {r['funcion_id']} | Butaca: {r['butaca']} | Precio: ${r['precio']} | Estado: {r['estado']}")
+        
+        return reservas_usuario
+    except Exception as e:
+        print(f"Error al consultar historial de compras: {e}")
+        return []
 
 
 #Funcion para modificar datos usuario
@@ -231,9 +256,6 @@ def modificar_datos_usuario(usuario, datos_nuevos):
 
 #Funcion para borrar la cuenta
 def borrar_cuenta(usuario):
-    """
-    Elimina la cuenta del usuario y sus datos asociados
-    """
     try:
         if usuario not in usuarios:
             print("El usuario no existe.")
@@ -315,6 +337,22 @@ def cargar_usuarios():
     try:
         with open("usuarios.txt", "r", encoding="utf-8") as f:
             usuarios = json.load(f)
+        
+        # Sincronizar reservas del usuario con el sistema de reservas de admin
+        reservas = cargar_reservas()
+        for usuario_nombre in usuarios:
+            # Limpiar reservas antiguas y reconstruir desde el sistema de admin
+            usuarios[usuario_nombre]["reservas"] = []
+            for reserva_id, datos_reserva in reservas.items():
+                if datos_reserva.get("Usuario") == usuario_nombre:
+                    funcion_id = datos_reserva.get("FuncionID", "")
+                    butaca = datos_reserva.get("Butaca", {})
+                    usuarios[usuario_nombre]["reservas"].append({
+                        "funcion_id": funcion_id,
+                        "butaca": f"F{butaca.get('Fila', 0)}-A{butaca.get('Columna', 0)}",
+                        "reserva_id": reserva_id
+                    })
+        
         return True
     except FileNotFoundError:
         usuarios = {}
@@ -336,9 +374,6 @@ def guardar_usuarios():
 
 #Funcion para cargar peliculas
 def cargar_peliculas():
-    """
-    Carga películas desde peliculas.txt (formato admin) y las convierte al formato usado en usuario.py
-    """
     try:
         with open("peliculas.txt", "r", encoding="utf-8") as f:
             peliculas_admin = json.load(f)
@@ -383,9 +418,6 @@ def guardar_reservas(reservas):
 
 #Funcion para generar id de reserva
 def generar_id_reserva(reservas):
-    """
-    Genera un ID incremental tipo R0001, R0002, ...
-    """
     siguiente = len(reservas) + 1
     if siguiente < 10:
         return f"R000{siguiente}"
