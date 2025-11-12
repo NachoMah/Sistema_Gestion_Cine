@@ -33,6 +33,7 @@ def main():
         elif opcion == "2":
             login_admin_menu()
         elif opcion == "0":
+            clear()
             print("\n¡Hasta luego!")
             break
         else:
