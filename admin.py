@@ -1,17 +1,15 @@
 import json
 import os
-import platform
+from clear import clear
 
-def clear():
-    # Limpia la consola
-    try:
-        current_os = platform.system()
-        if current_os == "Windows":
-            os.system('cls') # Windows
-        else:
-            os.system('clear') # macOS/Linux
-    except Exception as e:
-        print(f"Error al limpiar la pantalla: {e}")
+from precios import (
+    cargar_precios,
+    calcular_precio_entrada,
+    obtener_precio_base,
+    menu_gestion_precios,
+    seleccionar_tipo_entrada,
+    seleccionar_descuento
+)
 
 #Funcion para registrar administrador
 def registrar_admin(usuario, contrasenia, mail, nombre, apellido):
@@ -248,7 +246,7 @@ def asiento_esta_libre(funcion_id, fila, columna):
 
 
 #Funcion para crear reserva
-def crear_reserva(usuario, funcion_id, fila, columna, precio_base):
+def crear_reserva(usuario, funcion_id, fila, columna, precio_base=None):
     """
     Crea una reserva si la función existe y la butaca está libre.
     Marca la butaca como 'Ocupada' y guarda la reserva en 'reservas'.
@@ -265,6 +263,13 @@ def crear_reserva(usuario, funcion_id, fila, columna, precio_base):
     if not asiento_esta_libre(funcion_id, fila, columna):
         print("La butaca ya está ocupada.")
         return None
+    
+    # Si no se proporciona el precio, se calcula
+    if precio_base is None:
+        tipo_entrada = seleccionar_tipo_entrada()
+        descuento = seleccionar_descuento()
+        precio_base = calcular_precio_entrada(tipo_entrada, descuento)
+        print(f"Precio calculado: ${precio_base}")
 
     funciones[funcion_id]["Butacas"][fila - 1][columna - 1] = "Ocupada"
 
@@ -277,7 +282,7 @@ def crear_reserva(usuario, funcion_id, fila, columna, precio_base):
         "Estado": "Activa"
     }
 
-    print(f"Reserva creada. ID: {reserva_id} - Usuario: {usuario} - Función: {funcion_id} - Butaca F{fila}A{columna}")
+    print(f"Reserva creada. ID: {reserva_id} - Usuario: {usuario} - Función: {funcion_id} - Butaca F{fila}A{columna} - Precio: ${precio_base}")
     return reserva_id
 
 
@@ -593,15 +598,19 @@ def menu_gestion_reservas():
         print("0. Volver al menú principal")
         
         opcion = input("Seleccione una opción: ")
-        
+
         if opcion == "1":
             usuario = input("Usuario (nombre o mail): ")
             print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
             funcion_id = input("ID de la función: ")
             fila = int(input("Fila (número empezando en 1): "))
             columna = int(input("Asiento (número empezando en 1): "))
-            precio = float(input("Precio base: "))
-            crear_reserva(usuario, funcion_id, fila, columna, precio)
+    
+            print("\n¿Desea ingresar el precio manualmente o calcularlo automáticamente?")
+            print("1. Calcular automáticamente")
+            print("2. Ingresar manualmente")
+            opcion_precio = input("Seleccione una opción: ")
+    
         
         elif opcion == "2":
             print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
@@ -669,6 +678,7 @@ def mainAdmin():
         print("4. Gestión de Promociones")
         print("5. Generar reporte de ocupación")
         print("6. Guardar datos")
+        print("7. Gestión de Precios")
         print("0. Cerrar sesión")
         
         opcion = input("\nSeleccione una opción: ")
@@ -685,6 +695,8 @@ def mainAdmin():
             generar_reporte_ocupacion()
         elif opcion == "6":
             guardar_datos()
+        elif opcion == "7":
+            menu_gestion_precios()
         elif opcion == "0":
             print("Sesión cerrada.")
             return  # Volver al menú principal
