@@ -1,4 +1,17 @@
 import json
+import os
+import platform
+
+def clear():
+    # Limpia la consola
+    try:
+        current_os = platform.system()
+        if current_os == "Windows":
+            os.system('cls') # Windows
+        else:
+            os.system('clear') # macOS/Linux
+    except Exception as e:
+        print(f"Error al limpiar la pantalla: {e}")   
 
 usuarios = {}
 
@@ -460,6 +473,7 @@ def mainUsuario(usuario_actual):
         # Recargar funciones antes de mostrar opciones (por si se actualizaron)
         funciones = cargar_funciones()
         
+        clear()
         print("\n" + "="*50)
         print("    MENÚ USUARIO")
         print("="*50)
@@ -577,6 +591,7 @@ def login_usuario_menu():
     funciones = cargar_funciones()  # Cargar funciones para opciones sin login
 
     while True:
+        clear()
         print("\n" + "="*50)
         print("    ACCESO USUARIO")
         print("="*50)

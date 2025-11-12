@@ -1,4 +1,17 @@
 import json
+import os
+import platform
+
+def clear():
+    # Limpia la consola
+    try:
+        current_os = platform.system()
+        if current_os == "Windows":
+            os.system('cls') # Windows
+        else:
+            os.system('clear') # macOS/Linux
+    except Exception as e:
+        print(f"Error al limpiar la pantalla: {e}")
 
 #Funcion para registrar administrador
 def registrar_admin(usuario, contrasenia, mail, nombre, apellido):
@@ -487,6 +500,7 @@ def guardar_admins():
 #Menu gestion peliculas
 def menu_gestion_peliculas():
     while True:
+        clear()
         print("\n--- GESTIÓN DE PELÍCULAS ---")
         print("1. Agregar película")
         print("2. Modificar película")
@@ -525,6 +539,7 @@ def menu_gestion_peliculas():
 #Menu gestion funciones
 def menu_gestion_funciones():
     while True:
+        clear()
         print("\n--- GESTIÓN DE FUNCIONES ---")
         print("1. Cargar función de película")
         print("2. Consultar funciones programadas")
@@ -568,6 +583,7 @@ def menu_gestion_funciones():
 #Menu gestion reservas
 def menu_gestion_reservas():
     while True:
+        clear()
         print("\n--- GESTIÓN DE RESERVAS ---")
         print("1. Crear reserva")
         print("2. Consultar reservas por función")
@@ -615,6 +631,7 @@ def menu_gestion_reservas():
 #Menu gestion promociones
 def menu_promociones():
     while True:
+        clear()
         print("\n--- GESTIÓN DE PROMOCIONES ---")
         print("1. Agregar promoción")
         print("2. Consultar promociones")
@@ -642,6 +659,7 @@ def menu_promociones():
 def mainAdmin():
     cargar_datos()
     while True:
+        clear()
         print("\n" + "="*50)
         print("    MENÚ ADMINISTRADOR")
         print("="*50)
@@ -679,6 +697,7 @@ def login_admin_menu():
     cargar_datos()
     
     while True:
+        clear()
         print("\n" + "="*50)
         print("    ACCESO ADMINISTRADOR")
         print("="*50)
