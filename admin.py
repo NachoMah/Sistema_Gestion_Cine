@@ -1,6 +1,8 @@
 import json
 import os
 from clear import clear
+def pausar():
+    input("\nPresione Enter para continuar...")
 
 from precios import (
     cargar_precios,
@@ -120,9 +122,17 @@ def cargar_funcion(pelicula, fecha, hora, sala):
             print(f"No se puede cargar la función: ya existe otra función en la sala {sala} el {fecha} a las {hora}.")
             return False
 
-    clave_nueva = f"{pelicula}_{fecha}_{hora}_{sala}"
-    if clave_nueva in funciones: 
-        print(f"La función de '{pelicula}' ya está programada para esa fecha, hora y sala.")
+    fecha_compacta = fecha.replace('-', '')
+    conteo_existente = sum(
+        1
+        for datos in funciones.values()
+        if str(datos.get("Película", "")).strip().lower() == pelicula.lower() and datos.get("Fecha") == fecha
+    )
+    sufijo = chr(ord('a') + conteo_existente)
+    clave_nueva = f"{pelicula}_{fecha_compacta}_{sufijo}"
+
+    if clave_nueva in funciones:
+        print("Error interno: ya existe una función con ese identificador. Intente nuevamente.")
         return False
 
     butacas = crear_butacas(6, 6)
@@ -134,7 +144,8 @@ def cargar_funcion(pelicula, fecha, hora, sala):
         "Sala": sala,
         "Butacas": butacas
     }
-    print("Función cargada exitosamente.")
+
+    print(f"Función cargada exitosamente. ID asignado: {clave_nueva}")
     return True
 
 
@@ -143,8 +154,8 @@ def consultar_funciones():
     if not funciones:
         print("No se puede, consultar las funciones porque no hay ninguna cargada.")
     else:
-        for _, datos in funciones.items():
-            print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
+        for fid, datos in funciones.items():
+            print(f"ID: {fid} | {datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
 
 def ver_todas_las_peliculas():
     if not peliculas:
@@ -156,29 +167,6 @@ def ver_todas_las_peliculas():
             duracion = datos.get("Duración", "N/A")
             fecha = datos.get("Fecha", "N/A")
             print(f"- {nombre} | Género: {genero} | Duración: {duracion} | Fecha: {fecha}")
-
-
-#Funcion para agregar promocion
-def agregar_promocion(promocion, tipo, valor, condicion):
-    if promocion in promociones:
-        print(f"La promoción '{promocion}' ya está cargda.")
-        return False
-    else:
-        promociones[promocion] = {
-            "Tipo": tipo,
-            "Valor": valor,
-            "Condición": condicion,  
-        }
-        print(f"La promoción {promocion} fue cargada correctamente")
-        return True
-    
-#Funcion para consultar promociones
-def consultar_promocion():
-    if not promociones: 
-        print("No hay promociones registradas. Se deben cargar")
-    else:
-        for nombre, datos in promociones.items():
-            print(f"- {nombre}: Tipo={datos['Tipo']}, Valor={datos['Valor']}, Condición={datos['Condición']}")
 
 
 #Funcion para ver disponibilidad de butacas
@@ -426,10 +414,10 @@ def generar_reporte_ocupacion():
 
                 ocupadas = sum([1 for fila in butacas for asiento in fila if asiento == "Ocupada"])
 
-                porcentaje = (ocupadas / total) * 100 if total > 0 else 0
+                porcentaje = round((ocupadas / total) * 100) if total > 0 else 0
 
                 print(f"{datos['Película']} - {datos['Fecha']} - {datos['Hora']} - Sala {datos['Sala']}")
-                print(f"Butacas ocupadas: {ocupadas}/{total} ({porcentaje:.2f}%)")
+                print(f"Butacas ocupadas: {ocupadas}/{total} ({porcentaje}%)")
 
             return True
     except KeyError as e:
@@ -521,6 +509,7 @@ def menu_gestion_peliculas():
             duracion = input("Duración (minutos): ")
             fecha = input("Fecha de estreno (DD-MM-YY): ")
             agregar_pelicula(pelicula, genero, duracion, fecha)
+            pausar()
         
         elif opcion == "2":
             pelicula = input("Película a modificar: ")
@@ -528,17 +517,21 @@ def menu_gestion_peliculas():
             nueva_duracion = input("Nueva duración (Enter para no cambiar): ")
             nueva_fecha = input("Nueva fecha (DD-MM-YY, Enter para no cambiar): ")
             modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha)
+            pausar()
         
         elif opcion == "3":
             pelicula = input("Película a eliminar: ")
             eliminar_pelicula(pelicula)
+            pausar()
         elif opcion == "4":
             ver_todas_las_peliculas()
+            pausar()
         
         elif opcion == "0":
             break
         else:
             print("Opción no válida.")
+            pausar()
 
 
 #Menu gestion funciones
@@ -560,17 +553,29 @@ def menu_gestion_funciones():
             hora = input("Hora (HH:MM): ")
             sala = input("Sala: ")
             cargar_funcion(pelicula, fecha, hora, sala)
+            pausar()
         
         elif opcion == "2":
             consultar_funciones()
+            pausar()
         
         elif opcion == "3":
-            pelicula = input("Pelicula: ")
-            fecha = input("Fecha (DD-MM-YY): ")
-            hora = input("Hora (HH:MM): ")
-            sala = input("Sala: ")
-            funcion_id = f"{pelicula}_{fecha}_{hora}_{sala}"
-            ver_disponibilidad_funcion(funcion_id)
+            pelicula = input("Pelicula: ").strip()
+            fecha = input("Fecha (DD-MM-YY): ").strip()
+            funciones_encontradas = []
+            for fid, datos in funciones.items():
+                titulo = str(datos.get("Película", "")).strip().lower()
+                fecha_funcion = datos.get("Fecha")
+                if titulo == pelicula.lower() and fecha_funcion == fecha:
+                    funciones_encontradas.append((datos.get("Hora", ""), datos.get("Sala", ""), fid))
+            if not funciones_encontradas:
+                print(f"No se encontraron funciones para '{pelicula}' en la fecha {fecha}.")
+            else:
+                funciones_encontradas.sort(key=lambda x: (x[0], x[1]))
+                for hora, sala, fid in funciones_encontradas:
+                    print(f"\nFunción ID {fid}: Hora {hora} | Sala {sala}")
+                    ver_disponibilidad_funcion(fid)
+            pausar()
         
         elif opcion == "4":
             from usuario import ver_horarios_pelicula
@@ -578,11 +583,13 @@ def menu_gestion_funciones():
             fecha = input("Ingrese la fecha (DD-MM-YY) o presione \"Enter\" para ver todos los horarios: ")
             fecha = fecha if fecha.strip() else None
             ver_horarios_pelicula(pelicula, fecha, funciones)
+            pausar()
         
         elif opcion == "0":
             break
         else:
             print("Opción no válida.")
+            pausar()
 
 
 #Menu gestion reservas
@@ -601,67 +608,51 @@ def menu_gestion_reservas():
 
         if opcion == "1":
             usuario = input("Usuario (nombre o mail): ")
-            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
+            print("Formato de ID: pelicula_fechaCompacta_letra (ej.: Avatar_101024_a)")
             funcion_id = input("ID de la función: ")
             fila = int(input("Fila (número empezando en 1): "))
             columna = int(input("Asiento (número empezando en 1): "))
-    
+            
             print("\n¿Desea ingresar el precio manualmente o calcularlo automáticamente?")
             print("1. Calcular automáticamente")
             print("2. Ingresar manualmente")
             opcion_precio = input("Seleccione una opción: ")
-    
+            
+            if opcion_precio == "2":
+                precio = float(input("Precio base: "))
+                crear_reserva(usuario, funcion_id, fila, columna, precio)
+            else:
+                crear_reserva(usuario, funcion_id, fila, columna)
+            pausar()
         
         elif opcion == "2":
-            print("Formato de ID: pelicula_fecha_hora_sala (ej.: Avatar_10-10-25_20:00_1)")
+            print("Formato de ID: pelicula_fechaCompacta_letra (ej.: Avatar_101024_a)")
             funcion_id = input("ID de la función: ")
             consultar_reservas_por_funcion(funcion_id)
+            pausar()
         
         elif opcion == "3":
             usuario = input("Usuario (nombre o mail): ")
             consultar_reservas_por_usuario(usuario)
+            pausar()
         
         elif opcion == "4":
             reserva_id = input("ID de la reserva (ej.: R0001): ")
             cancelar_compra(reserva_id)
+            pausar()
         
         elif opcion == "5":
             reserva_id = input("ID de la reserva (ej.: R0001): ")
             nueva_fila = int(input("Nueva fila (número empezando en 1): "))
             nueva_col = int(input("Nuevo asiento (número empezando en 1): "))
             cambiar_butaca(reserva_id, nueva_fila, nueva_col)
+            pausar()
         
         elif opcion == "0":
             break
         else:
             print("Opción no válida.")
-
-
-#Menu gestion promociones
-def menu_promociones():
-    while True:
-        clear()
-        print("\n--- GESTIÓN DE PROMOCIONES ---")
-        print("1. Agregar promoción")
-        print("2. Consultar promociones")
-        print("0. Volver al menú principal")
-        
-        opcion = input("Seleccione una opción: ")
-        
-        if opcion == "1":
-            nombre_promocion = input("Ingrese el nombre de la promoción: ")
-            tipo = input("Tipo de promoción (Ejemplo: descuento, 2x1, etc. ): ")
-            valor = int(input("Valor de la promocion (ej: 50 o 0.5 para 50%, 2 entradas para 2x1): "))
-            condicion = input("Condición para que se cumpla (Ejemplo: 'miercoles', 'fecha festiva'): ")
-            agregar_promocion(nombre_promocion, tipo, valor, condicion)
-        
-        elif opcion == "2":
-            consultar_promocion()
-        
-        elif opcion == "0":
-            break
-        else:
-            print("Opción no válida.")
+            pausar()
 
 
 #Menu principal del administrador
@@ -675,10 +666,9 @@ def mainAdmin():
         print("1. Gestión de Películas")
         print("2. Gestión de Funciones")
         print("3. Gestión de Reservas")
-        print("4. Gestión de Promociones")
+        print("4. Gestión de Precios y Promociones")
         print("5. Generar reporte de ocupación")
         print("6. Guardar datos")
-        print("7. Gestión de Precios")
         print("0. Cerrar sesión")
         
         opcion = input("\nSeleccione una opción: ")
@@ -690,13 +680,12 @@ def mainAdmin():
         elif opcion == "3":
             menu_gestion_reservas()
         elif opcion == "4":
-            menu_promociones()
+            menu_gestion_precios()
         elif opcion == "5":
             generar_reporte_ocupacion()
+            pausar()
         elif opcion == "6":
             guardar_datos()
-        elif opcion == "7":
-            menu_gestion_precios()
         elif opcion == "0":
             print("Sesión cerrada.")
             return  # Volver al menú principal
@@ -745,10 +734,12 @@ def login_admin_menu():
                     continue
                 contrasenia = input("Contraseña: ")
                 if login_admin(usuario, contrasenia):
+                    pausar()
                     mainAdmin()
                     return
                 else:
                     print("Credenciales incorrectas. Intente nuevamente o ingrese -1 para volver.")
+                    pausar()
         
         elif opcion == "0":
             break
@@ -760,5 +751,4 @@ def login_admin_menu():
 admins = {}
 peliculas = {}
 funciones = {}
-promociones = {}
 reservas = {}

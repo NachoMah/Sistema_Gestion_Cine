@@ -12,6 +12,9 @@ precios = {
     "descuento_niños": 0.25        # 25% de descuento (menores de 12)
 }
 
+# Variable global para almacenar promociones
+promociones = {}
+
 def cargar_precios():
     """
     Se carga los precios desde archivo
@@ -194,16 +197,87 @@ def ver_lista_precios():
     print("="*50)
 
 
+def cargar_promociones():
+    """
+    Carga las promociones desde archivo
+    """
+    global promociones
+    try:
+        with open("promociones.txt", "r", encoding="utf-8") as f:
+            promociones = json.load(f)
+        print("Promociones cargadas correctamente.")
+        return True
+    except FileNotFoundError:
+        guardar_promociones()
+        print("Archivo de promociones creado con valores por defecto (vacío).")
+        return True
+    except Exception as e:
+        print(f"Error al cargar promociones: {e}")
+        return False
+
+def guardar_promociones():
+    """
+    Guarda las promociones en archivo
+    """
+    try:
+        with open("promociones.txt", "w", encoding="utf-8") as f:
+            json.dump(promociones, f, indent=4, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"Error al guardar promociones: {e}")
+        return False
+
+def ver_promociones():
+    if not promociones:
+        print("No hay promociones registradas.")
+    else:
+        print("\nPromociones vigentes:")
+        for nombre, datos in sorted(promociones.items()):
+            tipo = datos.get("Tipo", "N/A")
+            condicion = datos.get("Condición", "N/A")
+            print(f"- {nombre}: Tipo={tipo}, Condición={condicion}")
+
+def agregar_promocion_menu():
+    nombre = input("Nombre de la promoción: ").strip()
+    if not nombre:
+        print("El nombre no puede estar vacío.")
+        return
+    if nombre in promociones:
+        print("La promoción ya existe.")
+        return
+    tipo = input("Tipo (descuento, 2x1, etc.): ").strip()
+    condicion = input("Condición (ej.: miércoles, fecha especial): ").strip()
+    promociones[nombre] = {
+        "Tipo": tipo,
+        "Condición": condicion
+    }
+    if guardar_promociones():
+        print("Promoción agregada correctamente.")
+
+def eliminar_promocion_menu():
+    if not promociones:
+        print("No hay promociones para eliminar.")
+        return
+    nombre = input("Nombre de la promoción a eliminar: ").strip()
+    if nombre not in promociones:
+        print("La promoción indicada no existe.")
+        return
+    del promociones[nombre]
+    if guardar_promociones():
+        print("Promoción eliminada correctamente.")
+
+
 def menu_gestion_precios():
     """
-    Menú para gestionar precios y descuentos
+    Menú para gestionar precios, descuentos y promociones
     """
     cargar_precios()
+    cargar_promociones()
     
     while True:
         clear()
         print("\n" + "="*50)
-        print("    GESTIÓN DE PRECIOS")
+        print("    GESTIÓN DE PRECIOS Y PROMOCIONES")
         print("="*50)
         print("1. Ver lista de precios")
         print("2. Modificar precio base (2D)")
@@ -212,6 +286,9 @@ def menu_gestion_precios():
         print("5. Modificar descuento estudiantes")
         print("6. Modificar descuento jubilados")
         print("7. Modificar descuento niños")
+        print("8. Ver promociones")
+        print("9. Agregar promoción")
+        print("10. Eliminar promoción")
         print("0. Volver al menú principal")
         
         opcion = input("\nSeleccione una opción: ")
@@ -223,32 +300,51 @@ def menu_gestion_precios():
         elif opcion == "2":
             nuevo_precio = input("Ingrese el nuevo precio base: $")
             modificar_precio_base(nuevo_precio)
+            input("\nPresione Enter para continuar...")
         
         elif opcion == "3":
             nuevo_precio = input("Ingrese el nuevo precio 3D: $")
             modificar_precio_3D(nuevo_precio)
+            input("\nPresione Enter para continuar...")
         
         elif opcion == "4":
             nuevo_precio = input("Ingrese el nuevo precio VIP: $")
             modificar_precio_VIP(nuevo_precio)
+            input("\nPresione Enter para continuar...")
         
         elif opcion == "5":
             porcentaje = input("Ingrese el porcentaje de descuento (0-100): ")
             modificar_descuento("estudiante", porcentaje)
+            input("\nPresione Enter para continuar...")
         
         elif opcion == "6":
             porcentaje = input("Ingrese el porcentaje de descuento (0-100): ")
             modificar_descuento("jubilado", porcentaje)
+            input("\nPresione Enter para continuar...")
         
         elif opcion == "7":
             porcentaje = input("Ingrese el porcentaje de descuento (0-100): ")
             modificar_descuento("niños", porcentaje)
+            input("\nPresione Enter para continuar...")
+        
+        elif opcion == "8":
+            ver_promociones()
+            input("\nPresione Enter para continuar...")
+        
+        elif opcion == "9":
+            agregar_promocion_menu()
+            input("\nPresione Enter para continuar...")
+        
+        elif opcion == "10":
+            eliminar_promocion_menu()
+            input("\nPresione Enter para continuar...")
         
         elif opcion == "0":
             break
         
         else:
             print("Opción no válida.")
+            input("\nPresione Enter para continuar...")
 
 
 def seleccionar_tipo_entrada():
@@ -302,3 +398,4 @@ def seleccionar_descuento():
 
 # Inicializar precios al cargar el módulo
 cargar_precios()
+cargar_promociones()

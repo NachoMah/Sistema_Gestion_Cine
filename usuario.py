@@ -13,6 +13,9 @@ def clear():
     except Exception as e:
         print(f"Error al limpiar la pantalla: {e}")   
 
+def pausar():
+    input("\nPresione Enter para continuar...")
+
 usuarios = {}
 
 #Funcion para registrar usuario
@@ -238,52 +241,15 @@ def modificar_datos_usuario(usuario, datos_nuevos):
             print("El usuario no existe.")
             return None
         
-        nuevo_nombre_usuario = None
-        
-        # Si se cambia el nombre de usuario, mover los datos a la nueva clave
-        if "usuario" in datos_nuevos:
-            nuevo_nombre_usuario = datos_nuevos["usuario"].strip()
-            if nuevo_nombre_usuario != usuario:
-                # Verificar que el nuevo nombre no esté en uso
-                if nuevo_nombre_usuario in usuarios:
-                    print(f"El nombre de usuario '{nuevo_nombre_usuario}' ya está en uso.")
-                    return None
-                
-                # Actualizar referencias en el sistema de reservas de admin
-                reservas = cargar_reservas()
-                usuario_antiguo = usuario
-                for reserva_id, datos_reserva in reservas.items():
-                    if datos_reserva.get("Usuario") == usuario_antiguo:
-                        reservas[reserva_id]["Usuario"] = nuevo_nombre_usuario
-                guardar_reservas(reservas)
-                
-                # Mover los datos a la nueva clave
-                usuarios[nuevo_nombre_usuario] = usuarios[usuario].copy()
-                del usuarios[usuario]
-                usuario = nuevo_nombre_usuario  # Actualizar referencia
-                print(f"Nombre de usuario cambiado a '{nuevo_nombre_usuario}'.")
-                # Eliminar "usuario" de datos_nuevos para no intentar actualizarlo como campo
-                del datos_nuevos["usuario"]
-        
         # Actualizar los demás campos
         if datos_nuevos:
             usuarios[usuario].update(datos_nuevos)
-            campos_cambiados = []
-            if "mail" in datos_nuevos:
-                campos_cambiados.append("mail")
-            if "contraseña" in datos_nuevos:
-                campos_cambiados.append("contraseña")
-            if "nombre" in datos_nuevos:
-                campos_cambiados.append("nombre")
-            if "apellido" in datos_nuevos:
-                campos_cambiados.append("apellido")
-            
-            if campos_cambiados:
-                print(f"Datos actualizados: {', '.join(campos_cambiados)}")
+            if datos_nuevos:
+                print("Datos modificados de manera exitosa")
         
         guardar_usuarios()
         print(f"Datos de '{usuario}' actualizados correctamente.")
-        return nuevo_nombre_usuario if nuevo_nombre_usuario else usuario
+        return usuario
         
     except Exception as e:
         print(f"Error al modificar los datos: {e}")
@@ -491,16 +457,20 @@ def mainUsuario(usuario_actual):
 
         if opcion == "1":
             ver_cartelera()
+            pausar()
         
         elif opcion == "2":
             pelicula = input("Ingrese el título de la película: ")
             fecha = input("Ingrese la fecha (DD-MM-YY) o presione \"Enter\" para ver todos los horarios: ")
             fecha = fecha if fecha.strip() else None
             ver_horarios_pelicula(pelicula, fecha, funciones)
+            pausar()
 
         elif opcion == "3":
+            print("Formato de ID: pelicula_fechaCompacta_letra (ej.: Avatar_101024_a)")
             funcion_id = input("Ingrese el ID de la función: ")
-            if consultar_butacas(funcion_id, funciones):
+            resultado_consulta = consultar_butacas(funcion_id, funciones)
+            if resultado_consulta:
                 sub_menu_activo = True
                 while sub_menu_activo:
                     print("\nOpciones disponibles:")
@@ -517,17 +487,22 @@ def mainUsuario(usuario_actual):
                         sub_menu_activo = False
                     else:
                         print("Opción no válida. Intente nuevamente.")
+            pausar()
 
         elif opcion == "4":
+            print("Formato de ID: pelicula_fechaCompacta_letra (ej.: Avatar_101024_a)")
             funcion_id = input("Ingrese el ID de la función: ")
-            if consultar_butacas(funcion_id, funciones):
+            resultado_consulta = consultar_butacas(funcion_id, funciones)
+            if resultado_consulta:
                 fila = int(input("Fila (número): ")) - 1
                 columna = int(input("Columna (número): ")) - 1
                 if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
                     guardar_funciones(funciones)  # Guardar cambios después de comprar
+            pausar()
 
         elif opcion == "5":
             ver_historial_compras(usuario_actual)
+            pausar()
 
         elif opcion == "6":
             genero = input("Género (Enter para omitir): ")
@@ -541,31 +516,28 @@ def mainUsuario(usuario_actual):
                 except ValueError:
                     print("Duración inválida. Se omitirá este filtro.")
             buscar_peliculas(filtros)
+            pausar()
 
         elif opcion == "7":
             print("Modificar datos personales (dejar en blanco para no cambiar):")
-            nuevo_usuario = input("Nuevo nombre de usuario: ")
+            nuevo_mail = input("Nuevo mail: ")
             nuevo_nombre = input("Nuevo nombre: ")
             nuevo_apellido = input("Nuevo apellido: ")
-            nuevo_mail = input("Nuevo mail: ")
             nueva_contrasenia = input("Nueva contraseña: ")
             datos_nuevos = {}
-            if nuevo_usuario.strip():
-                datos_nuevos["usuario"] = nuevo_usuario.strip()
+            if nuevo_mail.strip():
+                datos_nuevos["mail"] = nuevo_mail.strip()
             if nuevo_nombre.strip():
                 datos_nuevos["nombre"] = nuevo_nombre.strip()
             if nuevo_apellido.strip():
                 datos_nuevos["apellido"] = nuevo_apellido.strip()
-            if nuevo_mail.strip():
-                datos_nuevos["mail"] = nuevo_mail.strip()
             if nueva_contrasenia.strip():
                 datos_nuevos["contraseña"] = nueva_contrasenia.strip()
             if datos_nuevos:
-                nuevo_usuario_actual = modificar_datos_usuario(usuario_actual, datos_nuevos)
-                if nuevo_usuario_actual:
-                    usuario_actual = nuevo_usuario_actual  # Actualizar variable si cambió el nombre
+                modificar_datos_usuario(usuario_actual, datos_nuevos)
             else:
                 print("No se ingresaron cambios.")
+            pausar()
 
         elif opcion == "8":
             confirmar = input("¿Está seguro de que desea borrar su cuenta? (s/n): ")
@@ -610,6 +582,7 @@ def login_usuario_menu():
             edad = input("Ingrese su edad: ")
             contrasenia = input("Ingrese su contraseña: ")
             registrar_usuario(mail, nombre, apellido, edad, contrasenia)
+            pausar()
 
         elif opcion == "2":
             bandera = True
@@ -621,26 +594,31 @@ def login_usuario_menu():
                 contrasenia = input("Contraseña: ")
                 if login_usuario(usuario, contrasenia):  
                     print("Inicio de sesión exitoso.")
+                    pausar()
                     terminar = mainUsuario(usuario)
                     if terminar:  # Si se borró la cuenta, terminar ejecución
                         return True
                     bandera = False
                 else:
                     print("Usuario o contraseña incorrectos. Intente nuevamente o ingrese -1 para volver.")
+                    pausar()
 
         elif opcion == "3":
             ver_cartelera()
+            pausar()
         
         elif opcion == "4":
             pelicula = input("Ingrese el título de la película: ")
             fecha = input("Ingrese la fecha (DD-MM-YY) o presione \"Enter\" para ver todos los horarios: ")
             fecha = fecha if fecha.strip() else None
             ver_horarios_pelicula(pelicula, fecha, funciones)
+            pausar()
 
         elif opcion == "0":
             break
 
         else:
             print("Opción no válida.")
+            pausar()
     
     return False
