@@ -1,8 +1,20 @@
 {
-    "admin5": {
-        "Contraseña": "admin5",
-        "Mail": "admin@gmail.com",
-        "Nombre": "admin5",
-        "Apellido": "admin5"
+    "admin1": {
+        "Contraseña": "123",
+        "Mail": "admin1@cine.com",
+        "Nombre": "juan",
+        "Apellido": "selva"
+    },
+    "admin2": {
+        "Contraseña": "123",
+        "Mail": "admin2@cine.com",
+        "Nombre": "pepe",
+        "Apellido": "fernandez"
+    },
+    "admin3": {
+        "Contraseña": "123",
+        "Mail": "admin3@cine.com",
+        "Nombre": "si",
+        "Apellido": "si"
     }
 }

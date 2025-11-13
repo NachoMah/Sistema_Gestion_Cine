@@ -1,0 +1,1362 @@
+{
+    "R0001": {
+        "Usuario": "usuario001@mail.com",
+        "FuncionID": "Avatar_131125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0002": {
+        "Usuario": "usuario002@mail.com",
+        "FuncionID": "Avatar_131125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0003": {
+        "Usuario": "usuario003@mail.com",
+        "FuncionID": "Avatar_131125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0004": {
+        "Usuario": "usuario004@mail.com",
+        "FuncionID": "Avatar_131125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0005": {
+        "Usuario": "usuario005@mail.com",
+        "FuncionID": "Avatar_131125_a",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0006": {
+        "Usuario": "usuario006@mail.com",
+        "FuncionID": "Avatar_131125_a",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0007": {
+        "Usuario": "usuario007@mail.com",
+        "FuncionID": "Avatar_131125_a",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0008": {
+        "Usuario": "usuario008@mail.com",
+        "FuncionID": "Titanic_131125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0009": {
+        "Usuario": "usuario009@mail.com",
+        "FuncionID": "Titanic_131125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0010": {
+        "Usuario": "usuario010@mail.com",
+        "FuncionID": "Titanic_131125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0011": {
+        "Usuario": "usuario011@mail.com",
+        "FuncionID": "Titanic_131125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0012": {
+        "Usuario": "usuario012@mail.com",
+        "FuncionID": "Titanic_131125_b",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0013": {
+        "Usuario": "usuario013@mail.com",
+        "FuncionID": "Titanic_131125_b",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0014": {
+        "Usuario": "usuario014@mail.com",
+        "FuncionID": "Titanic_131125_b",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0015": {
+        "Usuario": "usuario015@mail.com",
+        "FuncionID": "La La Land_131125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0016": {
+        "Usuario": "usuario016@mail.com",
+        "FuncionID": "La La Land_131125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0017": {
+        "Usuario": "usuario017@mail.com",
+        "FuncionID": "La La Land_131125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0018": {
+        "Usuario": "usuario018@mail.com",
+        "FuncionID": "La La Land_131125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0019": {
+        "Usuario": "usuario019@mail.com",
+        "FuncionID": "La La Land_131125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0020": {
+        "Usuario": "usuario020@mail.com",
+        "FuncionID": "La La Land_131125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0021": {
+        "Usuario": "usuario021@mail.com",
+        "FuncionID": "La La Land_131125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0022": {
+        "Usuario": "usuario022@mail.com",
+        "FuncionID": "John Wick_131125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 11500,
+        "Estado": "Activa"
+    },
+    "R0023": {
+        "Usuario": "usuario023@mail.com",
+        "FuncionID": "John Wick_131125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 11500,
+        "Estado": "Activa"
+    },
+    "R0024": {
+        "Usuario": "usuario024@mail.com",
+        "FuncionID": "John Wick_131125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 11500,
+        "Estado": "Activa"
+    },
+    "R0025": {
+        "Usuario": "usuario025@mail.com",
+        "FuncionID": "John Wick_131125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 11500,
+        "Estado": "Activa"
+    },
+    "R0026": {
+        "Usuario": "usuario026@mail.com",
+        "FuncionID": "John Wick_131125_d",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 11500,
+        "Estado": "Activa"
+    },
+    "R0027": {
+        "Usuario": "usuario027@mail.com",
+        "FuncionID": "John Wick_131125_d",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 11500,
+        "Estado": "Activa"
+    },
+    "R0028": {
+        "Usuario": "usuario028@mail.com",
+        "FuncionID": "John Wick_131125_d",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 11500,
+        "Estado": "Activa"
+    },
+    "R0029": {
+        "Usuario": "usuario029@mail.com",
+        "FuncionID": "El conjuro 3_131125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 12500,
+        "Estado": "Activa"
+    },
+    "R0030": {
+        "Usuario": "usuario030@mail.com",
+        "FuncionID": "El conjuro 3_131125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 12500,
+        "Estado": "Activa"
+    },
+    "R0031": {
+        "Usuario": "usuario031@mail.com",
+        "FuncionID": "El conjuro 3_131125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 12500,
+        "Estado": "Activa"
+    },
+    "R0032": {
+        "Usuario": "usuario032@mail.com",
+        "FuncionID": "El conjuro 3_131125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 12500,
+        "Estado": "Activa"
+    },
+    "R0033": {
+        "Usuario": "usuario033@mail.com",
+        "FuncionID": "El conjuro 3_131125_e",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 12500,
+        "Estado": "Activa"
+    },
+    "R0034": {
+        "Usuario": "usuario034@mail.com",
+        "FuncionID": "El conjuro 3_131125_e",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 12500,
+        "Estado": "Activa"
+    },
+    "R0035": {
+        "Usuario": "usuario035@mail.com",
+        "FuncionID": "El conjuro 3_131125_e",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 12500,
+        "Estado": "Activa"
+    },
+    "R0036": {
+        "Usuario": "usuario036@mail.com",
+        "FuncionID": "Avatar_141125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0037": {
+        "Usuario": "usuario037@mail.com",
+        "FuncionID": "Avatar_141125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0038": {
+        "Usuario": "usuario038@mail.com",
+        "FuncionID": "Avatar_141125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0039": {
+        "Usuario": "usuario039@mail.com",
+        "FuncionID": "Avatar_141125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0040": {
+        "Usuario": "usuario040@mail.com",
+        "FuncionID": "Avatar_141125_a",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0041": {
+        "Usuario": "usuario041@mail.com",
+        "FuncionID": "Avatar_141125_a",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0042": {
+        "Usuario": "usuario042@mail.com",
+        "FuncionID": "Avatar_141125_a",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0043": {
+        "Usuario": "usuario043@mail.com",
+        "FuncionID": "Coco_141125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 9000,
+        "Estado": "Activa"
+    },
+    "R0044": {
+        "Usuario": "usuario044@mail.com",
+        "FuncionID": "Coco_141125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 9000,
+        "Estado": "Activa"
+    },
+    "R0045": {
+        "Usuario": "usuario045@mail.com",
+        "FuncionID": "Coco_141125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 9000,
+        "Estado": "Activa"
+    },
+    "R0046": {
+        "Usuario": "usuario046@mail.com",
+        "FuncionID": "Coco_141125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 9000,
+        "Estado": "Activa"
+    },
+    "R0047": {
+        "Usuario": "usuario047@mail.com",
+        "FuncionID": "Coco_141125_b",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 9000,
+        "Estado": "Activa"
+    },
+    "R0048": {
+        "Usuario": "usuario048@mail.com",
+        "FuncionID": "Coco_141125_b",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 9000,
+        "Estado": "Activa"
+    },
+    "R0049": {
+        "Usuario": "usuario049@mail.com",
+        "FuncionID": "Coco_141125_b",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 9000,
+        "Estado": "Activa"
+    },
+    "R0050": {
+        "Usuario": "usuario050@mail.com",
+        "FuncionID": "Matrix_141125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0051": {
+        "Usuario": "usuario051@mail.com",
+        "FuncionID": "Matrix_141125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0052": {
+        "Usuario": "usuario052@mail.com",
+        "FuncionID": "Matrix_141125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0053": {
+        "Usuario": "usuario053@mail.com",
+        "FuncionID": "Matrix_141125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0054": {
+        "Usuario": "usuario054@mail.com",
+        "FuncionID": "Matrix_141125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0055": {
+        "Usuario": "usuario055@mail.com",
+        "FuncionID": "Matrix_141125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0056": {
+        "Usuario": "usuario056@mail.com",
+        "FuncionID": "Matrix_141125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0057": {
+        "Usuario": "usuario057@mail.com",
+        "FuncionID": "Matrix_141125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0058": {
+        "Usuario": "usuario058@mail.com",
+        "FuncionID": "Matrix_141125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0059": {
+        "Usuario": "usuario059@mail.com",
+        "FuncionID": "Matrix_141125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0060": {
+        "Usuario": "usuario060@mail.com",
+        "FuncionID": "Matrix_141125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0061": {
+        "Usuario": "usuario061@mail.com",
+        "FuncionID": "Matrix_141125_d",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0062": {
+        "Usuario": "usuario062@mail.com",
+        "FuncionID": "Matrix_141125_d",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0063": {
+        "Usuario": "usuario063@mail.com",
+        "FuncionID": "Matrix_141125_d",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 14000,
+        "Estado": "Activa"
+    },
+    "R0064": {
+        "Usuario": "usuario064@mail.com",
+        "FuncionID": "Dune_141125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 13500,
+        "Estado": "Activa"
+    },
+    "R0065": {
+        "Usuario": "usuario065@mail.com",
+        "FuncionID": "Dune_141125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 13500,
+        "Estado": "Activa"
+    },
+    "R0066": {
+        "Usuario": "usuario066@mail.com",
+        "FuncionID": "Dune_141125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 13500,
+        "Estado": "Activa"
+    },
+    "R0067": {
+        "Usuario": "usuario067@mail.com",
+        "FuncionID": "Dune_141125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 13500,
+        "Estado": "Activa"
+    },
+    "R0068": {
+        "Usuario": "usuario068@mail.com",
+        "FuncionID": "Dune_141125_e",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 13500,
+        "Estado": "Activa"
+    },
+    "R0069": {
+        "Usuario": "usuario069@mail.com",
+        "FuncionID": "Dune_141125_e",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 13500,
+        "Estado": "Activa"
+    },
+    "R0070": {
+        "Usuario": "usuario070@mail.com",
+        "FuncionID": "Dune_141125_e",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 13500,
+        "Estado": "Activa"
+    },
+    "R0071": {
+        "Usuario": "usuario071@mail.com",
+        "FuncionID": "Avatar_151125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0072": {
+        "Usuario": "usuario072@mail.com",
+        "FuncionID": "Avatar_151125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0073": {
+        "Usuario": "usuario073@mail.com",
+        "FuncionID": "Avatar_151125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0074": {
+        "Usuario": "usuario074@mail.com",
+        "FuncionID": "Avatar_151125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0075": {
+        "Usuario": "usuario075@mail.com",
+        "FuncionID": "Avatar_151125_a",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0076": {
+        "Usuario": "usuario076@mail.com",
+        "FuncionID": "Avatar_151125_a",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0077": {
+        "Usuario": "usuario077@mail.com",
+        "FuncionID": "Avatar_151125_a",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 12000,
+        "Estado": "Activa"
+    },
+    "R0078": {
+        "Usuario": "usuario078@mail.com",
+        "FuncionID": "Intensamente_151125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0079": {
+        "Usuario": "usuario079@mail.com",
+        "FuncionID": "Intensamente_151125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0080": {
+        "Usuario": "usuario080@mail.com",
+        "FuncionID": "Intensamente_151125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0081": {
+        "Usuario": "usuario081@mail.com",
+        "FuncionID": "Intensamente_151125_b",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0082": {
+        "Usuario": "usuario082@mail.com",
+        "FuncionID": "Intensamente_151125_b",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0083": {
+        "Usuario": "usuario083@mail.com",
+        "FuncionID": "Intensamente_151125_b",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0084": {
+        "Usuario": "usuario084@mail.com",
+        "FuncionID": "Intensamente_151125_b",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 10000,
+        "Estado": "Activa"
+    },
+    "R0085": {
+        "Usuario": "usuario085@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0086": {
+        "Usuario": "usuario086@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0087": {
+        "Usuario": "usuario087@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0088": {
+        "Usuario": "usuario088@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0089": {
+        "Usuario": "usuario089@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 5
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0090": {
+        "Usuario": "usuario090@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 6
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0091": {
+        "Usuario": "usuario091@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0092": {
+        "Usuario": "usuario092@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0093": {
+        "Usuario": "usuario093@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0094": {
+        "Usuario": "usuario094@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 4
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0095": {
+        "Usuario": "usuario095@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 5
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0096": {
+        "Usuario": "usuario096@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 6
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0097": {
+        "Usuario": "usuario097@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 3,
+            "Columna": 1
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0098": {
+        "Usuario": "usuario098@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 3,
+            "Columna": 2
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0099": {
+        "Usuario": "usuario099@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 3,
+            "Columna": 3
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0100": {
+        "Usuario": "usuario100@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 3,
+            "Columna": 4
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0101": {
+        "Usuario": "usuario101@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 3,
+            "Columna": 5
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0102": {
+        "Usuario": "usuario102@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 3,
+            "Columna": 6
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0103": {
+        "Usuario": "usuario103@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 4,
+            "Columna": 1
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0104": {
+        "Usuario": "usuario104@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 4,
+            "Columna": 2
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0105": {
+        "Usuario": "usuario105@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 4,
+            "Columna": 3
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0106": {
+        "Usuario": "usuario106@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 4,
+            "Columna": 4
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0107": {
+        "Usuario": "usuario107@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 4,
+            "Columna": 5
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0108": {
+        "Usuario": "usuario108@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 4,
+            "Columna": 6
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0109": {
+        "Usuario": "usuario109@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 5,
+            "Columna": 1
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0110": {
+        "Usuario": "usuario110@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 5,
+            "Columna": 2
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0111": {
+        "Usuario": "usuario111@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 5,
+            "Columna": 3
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0112": {
+        "Usuario": "usuario112@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 5,
+            "Columna": 4
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0113": {
+        "Usuario": "usuario113@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 5,
+            "Columna": 5
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0114": {
+        "Usuario": "usuario114@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 5,
+            "Columna": 6
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0115": {
+        "Usuario": "usuario115@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 6,
+            "Columna": 1
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0116": {
+        "Usuario": "usuario116@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 6,
+            "Columna": 2
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0117": {
+        "Usuario": "usuario117@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 6,
+            "Columna": 3
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0118": {
+        "Usuario": "usuario118@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 6,
+            "Columna": 4
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0119": {
+        "Usuario": "usuario119@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 6,
+            "Columna": 5
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0120": {
+        "Usuario": "usuario120@mail.com",
+        "FuncionID": "Gladiador_151125_c",
+        "Butaca": {
+            "Fila": 6,
+            "Columna": 6
+        },
+        "Precio": 13000,
+        "Estado": "Activa"
+    },
+    "R0121": {
+        "Usuario": "usuario121@mail.com",
+        "FuncionID": "Titanic_151125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0122": {
+        "Usuario": "usuario122@mail.com",
+        "FuncionID": "Titanic_151125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0123": {
+        "Usuario": "usuario123@mail.com",
+        "FuncionID": "Titanic_151125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0124": {
+        "Usuario": "usuario124@mail.com",
+        "FuncionID": "Titanic_151125_d",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0125": {
+        "Usuario": "usuario125@mail.com",
+        "FuncionID": "Titanic_151125_d",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0126": {
+        "Usuario": "usuario126@mail.com",
+        "FuncionID": "Titanic_151125_d",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0127": {
+        "Usuario": "usuario127@mail.com",
+        "FuncionID": "Titanic_151125_d",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 11000,
+        "Estado": "Activa"
+    },
+    "R0128": {
+        "Usuario": "usuario128@mail.com",
+        "FuncionID": "Interestelar_151125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 14500,
+        "Estado": "Activa"
+    },
+    "R0129": {
+        "Usuario": "usuario129@mail.com",
+        "FuncionID": "Interestelar_151125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 2
+        },
+        "Precio": 14500,
+        "Estado": "Activa"
+    },
+    "R0130": {
+        "Usuario": "usuario130@mail.com",
+        "FuncionID": "Interestelar_151125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 3
+        },
+        "Precio": 14500,
+        "Estado": "Activa"
+    },
+    "R0131": {
+        "Usuario": "usuario131@mail.com",
+        "FuncionID": "Interestelar_151125_e",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 4
+        },
+        "Precio": 14500,
+        "Estado": "Activa"
+    },
+    "R0132": {
+        "Usuario": "usuario132@mail.com",
+        "FuncionID": "Interestelar_151125_e",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 1
+        },
+        "Precio": 14500,
+        "Estado": "Activa"
+    },
+    "R0133": {
+        "Usuario": "usuario133@mail.com",
+        "FuncionID": "Interestelar_151125_e",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 2
+        },
+        "Precio": 14500,
+        "Estado": "Activa"
+    },
+    "R0134": {
+        "Usuario": "usuario134@mail.com",
+        "FuncionID": "Interestelar_151125_e",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 14500,
+        "Estado": "Activa"
+    },
+    "R0135": {
+        "Usuario": "juann.selva@gmail.com",
+        "FuncionID": "Titanic_131125_b",
+        "Butaca": {
+            "Fila": 6,
+            "Columna": 6
+        },
+        "Precio": 0,
+        "Estado": "Activa"
+    },
+    "R0136": {
+        "Usuario": "juann.selva@gmail.com",
+        "FuncionID": "Titanic_131125_b",
+        "Butaca": {
+            "Fila": 6,
+            "Columna": 5
+        },
+        "Precio": 0,
+        "Estado": "Activa"
+    }
+}

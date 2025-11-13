@@ -241,15 +241,20 @@ def modificar_datos_usuario(usuario, datos_nuevos):
             print("El usuario no existe.")
             return None
         
-        # Actualizar los demás campos
+        nuevo_usuario = usuario
+        # Si se cambia el mail, mover los datos a la nueva clave
+        if "mail" in datos_nuevos:
+            nuevo_mail = datos_nuevos["mail"].strip()
+            if nuevo_mail and nuevo_mail != usuario:
+                usuarios[nuevo_mail] = usuarios.pop(usuario)
+                usuario = nuevo_usuario = nuevo_mail
+        
         if datos_nuevos:
             usuarios[usuario].update(datos_nuevos)
-            if datos_nuevos:
-                print("Datos modificados de manera exitosa")
+            print("Datos modificados de manera exitosa")
         
         guardar_usuarios()
-        print(f"Datos de '{usuario}' actualizados correctamente.")
-        return usuario
+        return nuevo_usuario
         
     except Exception as e:
         print(f"Error al modificar los datos: {e}")
@@ -445,12 +450,13 @@ def mainUsuario(usuario_actual):
         print("="*50)
         print("1. Ver cartelera")
         print("2. Ver horarios de película")
-        print("3. Consultar butacas")
-        print("4. Comprar entrada")
-        print("5. Consultar mis reservas / Historial de compras")
-        print("6. Buscar películas por filtros")
-        print("7. Modificar datos personales")
-        print("8. Borrar cuenta")
+        print("3. Funciones disponibles")
+        print("4. Consultar butacas")
+        print("5. Comprar entrada")
+        print("6. Consultar mis reservas / Historial de compras")
+        print("7. Buscar películas por filtros")
+        print("8. Ver/Modificar datos personales")
+        print("9. Borrar cuenta")
         print("0. Cerrar sesión")
 
         opcion = input("\nSeleccione una opción: ")
@@ -467,44 +473,130 @@ def mainUsuario(usuario_actual):
             pausar()
 
         elif opcion == "3":
-            print("Formato de ID: pelicula_fechaCompacta_letra (ej.: Avatar_101024_a)")
-            funcion_id = input("Ingrese el ID de la función: ")
-            resultado_consulta = consultar_butacas(funcion_id, funciones)
-            if resultado_consulta:
-                sub_menu_activo = True
-                while sub_menu_activo:
-                    print("\nOpciones disponibles:")
-                    print("1. Comprar entrada")
-                    print("2. Volver al menú principal")
-                    eleccion = input("Seleccione una opción: ")
-                    if eleccion == "1":
-                        fila = int(input("Fila (número): ")) - 1
-                        columna = int(input("Columna (número): ")) - 1
-                        if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
-                            guardar_funciones(funciones)
-                        sub_menu_activo = False
-                    elif eleccion == "2":
-                        sub_menu_activo = False
-                    else:
-                        print("Opción no válida. Intente nuevamente.")
+            fecha = input("Ingrese la fecha (DD-MM-YY): ")
+            coincidencias = []
+            if fecha.strip():
+                for fid, datos in funciones.items():
+                    if datos.get("Fecha") == fecha.strip():
+                        coincidencias.append((datos.get("Película", ""), datos.get("Hora", ""), datos.get("Sala", ""), fid))
+                if not coincidencias:
+                    print(f"No hay funciones disponibles el {fecha.strip()}.")
+                else:
+                    coincidencias.sort(key=lambda x: (x[0], x[1], x[2]))
+                    print(f"\nFunciones disponibles el {fecha.strip()}:")
+                    pelicula_actual = None
+                    for pelicula, hora, sala, fid in coincidencias:
+                        if pelicula != pelicula_actual:
+                            print(f"\n{pelicula}:")
+                            pelicula_actual = pelicula
+                        print(f"- Hora {hora} | Sala {sala} | ID: {fid}")
+                    while True:
+                        print("\nOpciones:")
+                        print("1. Comprar entrada")
+                        print("2. Volver al menú")
+                        opcion_funciones = input("Seleccione una opción: ")
+                        if opcion_funciones == "1":
+                            pelicula_compra = input("Ingrese el título de la película: ")
+                            fecha_compra = fecha.strip()
+                            coincidencias_compra = []
+                            if pelicula_compra.strip():
+                                for fid, datos in funciones.items():
+                                    if str(datos.get("Película", "")).strip().lower() == pelicula_compra.strip().lower() and datos.get("Fecha") == fecha_compra:
+                                        coincidencias_compra.append((datos.get("Hora", ""), datos.get("Sala", ""), fid))
+                            if not coincidencias_compra:
+                                print("No se encontraron funciones para esa película en la fecha indicada.")
+                            else:
+                                coincidencias_compra.sort(key=lambda x: (x[0], x[1]))
+                                print("\nFunciones encontradas:")
+                                for idx, (hora, sala, fid) in enumerate(coincidencias_compra, 1):
+                                    print(f"{idx}. Hora {hora} | Sala {sala} | ID {fid}")
+                                seleccion = int(input("Seleccione una función (número): "))
+                                if 1 <= seleccion <= len(coincidencias_compra):
+                                    funcion_id = coincidencias_compra[seleccion - 1][2]
+                                    resultado_consulta = consultar_butacas(funcion_id, funciones)
+                                    if resultado_consulta:
+                                        fila = int(input("Fila (número): ")) - 1
+                                        columna = int(input("Columna (número): ")) - 1
+                                        if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
+                                            guardar_funciones(funciones)
+                            break
+                        elif opcion_funciones == "2":
+                            break
+                        else:
+                            print("Opción no válida.")
+            else:
+                print("Debe ingresar una fecha.")
             pausar()
 
         elif opcion == "4":
-            print("Formato de ID: pelicula_fechaCompacta_letra (ej.: Avatar_101024_a)")
-            funcion_id = input("Ingrese el ID de la función: ")
-            resultado_consulta = consultar_butacas(funcion_id, funciones)
-            if resultado_consulta:
-                fila = int(input("Fila (número): ")) - 1
-                columna = int(input("Columna (número): ")) - 1
-                if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
-                    guardar_funciones(funciones)  # Guardar cambios después de comprar
+            pelicula = input("Ingrese el título de la película: ")
+            fecha = input("Ingrese la fecha (DD-MM-YY): ")
+            coincidencias = []
+            if pelicula.strip() and fecha.strip():
+                for fid, datos in funciones.items():
+                    if str(datos.get("Película", "")).strip().lower() == pelicula.strip().lower() and datos.get("Fecha") == fecha.strip():
+                        coincidencias.append((datos.get("Hora", ""), datos.get("Sala", ""), fid))
+            if not coincidencias:
+                print("No se encontraron funciones para esa película en la fecha indicada.")
+            else:
+                coincidencias.sort(key=lambda x: (x[0], x[1]))
+                print("\nFunciones encontradas:")
+                for idx, (hora, sala, fid) in enumerate(coincidencias, 1):
+                    print(f"{idx}. Hora {hora} | Sala {sala} | ID {fid}")
+                seleccion = int(input("Seleccione una función (número): "))
+                if 1 <= seleccion <= len(coincidencias):
+                    funcion_id = coincidencias[seleccion - 1][2]
+                    resultado_consulta = consultar_butacas(funcion_id, funciones)
+                    if resultado_consulta:
+                        sub_menu_activo = True
+                        while sub_menu_activo:
+                            print("\nOpciones disponibles:")
+                            print("1. Comprar entrada")
+                            print("2. Volver al menú principal")
+                            eleccion = input("Seleccione una opción: ")
+                            if eleccion == "1":
+                                fila = int(input("Fila (número): ")) - 1
+                                columna = int(input("Columna (número): ")) - 1
+                                if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
+                                    guardar_funciones(funciones)
+                                sub_menu_activo = False
+                            elif eleccion == "2":
+                                sub_menu_activo = False
+                            else:
+                                print("Opción no válida. Intente nuevamente.")
             pausar()
 
         elif opcion == "5":
-            ver_historial_compras(usuario_actual)
+            pelicula = input("Ingrese el título de la película: ")
+            fecha = input("Ingrese la fecha (DD-MM-YY): ")
+            coincidencias = []
+            if pelicula.strip() and fecha.strip():
+                for fid, datos in funciones.items():
+                    if str(datos.get("Película", "")).strip().lower() == pelicula.strip().lower() and datos.get("Fecha") == fecha.strip():
+                        coincidencias.append((datos.get("Hora", ""), datos.get("Sala", ""), fid))
+            if not coincidencias:
+                print("No se encontraron funciones para esa película en la fecha indicada.")
+            else:
+                coincidencias.sort(key=lambda x: (x[0], x[1]))
+                print("\nFunciones encontradas:")
+                for idx, (hora, sala, fid) in enumerate(coincidencias, 1):
+                    print(f"{idx}. Hora {hora} | Sala {sala} | ID {fid}")
+                seleccion = int(input("Seleccione una función (número): "))
+                if 1 <= seleccion <= len(coincidencias):
+                    funcion_id = coincidencias[seleccion - 1][2]
+                    resultado_consulta = consultar_butacas(funcion_id, funciones)
+                    if resultado_consulta:
+                        fila = int(input("Fila (número): ")) - 1
+                        columna = int(input("Columna (número): ")) - 1
+                        if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
+                            guardar_funciones(funciones)  # Guardar cambios después de comprar
             pausar()
 
         elif opcion == "6":
+            ver_historial_compras(usuario_actual)
+            pausar()
+
+        elif opcion == "7":
             genero = input("Género (Enter para omitir): ")
             max_duracion = input("Duración máxima en minutos (Enter para omitir): ")
             filtros = {}
@@ -518,28 +610,48 @@ def mainUsuario(usuario_actual):
             buscar_peliculas(filtros)
             pausar()
 
-        elif opcion == "7":
-            print("Modificar datos personales (dejar en blanco para no cambiar):")
-            nuevo_mail = input("Nuevo mail: ")
-            nuevo_nombre = input("Nuevo nombre: ")
-            nuevo_apellido = input("Nuevo apellido: ")
-            nueva_contrasenia = input("Nueva contraseña: ")
-            datos_nuevos = {}
-            if nuevo_mail.strip():
-                datos_nuevos["mail"] = nuevo_mail.strip()
-            if nuevo_nombre.strip():
-                datos_nuevos["nombre"] = nuevo_nombre.strip()
-            if nuevo_apellido.strip():
-                datos_nuevos["apellido"] = nuevo_apellido.strip()
-            if nueva_contrasenia.strip():
-                datos_nuevos["contraseña"] = nueva_contrasenia.strip()
-            if datos_nuevos:
-                modificar_datos_usuario(usuario_actual, datos_nuevos)
-            else:
-                print("No se ingresaron cambios.")
-            pausar()
-
         elif opcion == "8":
+            while True:
+                clear()
+                datos_actuales = usuarios.get(usuario_actual, {})
+                print("\nDatos personales actuales:")
+                print(f"Mail: {usuario_actual}")
+                print(f"Nombre: {datos_actuales.get('nombre', '')}")
+                print(f"Apellido: {datos_actuales.get('apellido', '')}")
+                print(f"Contraseña: {datos_actuales.get('contraseña', '')}")
+                print("\nOpciones:")
+                print("1. Modificar datos personales")
+                print("2. Volver al menú")
+                opcion_datos = input("Seleccione una opción: ")
+                if opcion_datos == "1":
+                    print("Modificar datos personales (dejar en blanco para no cambiar):")
+                    nuevo_mail = input("Nuevo mail: ")
+                    nuevo_nombre = input("Nuevo nombre: ")
+                    nuevo_apellido = input("Nuevo apellido: ")
+                    nueva_contrasenia = input("Nueva contraseña: ")
+                    datos_nuevos = {}
+                    if nuevo_mail.strip():
+                        datos_nuevos["mail"] = nuevo_mail.strip()
+                    if nuevo_nombre.strip():
+                        datos_nuevos["nombre"] = nuevo_nombre.strip()
+                    if nuevo_apellido.strip():
+                        datos_nuevos["apellido"] = nuevo_apellido.strip()
+                    if nueva_contrasenia.strip():
+                        datos_nuevos["contraseña"] = nueva_contrasenia.strip()
+                    if datos_nuevos:
+                        nuevo_identificador = modificar_datos_usuario(usuario_actual, datos_nuevos)
+                        if nuevo_identificador:
+                            usuario_actual = nuevo_identificador
+                    else:
+                        print("No se ingresaron cambios.")
+                        pausar()
+                elif opcion_datos == "2":
+                    break
+                else:
+                    print("Opción no válida.")
+                    pausar()
+
+        elif opcion == "9":
             confirmar = input("¿Está seguro de que desea borrar su cuenta? (s/n): ")
             if confirmar.lower() == "s":
                 if borrar_cuenta(usuario_actual):

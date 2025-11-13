@@ -28,6 +28,7 @@ def registrar_admin(usuario, contrasenia, mail, nombre, apellido):
         guardar_admins()
         
         print(f"¡Bienvenido {usuario}! Usted se ha registrado como administrador correctamente.")
+        print("Registro de administrador completado con éxito.")
         return True
 
 #Funcion para iniciar sesión de administrador

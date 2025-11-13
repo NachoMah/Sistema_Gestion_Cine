@@ -1,0 +1,67 @@
+{
+    "Gladiador": {
+        "Género": "accion",
+        "Duración": "124",
+        "Fecha": "10-11-25"
+    },
+    "Avatar": {
+        "Género": "ciencia ficcion",
+        "Duración": "132",
+        "Fecha": "10-11-25"
+    },
+    "Titanic": {
+        "Género": "drama",
+        "Duración": "107",
+        "Fecha": "10-11-25"
+    },
+    "Intensamente": {
+        "Género": "familiar",
+        "Duración": "132",
+        "Fecha": "10-11-25"
+    },
+    "El conjuro 3": {
+        "Género": "terror",
+        "Duración": "145",
+        "Fecha": "10-11-25"
+    },
+    "F1: The movie": {
+        "Género": "automovilismo",
+        "Duración": "154",
+        "Fecha": "10-11-25"
+    },
+    "Volver al futuro": {
+        "Género": "accion",
+        "Duración": "118",
+        "Fecha": "10-11-25"
+    },
+    "John Wick": {
+        "Género": "accion",
+        "Duración": "133",
+        "Fecha": "10-11-25"
+    },
+    "Interestelar": {
+        "Género": "ciencia ficcion",
+        "Duración": "169",
+        "Fecha": "10-11-25"
+    },
+    "Coco": {
+        "Género": "animacion",
+        "Duración": "105",
+        "Fecha": "10-11-25"
+    },
+    "Matrix": {
+        "Género": "ciencia ficcion",
+        "Duración": "136",
+        "Fecha": "10-11-25"
+    },
+    "Dune": {
+        "Género": "ciencia ficcion",
+        "Duración": "155",
+        "Fecha": "10-11-25"
+    },
+    "La La Land": {
+        "Género": "musical",
+        "Duración": "128",
+        "Fecha": "10-11-25"
+    }
+}
