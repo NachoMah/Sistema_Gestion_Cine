@@ -228,6 +228,9 @@ def guardar_promociones():
         return False
 
 def ver_promociones():
+    """
+    Muestra todas las promociones registradas en el sistema.
+    """
     if not promociones:
         print("No hay promociones registradas.")
     else:
@@ -238,6 +241,9 @@ def ver_promociones():
             print(f"- {nombre}: Tipo={tipo}, Condición={condicion}")
 
 def agregar_promocion_menu():
+    """
+    Permite agregar una nueva promoción ingresando sus datos desde el menú.
+    """
     nombre = input("Nombre de la promoción: ").strip()
     if not nombre:
         print("El nombre no puede estar vacío.")
@@ -255,6 +261,9 @@ def agregar_promocion_menu():
         print("Promoción agregada correctamente.")
 
 def eliminar_promocion_menu():
+    """
+    Permite eliminar una promoción existente a partir de su nombre.
+    """
     if not promociones:
         print("No hay promociones para eliminar.")
         return

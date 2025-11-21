@@ -3,7 +3,9 @@ import os
 import platform
 
 def clear():
-    # Limpia la consola
+    """
+    Función para limpiar la consola según el sistema operativo detectado."
+    """
     try:
         current_os = platform.system()
         if current_os == "Windows":
@@ -14,12 +16,18 @@ def clear():
         print(f"Error al limpiar la pantalla: {e}")   
 
 def pausar():
+    """
+    Función para pausar la ejecución hasta que el usuario presione Enter.
+    """
     input("\nPresione Enter para continuar...")
 
 usuarios = {}
 
 #Funcion para registrar usuario
 def registrar_usuario(mail, nombre, apellido, edad, contrasenia):
+    """
+    Función para registrar un nuevo usuario en el sistema.
+    """
     nombre_usuario = mail
     try:
         if nombre_usuario in usuarios:
@@ -43,6 +51,9 @@ def registrar_usuario(mail, nombre, apellido, edad, contrasenia):
 
 #Funcion para login de usuario
 def login_usuario(usuario, contrasena):
+    """
+    Función para iniciar sesión verificando usuario y contraseña.
+    """
     try:
         if usuario not in usuarios:
             print("El usuario no existe.")
@@ -59,6 +70,9 @@ def login_usuario(usuario, contrasena):
 
 #Funcion para ver cartelera
 def ver_cartelera():
+    """
+    Función para mostrar la cartelera de películas disponibles.
+    """
     try:
         peliculas_disponibles = cargar_peliculas()
         if not peliculas_disponibles:
@@ -75,6 +89,9 @@ def ver_cartelera():
 
 #Funcion para ver horarios de pelicula
 def ver_horarios_pelicula(pelicula, fecha=None, funciones_dict=None):
+    """
+    Función para mostrar los horarios disponibles de una película dada
+    """
     try:
         if not isinstance(pelicula, str) or not pelicula.strip():
             print("Debe indicar el título de la película.")
@@ -119,6 +136,9 @@ def ver_horarios_pelicula(pelicula, fecha=None, funciones_dict=None):
 
 #Funcion para consultar butacas
 def consultar_butacas(funcion_id, funciones):
+    """
+    Función para mostrar la disponibilidad de butacas de una función.
+    """
     try:
         if funcion_id not in funciones:
             print(f"La función '{funcion_id}' no existe.")
@@ -143,6 +163,9 @@ def consultar_butacas(funcion_id, funciones):
 
 #Funcion para comprar entrada
 def comprar_entrada(usuario, funcion_id, butaca, funciones):
+    """
+    Función para registrar la compra de una entrada y generar una reserva.
+    """
     try:
         datos_funcion = funciones[funcion_id]
         pelicula = datos_funcion["Película"]
@@ -193,6 +216,9 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
 
 #Funcion para ver historial de compras
 def ver_historial_compras(usuario):
+    """
+    Función para mostrar el historial de compras del usuario.
+    """
     try:
         reservas = cargar_reservas()
         funciones = cargar_funciones()
@@ -236,6 +262,9 @@ def ver_historial_compras(usuario):
 
 #Funcion para modificar datos usuario
 def modificar_datos_usuario(usuario, datos_nuevos):
+    """
+    Función para modificar los datos personales del usuario.
+    """
     try:
         if usuario not in usuarios:
             print("El usuario no existe.")
@@ -263,6 +292,9 @@ def modificar_datos_usuario(usuario, datos_nuevos):
 
 #Funcion para borrar la cuenta
 def borrar_cuenta(usuario):
+    """
+    Función para eliminar la cuenta de un usuario del sistema.
+    """
     try:
         if usuario not in usuarios:
             print("El usuario no existe.")
@@ -278,6 +310,9 @@ def borrar_cuenta(usuario):
 
 #Funcion para buscar peliculas por filtros
 def buscar_peliculas(filtros):
+    """
+    Función para buscar películas aplicando filtros opcionales.
+    """
     try:
         peliculas_disponibles = cargar_peliculas()
         genero = filtros.get("genero")
@@ -305,6 +340,9 @@ def buscar_peliculas(filtros):
 
 #Funcion para generar comprobante
 def generar_comprobante(compra):
+    """
+    Función para generar un comprobante en formato .txt de una compra.
+    """
     try:
         nombre_archivo = f"comprobante_{compra['pelicula']}.txt"
         with open(nombre_archivo, "w", encoding="utf-8") as archivo:
@@ -318,6 +356,9 @@ def generar_comprobante(compra):
 
 #Funcion para cargar funciones
 def cargar_funciones():
+    """
+    Función para cargar desde archivo las funciones de cine.
+    """
     try:
         with open("funciones.txt", "r", encoding="utf-8") as f:
             funciones = json.load(f)
@@ -330,6 +371,9 @@ def cargar_funciones():
 
 #Funcion para guardar funciones
 def guardar_funciones(funciones):
+    """
+    Función para guardar en archivo las funciones de cine.
+    """
     try:
         with open("funciones.txt", "w", encoding="utf-8") as f:
             json.dump(funciones, f, indent=4, ensure_ascii=False)
@@ -340,6 +384,9 @@ def guardar_funciones(funciones):
 
 #Funcion para cargar usuarios
 def cargar_usuarios():
+    """
+    Función para cargar usuarios desde archivo y sincronizar sus reservas.
+    """
     global usuarios
     try:
         with open("usuarios.txt", "r", encoding="utf-8") as f:
@@ -371,6 +418,9 @@ def cargar_usuarios():
 
 #Funcion para guardar usuarios
 def guardar_usuarios():
+    """
+    Función para guardar los datos de usuarios en archivo.
+    """
     try:
         with open("usuarios.txt", "w", encoding="utf-8") as f:
             json.dump(usuarios, f, indent=4, ensure_ascii=False)
@@ -381,6 +431,9 @@ def guardar_usuarios():
 
 #Funcion para cargar peliculas
 def cargar_peliculas():
+    """
+    Función para cargar películas desde archivo en formato de usuario.
+    """
     try:
         with open("peliculas.txt", "r", encoding="utf-8") as f:
             peliculas_admin = json.load(f)
@@ -403,6 +456,9 @@ def cargar_peliculas():
 
 #Funcion para cargar reservas
 def cargar_reservas():
+    """
+    Función para cargar todas las reservas registradas desde archivo.
+    """
     try:
         with open("reservas.txt", "r", encoding="utf-8") as f:
             reservas = json.load(f)
@@ -415,6 +471,9 @@ def cargar_reservas():
 
 #Funcion para guardar reservas
 def guardar_reservas(reservas):
+    """
+    Función para guardar las reservas actualizadas en archivo.
+    """
     try:
         with open("reservas.txt", "w", encoding="utf-8") as f:
             json.dump(reservas, f, indent=4, ensure_ascii=False)
@@ -425,6 +484,9 @@ def guardar_reservas(reservas):
 
 #Funcion para generar id de reserva
 def generar_id_reserva(reservas):
+    """
+    Función para generar un ID único para cada nueva reserva.
+    """
     siguiente = len(reservas) + 1
     if siguiente < 10:
         return f"R000{siguiente}"
@@ -438,6 +500,9 @@ def generar_id_reserva(reservas):
     
 #Main usuario
 def mainUsuario(usuario_actual):
+    """
+    Función para mostrar el menú principal del usuario y gestionar todas sus opciones.
+    """
     funciones = cargar_funciones()  # Cargar funciones al inicio
 
     while True:
@@ -671,6 +736,9 @@ def mainUsuario(usuario_actual):
 
 #Funcion de login usuario y menu
 def login_usuario_menu():
+    """
+    Función para manejar el menú de acceso del usuario, incluyendo registro e inicio de sesión.
+    """
     cargar_usuarios()  # Cargar usuarios al inicio
     funciones = cargar_funciones()  # Cargar funciones para opciones sin login
 
