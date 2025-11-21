@@ -1,0 +1,842 @@
+{
+    "Avatar_131125_a": {
+        "Película": "Avatar",
+        "Fecha": "13-11-25",
+        "Hora": "16:00",
+        "Sala": "1",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Titanic_131125_b": {
+        "Película": "Titanic",
+        "Fecha": "13-11-25",
+        "Hora": "17:45",
+        "Sala": "2",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Ocupada",
+                "Ocupada"
+            ]
+        ]
+    },
+    "La La Land_131125_c": {
+        "Película": "La La Land",
+        "Fecha": "13-11-25",
+        "Hora": "17:45",
+        "Sala": "5",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "John Wick_131125_d": {
+        "Película": "John Wick",
+        "Fecha": "13-11-25",
+        "Hora": "20:30",
+        "Sala": "3",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "El conjuro 3_131125_e": {
+        "Película": "El conjuro 3",
+        "Fecha": "13-11-25",
+        "Hora": "23:00",
+        "Sala": "4",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Avatar_141125_a": {
+        "Película": "Avatar",
+        "Fecha": "14-11-25",
+        "Hora": "16:00",
+        "Sala": "1",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Coco_141125_b": {
+        "Película": "Coco",
+        "Fecha": "14-11-25",
+        "Hora": "17:45",
+        "Sala": "3",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Matrix_141125_c": {
+        "Película": "Matrix",
+        "Fecha": "14-11-25",
+        "Hora": "18:30",
+        "Sala": "2",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Matrix_141125_d": {
+        "Película": "Matrix",
+        "Fecha": "14-11-25",
+        "Hora": "23:00",
+        "Sala": "4",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Dune_141125_e": {
+        "Película": "Dune",
+        "Fecha": "14-11-25",
+        "Hora": "20:30",
+        "Sala": "5",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Avatar_151125_a": {
+        "Película": "Avatar",
+        "Fecha": "15-11-25",
+        "Hora": "16:00",
+        "Sala": "1",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Intensamente_151125_b": {
+        "Película": "Intensamente",
+        "Fecha": "15-11-25",
+        "Hora": "17:45",
+        "Sala": "2",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Gladiador_151125_c": {
+        "Película": "Gladiador",
+        "Fecha": "15-11-25",
+        "Hora": "18:30",
+        "Sala": "3",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada"
+            ]
+        ]
+    },
+    "Titanic_151125_d": {
+        "Película": "Titanic",
+        "Fecha": "15-11-25",
+        "Hora": "20:30",
+        "Sala": "4",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Interestelar_151125_e": {
+        "Película": "Interestelar",
+        "Fecha": "15-11-25",
+        "Hora": "23:00",
+        "Sala": "5",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Ocupada",
+                "Ocupada",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    }
+}
