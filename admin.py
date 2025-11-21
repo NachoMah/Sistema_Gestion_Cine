@@ -1,7 +1,11 @@
 import json
 import os
 from clear import clear
+
 def pausar():
+    """
+    Función para pausar la ejecución hasta que el usuario presione Enter.
+    """
     input("\nPresione Enter para continuar...")
 
 from precios import (
@@ -15,6 +19,9 @@ from precios import (
 
 #Funcion para registrar administrador
 def registrar_admin(usuario, contrasenia, mail, nombre, apellido):
+    """
+    Función para registrar un nuevo administrador en el sistema.
+    """
     if usuario in admins:
         print(f"El usuario {usuario} que quiere registrar ya existe. Por favor incie sesión con ese usuario")
         return False
@@ -33,6 +40,9 @@ def registrar_admin(usuario, contrasenia, mail, nombre, apellido):
 
 #Funcion para iniciar sesión de administrador
 def login_admin(usuario, contrasenia):
+    """
+    Función para iniciar sesión de administrador
+    """
     if usuario not in admins:
         print(f"El usuario {usuario} no existe. Por favor, regístrese primero antes de realziar el log in.")
         return False
@@ -45,6 +55,9 @@ def login_admin(usuario, contrasenia):
     
 #Funcion para agregar película
 def agregar_pelicula(pelicula, genero, duracion, fecha):
+    """
+    Función para agregar una película al sistema
+    """
     if not pelicula_existente_sistema(pelicula):
         peliculas[pelicula] = {
             "Género": genero, 
@@ -59,6 +72,9 @@ def agregar_pelicula(pelicula, genero, duracion, fecha):
 
 #Funcion para eliminar película
 def eliminar_pelicula(pelicula):
+    """
+    Función para eliminar una película del sistema si existe.
+    """
     try:
         if not pelicula_existente_sistema(pelicula):
             print(f"La película '{pelicula}' no se puede eliminar porque no existe en el sistema.")
@@ -73,6 +89,9 @@ def eliminar_pelicula(pelicula):
 
 #Funcion para modificar película
 def modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha):
+    """
+    Función para modificar los datos de una película.
+    """
     if not pelicula_existente_sistema(pelicula):
         print(f"La película '{pelicula}' no existe en el sistema por lo que no se puede modificar.")
         return False
@@ -91,6 +110,9 @@ def modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha):
 
 #Funcion para verificar si la pelicula existe en el sistema
 def pelicula_existente_sistema(pelicula):
+    """
+    Funcion para verificar si la pelicula existe en el sistema
+    """
     if pelicula in peliculas:
         return True
     else:
@@ -98,6 +120,9 @@ def pelicula_existente_sistema(pelicula):
     
 #Funcion para crear butacas
 def crear_butacas(filas, asientos):
+    """
+    Función para generar la matriz de butacas en estado 'Libre'.
+    """
     butacas = []
     for i in range(filas):
         fila_butacas = []
@@ -108,6 +133,9 @@ def crear_butacas(filas, asientos):
 
 #Funcion para cargar funcion
 def cargar_funcion(pelicula, fecha, hora, sala):
+    """
+    Función para cargar una nueva función de película
+    """
     sala = str(sala)
 
     if not pelicula_existente_sistema(pelicula):
@@ -152,6 +180,9 @@ def cargar_funcion(pelicula, fecha, hora, sala):
 
 #Funcion para consultar funciones
 def consultar_funciones():
+    """
+    Función para mostrar todas las funciones cargadas en el sistema
+    """
     if not funciones:
         print("No se puede, consultar las funciones porque no hay ninguna cargada.")
     else:
@@ -199,6 +230,9 @@ def ver_disponibilidad_funcion(funcion_id):
 
 #Funcion para generar id de reserva
 def generar_id_reserva():
+    """
+    Función para generar un ID para cada nueva reserva.
+    """
     siguiente = len(reservas) + 1
     if siguiente < 10:
         return f"R000{siguiente}"
@@ -211,6 +245,9 @@ def generar_id_reserva():
 
 #Funcion para verificar si el asiento existe
 def asiento_existe(funcion_id, fila, columna):
+    """
+    Función para verificar si una butaca existe para una función dada
+    """
     if funcion_id not in funciones:
         return False
     butacas = funciones[funcion_id]["Butacas"]
@@ -277,6 +314,9 @@ def crear_reserva(usuario, funcion_id, fila, columna, precio_base=None):
 
 #Funcion para consultar reservas por funcion
 def consultar_reservas_por_funcion(funcion_id):
+    """
+    Función para mostrar todas las reservas asociadas a una función.
+    """
     if funcion_id not in funciones:
         print(f"La función '{funcion_id}' no existe.")
         return False
@@ -296,6 +336,9 @@ def consultar_reservas_por_funcion(funcion_id):
 
 #Funcion para consultar reservas por usuario
 def consultar_reservas_por_usuario(usuario):
+    """
+    Función para mostrar todas las reservas realizadas por un usuario.
+    """
     hay = False
     for rid, r in reservas.items():
         if r["Usuario"] == usuario:
@@ -311,12 +354,18 @@ def consultar_reservas_por_usuario(usuario):
 
 #Funcion para calcular ingresos
 def calcular_ingresos(filtro=None):
+    """
+    Función para calcular ingresos totales
+    """
     # se encarga de calcular/consultar el total de ingresos según un filtro (película, sala, día, semana).
     pass
 
 
 #Funcion para cambiar butaca
 def cambiar_butaca(reserva_id, nueva_fila, nueva_columna):
+    """
+    Función para cambiar la butaca de una reserva existente.
+    """
     # 1) Validar reserva
     if reserva_id not in reservas:
         print(f"La reserva '{reserva_id}' no existe.")
@@ -404,6 +453,9 @@ def cancelar_compra(reserva_id):
 
 #Funcion para egenrar un reporte de ocupacion
 def generar_reporte_ocupacion():
+    """
+    Funcion para egenrar un reporte de ocupacion
+    """
     try:
         if not funciones:
             print("No hay funciones cargadas en el sistema.")
@@ -431,6 +483,9 @@ def generar_reporte_ocupacion():
 
 #Funcion para guardar datos
 def guardar_datos():
+    """
+    Funcion para guardar datos utilziando archivos JSON
+    """
     try:
         with open("admins.txt", "w", encoding="utf-8") as f:
             json.dump(admins, f, indent=4, ensure_ascii=False)
@@ -452,6 +507,9 @@ def guardar_datos():
 
 #Funcion para cargar datos
 def cargar_datos():
+    """
+    Función para cargar administradores, películas, funciones y reservas desde archivos JSON.
+    """
     global admins, peliculas, funciones, reservas
     try:
         with open("admins.txt", "r", encoding="utf-8") as f:
@@ -482,6 +540,9 @@ def cargar_datos():
 
 
 def guardar_admins():
+    """
+    Función para guardar la lista de administradores en su archivo JSON.
+    """
     try:
         with open("admins.txt", "w", encoding="utf-8") as f:
             json.dump(admins, f, indent=4, ensure_ascii=False)
@@ -493,6 +554,9 @@ def guardar_admins():
 
 #Menu gestion peliculas
 def menu_gestion_peliculas():
+    """
+    Menú para gestionar películas: agregar, modificar, eliminar y listar.
+    """
     while True:
         clear()
         print("\n--- GESTIÓN DE PELÍCULAS ---")
@@ -537,6 +601,9 @@ def menu_gestion_peliculas():
 
 #Menu gestion funciones
 def menu_gestion_funciones():
+    """
+    Menú para gestionar funciones: cargar, consultar horarios y ver disponibilidad de butacas.
+    """
     while True:
         clear()
         print("\n--- GESTIÓN DE FUNCIONES ---")
@@ -595,6 +662,9 @@ def menu_gestion_funciones():
 
 #Menu gestion reservas
 def menu_gestion_reservas():
+    """
+    Menú para gestionar reservas: crear, consultar, cancelar y cambiar butacas.
+    """
     while True:
         clear()
         print("\n--- GESTIÓN DE RESERVAS ---")
@@ -658,6 +728,9 @@ def menu_gestion_reservas():
 
 #Menu principal del administrador
 def mainAdmin():
+    """
+    Menú principal del administrador con acceso a todas las gestiones y reportes.
+    """
     cargar_datos()
     while True:
         clear()
@@ -696,6 +769,9 @@ def mainAdmin():
 
 #Funcion de login administrador y menu
 def login_admin_menu():
+    """
+    Menú de acceso para administradores: registro, inicio de sesión o volver al principal.
+    """
     cargar_datos()
     
     while True:
