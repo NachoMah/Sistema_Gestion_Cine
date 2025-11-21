@@ -2,7 +2,9 @@ import os
 import platform
 
 def clear():
-    # Limpia la consola
+    """
+    Funcion para limpiar la consola según el sistema operativo detectado
+    """
     try:
         current_os = platform.system()
         if current_os == "Windows":

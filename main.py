@@ -3,6 +3,10 @@ from usuario import login_usuario_menu
 from clear import clear
 
 def main():
+    """
+    Función principal del sistema de gestión de cine.
+    Muestra el menú inicial y permite ingresar como usuario (accediendo al menú de usuario.py), administrador (accediendo al menú de administrador.py) o salir.
+    """
     while True:
         clear()
         print("\n" + "="*50)
