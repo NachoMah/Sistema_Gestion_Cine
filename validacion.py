@@ -97,14 +97,14 @@ def validar_pelicula_existente(pelicula):
         with open("peliculas.txt", "r", encoding="utf-8") as archivoPelicula:
             peliculas = json.load(archivoPelicula)
             
+            peliculaSinEspacios = pelicula.strip()
             for titulo in peliculas.keys():
-                if pelicula.strip().lower() == titulo.lower():
+                if peliculaSinEspacios.lower() == titulo.lower():
                     return True
             return False
     
     except FileNotFoundError:
         print("ERROR: El archivo no se pudo encontrar. Intentelo más tarde")
-        
     
     except Exception as e:
         print(f"Error al validar película: {e}")
