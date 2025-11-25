@@ -29,6 +29,14 @@ def registrar_usuario(mail, nombre, apellido, edad, contrasenia):
     """
     Función para registrar un nuevo usuario en el sistema.
     """
+    if not validacion.validar_mail(mail):
+        print("Mail inválido. Debe tener un dominio válido (gmail, yahoo, etc.)")
+        return False
+    
+    if not validacion.validar_contrasena(contrasenia):
+        print("Contraseña inválida. Debe tener al menos 8 caracteres.")
+        return False
+    
     nombre_usuario = mail
     try:
         if nombre_usuario in usuarios:
