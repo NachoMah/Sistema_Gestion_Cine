@@ -1,0 +1,10 @@
+{
+    "jorge@gmail.com": {
+        "nombre": "jorge",
+        "apellido": "jorge",
+        "edad": "21",
+        "mail": "jorge@gmail.com",
+        "contraseña": "12345678",
+        "reservas": []
+    }
+}

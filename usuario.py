@@ -41,15 +41,17 @@ def registrar_usuario(mail, nombre, apellido, edad, contrasenia):
         print("ERROR: Todos los campos son obligatorios y no pueden estar vacíos.")
         return False
     
+    nombre_usuario = mail
+    
     if validacion.validar_usuario_registrado(nombre_usuario):
         print("El usuario ya existe")
         return False
     
-    nombre_usuario = mail
     try:
         if nombre_usuario in usuarios:
             print("El usuario ya existe")
             return False
+        
         usuarios[nombre_usuario] = {
             "nombre": nombre,
             "apellido": apellido,
@@ -61,6 +63,7 @@ def registrar_usuario(mail, nombre, apellido, edad, contrasenia):
         guardar_usuarios()
         print(f"Usuario '{nombre_usuario}' registrado correctamente.")
         return True
+    
     except Exception as e:
         print(f"Error al registrar usuario: {e}")
         return False
@@ -187,6 +190,11 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
         datos_funcion = funciones[funcion_id]
         pelicula = datos_funcion["Película"]
         fila, columna = butaca  # Índices 0-based recibidos del menú
+        
+        
+        if not validacion.validar_edad(usuario, pelicula):
+            print("No tenés la edad suficiente para ver esta película.")
+            return False
         
         # Marcar butaca como ocupada
         funciones[funcion_id]["Butacas"][fila][columna] = "Ocupada"
