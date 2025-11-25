@@ -45,14 +45,35 @@ def validar_contrasena(contrasena):
     """
     Funcion encaragada de verificar que la contraseña cumpla con el mínimo de caracteres.
     """
-    caracteresMinimos 0 8
-    if len(contrasena) < :
+    caracteresMinimos = 8
+    if len(contrasena) < caracteresMinimos:
         return False
     return True
 
 def validar_edad(usuario, pelicula):
-    # se encarga de verificar si la edad del usuario permite comprar entradas según la clasificación de la película.
-    pass
+    """
+    Función encargada de verificar si la edad del usuario permite comprar entradas según la clasificación de la película.
+    """
+    
+    clasificacion = pelicula.get("clasificacion", "").upper()
+    edadUsuario = usuario.get("edad", 0)
+
+    edadesSegunClasificacion = {
+        "ATP": 0,
+        "+13": 13,
+        "+16": 16,
+        "+18": 18
+    }
+
+    if clasificacion not in edadesSegunClasificacion:
+        return False
+
+    edadMinima = edadesSegunClasificacion[clasificacion]
+
+    if edadUsuario >= edadMinima:
+        return True
+    else:
+        return False
 
 def validar_butaca_disponible(funcion, butaca):
     # se encarga de verificar que la butaca esté libre en una función.
