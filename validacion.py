@@ -129,7 +129,18 @@ def validar_usuario_registrado(usuario):
     """
     Función encargada de verificar que el usuario esté registrado en el sistema.
     """
-    pass
+    try:
+        with open(rutaUsuarios, "r", encoding="utf-8") as archivoUsuarios:
+            usuarios = json.load(archivoUsuarios)
+            if usuario in usuarios:
+                return True
+            else:
+                return False
+    except FileNotFoundError:
+        print("ERROR: El archivo no se pudo encontrar. intentelo más tarde")
+    except Exception as e:
+        print(f"ERROR: Error del tipo: {e}")
+        return False
 
 def confirmar_accion(accion):
     """

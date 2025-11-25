@@ -41,6 +41,10 @@ def registrar_usuario(mail, nombre, apellido, edad, contrasenia):
         print("ERROR: Todos los campos son obligatorios y no pueden estar vacíos.")
         return False
     
+    if validacion.validar_usuario_registrado(nombre_usuario):
+        print("El usuario ya existe")
+        return False
+    
     nombre_usuario = mail
     try:
         if nombre_usuario in usuarios:
