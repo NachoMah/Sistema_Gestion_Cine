@@ -1,6 +1,7 @@
 import json
 import os
 from clear import clear
+import validacion
 
 def pausar():
     """

@@ -1,6 +1,23 @@
+import os
+import json
+
+rutaUsuarios = os.path.join(os.path.dirname(__file__), "usuarios.txt")
+
 def validar_usuario_y_contrasena(usuario, contrasena):
-    # se encarga de validar las credenciales del administrador o usuario.
-    pass
+    """
+    Funcion encargada de validar las credenciales del administrador o usuario
+    """ 
+    try:
+        with open(rutaUsuarios, "r", encoding="utf-8") as archivoUsuarios:
+            usuarios = json.load(archivoUsuarios)
+    except Exception as e:
+        print(f"ERROR: Error tipo: {e}")
+        return -1
+    
+    if (usuario in usuarios) and (usuarios[usuario].get("contrasena") == contrasena):
+        return usuarios[usuario]
+    
+    return None
 
 def validar_mail(mail):
     # se encarga de verificar que el correo tenga un dominio válido.

@@ -1,6 +1,7 @@
 import json
 import os
 import platform
+import validacion
 
 def clear():
     """
