@@ -2,6 +2,7 @@ import os
 import json
 
 rutaUsuarios = os.path.join(os.path.dirname(__file__), "usuarios.txt")
+rutaPeliculas = os.path.join(os.path.dirname(__file__), "peliculas.txt")
 
 def validar_usuario_y_contrasena(usuario, contrasena):
     """
@@ -79,7 +80,7 @@ def validar_butaca_disponible(funcion, butaca):
     """
     Función encargada de verificar que la butaca esté libre en una función.
     """
-    
+
     pass
 
 def validar_funcion_no_solapada(sala, fecha, hora):
@@ -92,8 +93,23 @@ def validar_pelicula_existente(pelicula):
     """
     Función encargada de verificar que la película exista antes de asignarla a una función.
     """
-    pass
-
+    try:
+        with open("peliculas.txt", "r", encoding="utf-8") as archivoPelicula:
+            peliculas = json.load(archivoPelicula)
+            
+            for titulo in peliculas.keys():
+                if pelicula.strip().lower() == titulo.lower():
+                    return True
+            return False
+    
+    except FileNotFoundError:
+        print("ERROR: El archivo no se pudo encontrar. Intentelo más tarde")
+        
+    
+    except Exception as e:
+        print(f"Error al validar película: {e}")
+        return -1
+        
 def validar_datos_no_nulos(datos):
     """
     Función encargada de verificar que los datos ingresados no sean nulos
