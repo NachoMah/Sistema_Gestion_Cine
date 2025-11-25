@@ -5,7 +5,7 @@ rutaUsuarios = os.path.join(os.path.dirname(__file__), "usuarios.txt")
 
 def validar_usuario_y_contrasena(usuario, contrasena):
     """
-    Funcion encargada de validar las credenciales del administrador o usuario
+    Función encargada de validar las credenciales del administrador o usuario
     """ 
     try:
         with open(rutaUsuarios, "r", encoding="utf-8") as archivoUsuarios:
@@ -20,12 +20,34 @@ def validar_usuario_y_contrasena(usuario, contrasena):
     return None
 
 def validar_mail(mail):
-    # se encarga de verificar que el correo tenga un dominio válido.
-    pass
+    """
+    Función encargada de verificar que el correo tenga un dominio válido.
+    """ 
+    
+    dominios =  ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "gmail.com.ar", "hotmail.com.ar"]
+    
+    if "@" not in mail:
+        return False
+    
+    partesMail = mail.split("@")
+    
+    if len(partesMail) != 2:
+        return False
+    
+    nombre, dominio = partesMail
+    
+    if dominio not in dominios:
+        return False
+    
+    return True
 
 def validar_contrasena(contrasena):
-    # se encarga de verificar que la contraseña cumpla con el mínimo de caracteres.
-    pass
+    """
+    Funcion encaragada de verificar que la contraseña cumpla con el mínimo de caracteres.
+    """
+    if len(contrasena) < 8:
+        return False
+    return True
 
 def validar_edad(usuario, pelicula):
     # se encarga de verificar si la edad del usuario permite comprar entradas según la clasificación de la película.
