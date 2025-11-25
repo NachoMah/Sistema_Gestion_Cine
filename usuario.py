@@ -37,6 +37,10 @@ def registrar_usuario(mail, nombre, apellido, edad, contrasenia):
         print("Contraseña inválida. Debe tener al menos 8 caracteres.")
         return False
     
+    if not validacion.validar_datos_no_nulos([mail, nombre, apellido, edad, contrasenia]):
+        print("ERROR: Todos los campos son obligatorios y no pueden estar vacíos.")
+        return False
+    
     nombre_usuario = mail
     try:
         if nombre_usuario in usuarios:

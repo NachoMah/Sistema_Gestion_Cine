@@ -114,7 +114,16 @@ def validar_datos_no_nulos(datos):
     """
     Función encargada de verificar que los datos ingresados no sean nulos
     """
-    pass
+    for dato in datos:
+        if dato is None:
+            return False
+        
+        if type(dato) == str:
+            datoSinEspacios = dato.strip()
+            if datoSinEspacios == "":
+                return False
+    
+    return True
 
 def validar_usuario_registrado(usuario):
     """
