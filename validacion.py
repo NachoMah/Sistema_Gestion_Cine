@@ -45,7 +45,8 @@ def validar_contrasena(contrasena):
     """
     Funcion encaragada de verificar que la contraseña cumpla con el mínimo de caracteres.
     """
-    if len(contrasena) < 8:
+    caracteresMinimos 0 8
+    if len(contrasena) < :
         return False
     return True
 
