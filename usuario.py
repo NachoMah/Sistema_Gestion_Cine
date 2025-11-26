@@ -76,6 +76,8 @@ def registrar_usuario(mail, nombre, apellido, edad, contrasenia):
         print("ERROR: La contraseña debe tener al menos 5 caracteres.")
         return False
     
+    # Normalizar email a minúsculas para evitar errores de tipeo
+    mail = mail.strip().lower()
     nombre_usuario = mail
     
     # Validar que el usuario no exista (validación manual específica del contexto)
@@ -366,14 +368,19 @@ def modificar_datos_usuario(usuario, datos_nuevos):
         
         # Validar datos modificados
         if "mail" in datos_nuevos and datos_nuevos["mail"]:
-            nuevo_mail = datos_nuevos["mail"].strip()
+            nuevo_mail = datos_nuevos["mail"].strip().lower()  # Normalizar a minúsculas
             if nuevo_mail:
                 # Validar formato de mail
                 if not validacion.validar_mail(nuevo_mail):
                     print("ERROR: El mail debe tener un dominio válido (gmail, hotmail, outlook, yahoo, etc.).")
                     return None
-                # Validar que el nuevo mail no esté en uso
-                if nuevo_mail in usuarios and nuevo_mail != usuario:
+                # Validar que el nuevo mail no esté en uso (búsqueda case-insensitive)
+                mail_en_uso = False
+                for usuario_key in usuarios.keys():
+                    if usuario_key.lower() == nuevo_mail and usuario_key.lower() != usuario.lower():
+                        mail_en_uso = True
+                        break
+                if mail_en_uso:
                     print("ERROR: El mail ingresado ya está en uso por otro usuario.")
                     return None
         
@@ -394,8 +401,8 @@ def modificar_datos_usuario(usuario, datos_nuevos):
         nuevo_usuario = usuario
         # Si se cambia el mail, mover los datos a la nueva clave
         if "mail" in datos_nuevos:
-            nuevo_mail = datos_nuevos["mail"].strip()
-            if nuevo_mail and nuevo_mail != usuario:
+            nuevo_mail = datos_nuevos["mail"].strip().lower()  # Normalizar a minúsculas
+            if nuevo_mail and nuevo_mail.lower() != usuario.lower():
                 # Actualizar referencias en reservas si es necesario
                 reservas = cargar_reservas()
                 for reserva_id, datos_reserva in reservas.items():
@@ -973,17 +980,31 @@ def mainUsuario(usuario_actual):
                     nueva_contrasenia = input("Nueva contraseña: ")
                     datos_nuevos = {}
                     if nuevo_mail.strip():
-                        datos_nuevos["mail"] = nuevo_mail.strip()
+                        datos_nuevos["mail"] = nuevo_mail.strip().lower()  # Normalizar a minúsculas
                     if nuevo_nombre.strip():
+                        if not validacion.validar_solo_letras(nuevo_nombre.strip()):
+                            print("ERROR: El nombre solo puede contener letras, espacios y guiones. No se permiten números.")
+                            pausar()
+                            continue
                         datos_nuevos["nombre"] = nuevo_nombre.strip()
                     if nuevo_apellido.strip():
+                        if not validacion.validar_solo_letras(nuevo_apellido.strip()):
+                            print("ERROR: El apellido solo puede contener letras, espacios y guiones. No se permiten números.")
+                            pausar()
+                            continue
                         datos_nuevos["apellido"] = nuevo_apellido.strip()
                     if nueva_contrasenia.strip():
                         datos_nuevos["contraseña"] = nueva_contrasenia.strip()
                     if datos_nuevos:
-                        nuevo_identificador = modificar_datos_usuario(usuario_actual, datos_nuevos)
-                        if nuevo_identificador:
-                            usuario_actual = nuevo_identificador
+                        # Mostrar resumen de cambios
+                        cambios_texto = ", ".join([f"{k}: {v}" for k, v in datos_nuevos.items()])
+                        if validacion.confirmar_accion(f"modificar sus datos personales ({cambios_texto})"):
+                            nuevo_identificador = modificar_datos_usuario(usuario_actual, datos_nuevos)
+                            if nuevo_identificador:
+                                usuario_actual = nuevo_identificador
+                        else:
+                            print("Modificación de datos cancelada.")
+                            pausar()
                     else:
                         print("No se ingresaron cambios.")
                         pausar()
@@ -1035,14 +1056,20 @@ def login_usuario_menu():
             # Validar mail
             bandera = True
             while bandera:
-                mail = input("Ingrese su mail: ").strip()
+                mail = input("Ingrese su mail: ").strip().lower()  # Normalizar a minúsculas
                 if not mail:
                     print("ERROR: El mail no puede estar vacío.")
                     continue
                 if not validacion.validar_mail(mail):
                     print("ERROR: El mail debe tener un dominio válido (gmail, hotmail, outlook, yahoo, cineuade.com, etc.).")
                     continue
-                if mail in usuarios:
+                # Verificar si el mail ya está registrado (búsqueda case-insensitive)
+                mail_existe = False
+                for usuario_key in usuarios.keys():
+                    if usuario_key.lower() == mail:
+                        mail_existe = True
+                        break
+                if mail_existe:
                     print("ERROR: El mail ya está registrado.")
                     continue
                 bandera = False
@@ -1054,6 +1081,9 @@ def login_usuario_menu():
                 if not nombre:
                     print("ERROR: El nombre no puede estar vacío.")
                     continue
+                if not validacion.validar_solo_letras(nombre):
+                    print("ERROR: El nombre solo puede contener letras, espacios y guiones. No se permiten números.")
+                    continue
                 bandera = False
             
             # Validar apellido
@@ -1062,6 +1092,9 @@ def login_usuario_menu():
                 apellido = input("Ingrese su apellido: ").strip()
                 if not apellido:
                     print("ERROR: El apellido no puede estar vacío.")
+                    continue
+                if not validacion.validar_solo_letras(apellido):
+                    print("ERROR: El apellido solo puede contener letras, espacios y guiones. No se permiten números.")
                     continue
                 bandera = False
             
@@ -1103,7 +1136,7 @@ def login_usuario_menu():
         elif opcion == "2":
             bandera = True
             while bandera:
-                usuario = input("Mail (o -1 para volver): ").strip()
+                usuario = input("Mail (o -1 para volver): ").strip().lower()  # Normalizar a minúsculas
                 if usuario == "-1":
                     bandera = False
                     continue
