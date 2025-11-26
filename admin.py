@@ -106,8 +106,18 @@ def registrar_admin(usuario, contrasenia, mail, nombre, apellido):
         print("ERROR: La contraseña debe tener al menos 5 caracteres.")
         return False
     
-    # Validar que el usuario no exista (validación manual específica del contexto)
-    if usuario in admins:
+    # Normalizar usuario a minúsculas para evitar errores de tipeo
+    usuario = usuario.strip().lower()
+    mail = mail.strip().lower()
+    
+    # Validar que el usuario no exista (búsqueda case-insensitive)
+    usuario_existe = False
+    for usuario_key in admins.keys():
+        if usuario_key.lower() == usuario:
+            usuario_existe = True
+            break
+    
+    if usuario_existe:
         print(f"El usuario {usuario} que quiere registrar ya existe. Por favor incie sesión con ese usuario")
         return False
     
@@ -145,29 +155,46 @@ def agregar_pelicula(pelicula, genero, duracion, fecha):
     Función para agregar una película al sistema
     """
     from validacion import validar_pelicula_existente
-    if not validar_pelicula_existente(pelicula, peliculas):
-        peliculas[pelicula] = {
-            "Género": genero, 
-            "Duración": duracion,
-            "Fecha": fecha,  # DD-MM-YY
-        }
-        print(f"La pelicula '{pelicula}' se agregó correctamente al sistema")
-        return True
-    else:
-        print(f"La pelicula '{pelicula}' que intenta agregar ya existe en el sistema") 
+    
+    # Normalizar película a minúsculas para la clave, pero mantener formato original para mostrar
+    pelicula_normalizada = pelicula.strip().lower()
+    
+    # Verificar si existe (búsqueda case-insensitive)
+    pelicula_existe = False
+    pelicula_clave_original = None
+    for pelicula_key in peliculas.keys():
+        if pelicula_key.lower() == pelicula_normalizada:
+            pelicula_existe = True
+            pelicula_clave_original = pelicula_key
+            break
+    
+    if pelicula_existe:
+        print(f"La pelicula '{pelicula_clave_original}' que intenta agregar ya existe en el sistema")
         return False
+    
+    # Guardar con la clave normalizada a minúsculas
+    peliculas[pelicula_normalizada] = {
+        "Género": genero, 
+        "Duración": duracion,
+        "Fecha": fecha,  # DD-MM-YY
+    }
+    print(f"La pelicula '{pelicula}' se agregó correctamente al sistema")
+    return True
 
 #Funcion para eliminar película
 def eliminar_pelicula(pelicula):
     """
     Función para eliminar una película del sistema si existe.
     """
-    from validacion import validar_pelicula_existente
+    from validacion import validar_pelicula_existente, confirmar_accion
     try:
         if not validar_pelicula_existente(pelicula, peliculas):
             print(f"La película '{pelicula}' no se puede eliminar porque no existe en el sistema.")
             return False
         else:
+            if not confirmar_accion(f"eliminar la película '{pelicula}'"):
+                print("Eliminación de película cancelada.")
+                return False
             del peliculas[pelicula]
             print(f"La película '{pelicula}' fue eliminada correctamente del sistema.")
             return True
@@ -180,21 +207,47 @@ def modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha):
     """
     Función para modificar los datos de una película.
     """
-    from validacion import validar_pelicula_existente
-    if not validar_pelicula_existente(pelicula, peliculas):
+    from validacion import confirmar_accion
+    
+    # Normalizar película a minúsculas para búsqueda
+    pelicula_normalizada = pelicula.strip().lower()
+    
+    # Buscar película (case-insensitive)
+    pelicula_clave_original = None
+    for pelicula_key in peliculas.keys():
+        if pelicula_key.lower() == pelicula_normalizada:
+            pelicula_clave_original = pelicula_key
+            break
+    
+    if pelicula_clave_original is None:
         print(f"La película '{pelicula}' no existe en el sistema por lo que no se puede modificar.")
         return False
     else:
+        # Construir mensaje de cambios
+        cambios = []
         if nuevo_genero:
-            peliculas[pelicula]["Género"] = nuevo_genero
+            cambios.append(f"género: {nuevo_genero}")
+        if nueva_duracion:
+            cambios.append(f"duración: {nueva_duracion}")
+        if nueva_fecha:
+            cambios.append(f"fecha: {nueva_fecha}")
+        
+        if cambios:
+            cambios_texto = ", ".join(cambios)
+            if not confirmar_accion(f"modificar la película '{pelicula_clave_original}' ({cambios_texto})"):
+                print("Modificación de película cancelada.")
+                return False
+        
+        if nuevo_genero:
+            peliculas[pelicula_clave_original]["Género"] = nuevo_genero
             
         if nueva_duracion:
-            peliculas[pelicula]["Duración"] = nueva_duracion
+            peliculas[pelicula_clave_original]["Duración"] = nueva_duracion
         
         if nueva_fecha:
-            peliculas[pelicula]["Fecha"] = nueva_fecha  # DD-MM-YY
+            peliculas[pelicula_clave_original]["Fecha"] = nueva_fecha  # DD-MM-YY
         
-        print(f"¡Los datos de la película '{pelicula}' se puedieron modificar correctamente!.")
+        print(f"¡Los datos de la película '{pelicula_clave_original}' se puedieron modificar correctamente!.")
         return True
 
 #Funcion para crear butacas
@@ -218,12 +271,22 @@ def cargar_funcion(pelicula, fecha, hora, sala):
     from validacion import validar_pelicula_existente
     sala = str(sala)
 
-    if not validar_pelicula_existente(pelicula, peliculas):
+    # Normalizar película a minúsculas para búsqueda
+    pelicula_normalizada = pelicula.strip().lower()
+    
+    # Buscar película (case-insensitive)
+    pelicula_clave_original = None
+    for pelicula_key in peliculas.keys():
+        if pelicula_key.lower() == pelicula_normalizada:
+            pelicula_clave_original = pelicula_key
+            break
+    
+    if pelicula_clave_original is None:
         print(f"La película '{pelicula}' no está registrada. Antes de cargar la función debe registrar la película.")
         return False
 
     # Obtener duración de la película para validar solapamiento
-    duracion_pelicula = peliculas.get(pelicula, {}).get("Duración", "0")
+    duracion_pelicula = peliculas.get(pelicula_clave_original, {}).get("Duración", "0")
     if isinstance(duracion_pelicula, str):
         try:
             duracion_pelicula = int(duracion_pelicula)
@@ -246,10 +309,10 @@ def cargar_funcion(pelicula, fecha, hora, sala):
     conteo_existente = sum(
         1
         for datos in funciones.values()
-        if str(datos.get("Película", "")).strip().lower() == pelicula.lower() and datos.get("Fecha") == fecha
+        if str(datos.get("Película", "")).strip().lower() == pelicula_normalizada and datos.get("Fecha") == fecha
     )
     sufijo = chr(ord('a') + conteo_existente)
-    clave_nueva = f"{pelicula}_{fecha_compacta}_{sufijo}"
+    clave_nueva = f"{pelicula_clave_original}_{fecha_compacta}_{sufijo}"
 
     if clave_nueva in funciones:
         print("Error interno: ya existe una función con ese identificador. Intente nuevamente.")
@@ -258,7 +321,7 @@ def cargar_funcion(pelicula, fecha, hora, sala):
     butacas = crear_butacas(6, 6)
 
     funciones[clave_nueva] = {
-        "Película": pelicula,
+        "Película": pelicula_clave_original,  # Usar la clave original normalizada
         "Fecha": fecha,  # DD-MM-YY
         "Hora": hora,    # HH:MM
         "Sala": sala,
@@ -343,6 +406,9 @@ def crear_reserva(usuario, funcion_id, fila, columna, precio_base=None):
     """
     from validacion import validar_butaca_disponible, butaca_existe
     
+    # Normalizar usuario a minúsculas
+    usuario = usuario.strip().lower() if usuario else ""
+    
     if funcion_id not in funciones:
         print(f"La función '{funcion_id}' no existe.")
         return None
@@ -406,11 +472,17 @@ def consultar_reservas_por_usuario(usuario):
     """
     Función para mostrar todas las reservas realizadas por un usuario.
     """
+    # Normalizar usuario a minúsculas para búsqueda case-insensitive
+    usuario_normalizado = usuario.strip().lower() if usuario else ""
+    
     hay = False
+    usuario_encontrado = None
     for rid, r in reservas.items():
-        if r["Usuario"] == usuario:
+        usuario_reserva = r.get("Usuario", "")
+        if usuario_reserva.lower() == usuario_normalizado:
             if not hay:
-                print(f"\nReservas del usuario '{usuario}':")
+                usuario_encontrado = usuario_reserva  # Guardar el formato original
+                print(f"\nReservas del usuario '{usuario_encontrado}':")
                 hay = True
             print(f"- {rid} | Función: {r['FuncionID']} | Butaca: F{r['Butaca']['Fila']}A{r['Butaca']['Columna']} | "
                   f"Precio: {r['Precio']} | Estado: {r['Estado']}")
@@ -471,11 +543,17 @@ def cambiar_butaca(reserva_id, nueva_fila, nueva_columna):
         print("La nueva butaca está ocupada.")
         return False
 
-    # 6) Efectuar el cambio: liberar vieja y ocupar nueva
+    # 6) Confirmar cambio de butaca
+    from validacion import confirmar_accion
+    if not confirmar_accion(f"cambiar la butaca de la reserva '{reserva_id}' de F{fila_actual}A{col_actual} a F{nueva_fila}A{nueva_columna}"):
+        print("Cambio de butaca cancelado.")
+        return False
+
+    # 7) Efectuar el cambio: liberar vieja y ocupar nueva
     funciones[funcion_id]["Butacas"][fila_actual - 1][col_actual - 1] = "Libre"
     funciones[funcion_id]["Butacas"][nueva_fila - 1][nueva_columna - 1] = "Ocupada"
 
-    # 7) Actualizar la reserva
+    # 8) Actualizar la reserva
     reservas[reserva_id]["Butaca"]["Fila"] = nueva_fila
     reservas[reserva_id]["Butaca"]["Columna"] = nueva_columna
 
@@ -489,6 +567,8 @@ def cancelar_compra(reserva_id):
     Cancela una compra y libera la butaca correspondiente.
     Cambia el estado de la reserva a 'Cancelada' y marca la butaca como 'Libre'.
     """
+    from validacion import confirmar_accion
+    
     #1 Validar existencia de la reserva
     if reserva_id not in reservas:
         print(f"La reserva '{reserva_id}' no existe.")
@@ -498,6 +578,11 @@ def cancelar_compra(reserva_id):
     estado_actual = reservas[reserva_id].get("Estado")
     if estado_actual != "Activa":
         print(f"La reserva '{reserva_id}' no está activa (estado: {estado_actual}).")
+        return False
+    
+    #3 Confirmar cancelación
+    if not confirmar_accion(f"cancelar la reserva '{reserva_id}'"):
+        print("Cancelación de compra cancelada.")
         return False
 
     #3 Obtener datos
@@ -917,7 +1002,7 @@ def menu_gestion_reservas():
             # Validar usuario
             bandera = True
             while bandera:
-                usuario = input("Usuario (nombre o mail, o -1 para volver): ").strip()
+                usuario = input("Usuario (nombre o mail, o -1 para volver): ").strip().lower()  # Normalizar a minúsculas
                 if usuario == "-1":
                     bandera = False
                     break
@@ -1197,11 +1282,17 @@ def login_admin_menu():
                     # Validar usuario
                     bandera_usuario = True
                     while bandera_usuario:
-                        usuario = input("Usuario: ").strip()
+                        usuario = input("Usuario: ").strip().lower()  # Normalizar a minúsculas
                         if not usuario:
                             print("ERROR: El usuario no puede estar vacío.")
                             continue
-                        if usuario in admins:
+                        # Verificar si el usuario ya existe (búsqueda case-insensitive)
+                        usuario_existe = False
+                        for usuario_key in admins.keys():
+                            if usuario_key.lower() == usuario:
+                                usuario_existe = True
+                                break
+                        if usuario_existe:
                             print("ERROR: El usuario ya existe.")
                             continue
                         bandera_usuario = False
@@ -1221,7 +1312,7 @@ def login_admin_menu():
                     # Validar mail
                     bandera = True
                     while bandera:
-                        mail = input("Mail: ").strip()
+                        mail = input("Mail: ").strip().lower()  # Normalizar a minúsculas
                         if not mail:
                             print("ERROR: El mail no puede estar vacío.")
                             continue
@@ -1231,11 +1322,15 @@ def login_admin_menu():
                         bandera = False
                     
                     # Validar nombre
+                    from validacion import validar_solo_letras
                     bandera = True
                     while bandera:
                         nombre = input("Nombre: ").strip()
                         if not nombre:
                             print("ERROR: El nombre no puede estar vacío.")
+                            continue
+                        if not validar_solo_letras(nombre):
+                            print("ERROR: El nombre solo puede contener letras, espacios y guiones. No se permiten números.")
                             continue
                         bandera = False
                     
@@ -1245,6 +1340,9 @@ def login_admin_menu():
                         apellido = input("Apellido: ").strip()
                         if not apellido:
                             print("ERROR: El apellido no puede estar vacío.")
+                            continue
+                        if not validar_solo_letras(apellido):
+                            print("ERROR: El apellido solo puede contener letras, espacios y guiones. No se permiten números.")
                             continue
                         bandera = False
                     
@@ -1257,7 +1355,7 @@ def login_admin_menu():
         elif opcion == "2":
             bandera = True
             while bandera:
-                usuario = input("Usuario (o -1 para volver): ").strip()
+                usuario = input("Usuario (o -1 para volver): ").strip().lower()  # Normalizar a minúsculas
                 if usuario == "-1":
                     bandera = False
                     continue

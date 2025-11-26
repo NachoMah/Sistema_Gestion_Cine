@@ -13,8 +13,8 @@ def validar_usuario_y_contrasena(usuario, contrasena):
         Diccionario del usuario si las credenciales son válidas, None si no son válidas, None si hay error
     """ 
     try:
-        # Limpiar espacios en blanco
-        usuario = usuario.strip() if usuario else ""
+        # Limpiar espacios en blanco y normalizar a minúsculas
+        usuario = usuario.strip().lower() if usuario else ""
         contrasena = contrasena.strip() if contrasena else ""
         
         if not usuario or not contrasena:
@@ -23,9 +23,17 @@ def validar_usuario_y_contrasena(usuario, contrasena):
         with open(rutaUsuarios, "r", encoding="utf-8") as archivoUsuarios:
             usuarios = json.load(archivoUsuarios)
         
-        # Verificar que el usuario existe
-        if usuario not in usuarios:
+        # Verificar que el usuario existe (búsqueda case-insensitive)
+        usuario_encontrado = None
+        for usuario_key in usuarios.keys():
+            if usuario_key.lower() == usuario:
+                usuario_encontrado = usuario_key
+                break
+        
+        if usuario_encontrado is None:
             return None
+        
+        usuario = usuario_encontrado  # Usar la clave original del diccionario
         
         # Obtener la contraseña del usuario (puede estar como "contraseña" o "contrasena")
         contrasena_guardada = usuarios[usuario].get("contraseña") or usuarios[usuario].get("contrasena")
@@ -51,8 +59,8 @@ def validar_admin_y_contrasena(usuario, contrasena):
         Diccionario del admin si las credenciales son válidas, None si no son válidas, None si hay error
     """
     try:
-        # Limpiar espacios en blanco
-        usuario = usuario.strip() if usuario else ""
+        # Limpiar espacios en blanco y normalizar a minúsculas
+        usuario = usuario.strip().lower() if usuario else ""
         contrasena = contrasena.strip() if contrasena else ""
         
         if not usuario or not contrasena:
@@ -61,9 +69,17 @@ def validar_admin_y_contrasena(usuario, contrasena):
         with open(rutaAdmins, "r", encoding="utf-8") as archivoAdmins:
             admins = json.load(archivoAdmins)
         
-        # Verificar que el usuario existe
-        if usuario not in admins:
+        # Verificar que el usuario existe (búsqueda case-insensitive)
+        usuario_encontrado = None
+        for usuario_key in admins.keys():
+            if usuario_key.lower() == usuario:
+                usuario_encontrado = usuario_key
+                break
+        
+        if usuario_encontrado is None:
             return None
+        
+        usuario = usuario_encontrado  # Usar la clave original del diccionario
         
         # Obtener la contraseña del admin (puede estar como "Contraseña" o "contraseña")
         contrasena_guardada = admins[usuario].get("Contraseña") or admins[usuario].get("contraseña")
@@ -110,6 +126,45 @@ def validar_contrasena(contrasena):
     if len(contrasena) < caracteresMinimos:
         return False
     return True
+
+def validar_solo_letras(texto):
+    """
+    Función encargada de verificar que el texto solo contenga letras, espacios y caracteres especiales comunes (guiones, apóstrofes).
+    No permite números.
+    
+    Args:
+        texto: String a validar
+    
+    Returns:
+        True si solo contiene letras y caracteres permitidos, False si contiene números u otros caracteres no permitidos
+    """
+    if not texto or not texto.strip():
+        return False
+    
+    # Permitir letras (incluyendo acentos), espacios, guiones y apóstrofes
+    # (para nombres compuestos como "María José", "O'Connor", "Jean-Pierre")
+    texto_limpio = texto.strip()
+    
+    # Verificar que al menos tenga una letra (no solo espacios o caracteres especiales)
+    tiene_letra = False
+    
+    for caracter in texto_limpio:
+        # Si es un número, rechazar inmediatamente
+        if caracter.isdigit():
+            return False
+        
+        # Si es una letra (incluye acentos y ñ), permitir
+        if caracter.isalpha():
+            tiene_letra = True
+        # Si es espacio, guion o apóstrofe, permitir
+        elif caracter.isspace() or caracter in ['-', "'", '´']:
+            continue
+        # Cualquier otro carácter no permitido
+        else:
+            return False
+    
+    # Debe tener al menos una letra
+    return tiene_letra
 
 def validar_edad(usuario, pelicula):
     """
@@ -443,12 +498,16 @@ def verificar_usuario_registrado(usuario):
         True si el usuario está registrado, False en caso contrario
     """
     try:
+        # Normalizar a minúsculas para búsqueda case-insensitive
+        usuario_normalizado = usuario.strip().lower() if usuario else ""
+        
         with open(rutaUsuarios, "r", encoding="utf-8") as archivoUsuarios:
             usuarios = json.load(archivoUsuarios)
-            if usuario in usuarios:
-                return True
-            else:
-                return False
+            # Búsqueda case-insensitive
+            for usuario_key in usuarios.keys():
+                if usuario_key.lower() == usuario_normalizado:
+                    return True
+            return False
     except FileNotFoundError:
         return False
     except Exception as e:
