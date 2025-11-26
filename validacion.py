@@ -151,8 +151,12 @@ def confirmar_accion(accion):
 def manejar_entrada_invalida(entrada):
     """ 
     Función encargada de manejar entradas inválidas del usuario.
+    
+    ACLARACION: Sirve únicamente para mostrar un mensaje estándar cuando el usuario ingresa algo incorrecto.
+    No realiza validaciones complejas porque es imposible cubrir todos los escenarios; solo centraliza el mensaje de error.
     """
-    pass
+    print(f"Entrada inválida: '{entrada}'. Por favor, intentelo nuevamente.")  
+   
 
 def verificar_usuario_registrado(usuario):
     """
