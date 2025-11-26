@@ -218,6 +218,10 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
     """
     Función para registrar la compra de una entrada y generar una reserva.
     """
+    if not validacion.confirmar_accion(f"comprar la entrada en la butaca {butaca}"):
+        print("Compra cancelada.")
+        return False
+    
     try:
         # Validar que la función existe
         if funcion_id not in funciones:
@@ -990,11 +994,10 @@ def mainUsuario(usuario_actual):
                     pausar()
 
         elif opcion == "9":
-            confirmar = input("¿Está seguro de que desea borrar su cuenta? (s/n): ")
-            if confirmar.lower() == "s":
-                if borrar_cuenta(usuario_actual):
-                    print("Cuenta eliminada. Saliendo del sistema...")
-                    return True  # Indica que se debe terminar la ejecución
+            if validacion.confirmar_accion("borrar su cuenta"):
+                borrar_cuenta(usuario_actual)
+                print("Cuenta eliminada. Saliendo del sistema...")
+                return True  # Indica que se debe terminar la ejecución
             else:
                 print("Operación cancelada.")
 
