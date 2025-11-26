@@ -9,6 +9,71 @@ def pausar():
     """
     input("\nPresione Enter para continuar...")
 
+# Funciones helper para validaciones de formato (específicas del contexto)
+def validar_formato_fecha(fecha):
+    """
+    Valida que la fecha tenga formato DD-MM-YY.
+    Retorna True si es válido, False en caso contrario.
+    """
+    try:
+        partes = fecha.strip().split('-')
+        if len(partes) != 3:
+            return False
+        dia, mes, anio = int(partes[0]), int(partes[1]), int(partes[2])
+        # Validar rangos básicos
+        if not (1 <= dia <= 31 and 1 <= mes <= 12 and len(partes[2]) == 2):
+            return False
+        return True
+    except (ValueError, IndexError):
+        return False
+
+def validar_formato_hora(hora):
+    """
+    Valida que la hora tenga formato HH:MM.
+    Retorna True si es válido, False en caso contrario.
+    """
+    try:
+        partes = hora.strip().split(':')
+        if len(partes) != 2:
+            return False
+        horas, minutos = int(partes[0]), int(partes[1])
+        # Validar rangos
+        if not (0 <= horas <= 23 and 0 <= minutos <= 59):
+            return False
+        return True
+    except (ValueError, IndexError):
+        return False
+
+def validar_numero_positivo(valor, mensaje_error="Debe ser un número positivo."):
+    """
+    Valida que el valor sea un número positivo.
+    Retorna el número si es válido, None en caso contrario.
+    """
+    try:
+        numero = int(valor.strip())
+        if numero <= 0:
+            print(f"ERROR: {mensaje_error}")
+            return None
+        return numero
+    except ValueError:
+        print("ERROR: Debe ingresar un número válido.")
+        return None
+
+def validar_sala(sala_str):
+    """
+    Valida que la sala sea un número entre 1 y 6.
+    Retorna el número si es válido, None en caso contrario.
+    """
+    try:
+        sala = int(sala_str.strip())
+        if not (1 <= sala <= 6):
+            print("ERROR: La sala debe ser un número entre 1 y 6.")
+            return None
+        return sala
+    except ValueError:
+        print("ERROR: Debe ingresar un número válido.")
+        return None
+
 from precios import (
     cargar_precios,
     calcular_precio_entrada,
@@ -23,35 +88,55 @@ def registrar_admin(usuario, contrasenia, mail, nombre, apellido):
     """
     Función para registrar un nuevo administrador en el sistema.
     """
+    from validacion import validar_mail, validar_contrasena, validar_datos_no_nulos
+    
+    # Validar datos no nulos
+    datos = [usuario, contrasenia, mail, nombre, apellido]
+    if not validar_datos_no_nulos(datos):
+        print("ERROR: Todos los campos son obligatorios y no pueden estar vacíos.")
+        return False
+    
+    # Validar formato de mail
+    if not validar_mail(mail):
+        print("ERROR: El mail debe tener un dominio válido (gmail, hotmail, outlook, yahoo, cineuade.com, etc.).")
+        return False
+    
+    # Validar contraseña
+    if not validar_contrasena(contrasenia):
+        print("ERROR: La contraseña debe tener al menos 5 caracteres.")
+        return False
+    
+    # Validar que el usuario no exista (validación manual específica del contexto)
     if usuario in admins:
         print(f"El usuario {usuario} que quiere registrar ya existe. Por favor incie sesión con ese usuario")
         return False
-    else:
-        admins[usuario] = {
-            "Contraseña": contrasenia,
-            "Mail": mail,
-            "Nombre": nombre,
-            "Apellido": apellido,
-        }
-        guardar_admins()
-        
-        print(f"¡Bienvenido {usuario}! Usted se ha registrado como administrador correctamente.")
-        print("Registro de administrador completado con éxito.")
-        return True
+    
+    # Registrar admin
+    admins[usuario] = {
+        "Contraseña": contrasenia,
+        "Mail": mail,
+        "Nombre": nombre,
+        "Apellido": apellido,
+    }
+    guardar_admins()
+    
+    print(f"¡Bienvenido {usuario}! Usted se ha registrado como administrador correctamente.")
+    print("Administrador registrado de manera exitosa.")
+    return True
 
 #Funcion para iniciar sesión de administrador
 def login_admin(usuario, contrasenia):
     """
     Función para iniciar sesión de administrador
     """
-    if usuario not in admins:
-        print(f"El usuario {usuario} no existe. Por favor, regístrese primero antes de realziar el log in.")
-        return False
-    elif admins[usuario]["Contraseña"] != contrasenia:
-        print("Contraseña incorrecta")
+    from validacion import validar_admin_y_contrasena
+    
+    resultado = validar_admin_y_contrasena(usuario, contrasenia)
+    if resultado is None:
+        print("Usuario o contraseña incorrectos.")
         return False
     else:
-        print(f"¡Bienvenido {usuario}! Se ha inciado sesión correctamente.")
+        print(f"¡Bienvenido {usuario}! Se ha iniciado sesión correctamente.")
         return True
     
 #Funcion para agregar película
@@ -59,7 +144,8 @@ def agregar_pelicula(pelicula, genero, duracion, fecha):
     """
     Función para agregar una película al sistema
     """
-    if not pelicula_existente_sistema(pelicula):
+    from validacion import validar_pelicula_existente
+    if not validar_pelicula_existente(pelicula, peliculas):
         peliculas[pelicula] = {
             "Género": genero, 
             "Duración": duracion,
@@ -76,8 +162,9 @@ def eliminar_pelicula(pelicula):
     """
     Función para eliminar una película del sistema si existe.
     """
+    from validacion import validar_pelicula_existente
     try:
-        if not pelicula_existente_sistema(pelicula):
+        if not validar_pelicula_existente(pelicula, peliculas):
             print(f"La película '{pelicula}' no se puede eliminar porque no existe en el sistema.")
             return False
         else:
@@ -93,7 +180,8 @@ def modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha):
     """
     Función para modificar los datos de una película.
     """
-    if not pelicula_existente_sistema(pelicula):
+    from validacion import validar_pelicula_existente
+    if not validar_pelicula_existente(pelicula, peliculas):
         print(f"La película '{pelicula}' no existe en el sistema por lo que no se puede modificar.")
         return False
     else:
@@ -109,16 +197,6 @@ def modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha):
         print(f"¡Los datos de la película '{pelicula}' se puedieron modificar correctamente!.")
         return True
 
-#Funcion para verificar si la pelicula existe en el sistema
-def pelicula_existente_sistema(pelicula):
-    """
-    Funcion para verificar si la pelicula existe en el sistema
-    """
-    if pelicula in peliculas:
-        return True
-    else:
-        return False
-    
 #Funcion para crear butacas
 def crear_butacas(filas, asientos):
     """
@@ -137,20 +215,32 @@ def cargar_funcion(pelicula, fecha, hora, sala):
     """
     Función para cargar una nueva función de película
     """
+    from validacion import validar_pelicula_existente
     sala = str(sala)
 
-    if not pelicula_existente_sistema(pelicula):
+    if not validar_pelicula_existente(pelicula, peliculas):
         print(f"La película '{pelicula}' no está registrada. Antes de cargar la función debe registrar la película.")
         return False
 
-    #Se verifica que no haya solapamientos en la misma sala, fecha y hora
-    for _, datos in funciones.items():
-        misma_sala = str(datos.get("Sala")) == sala
-        misma_fecha = datos.get("Fecha") == fecha
-        misma_hora = datos.get("Hora") == hora
-        if misma_sala and misma_fecha and misma_hora:
-            print(f"No se puede cargar la función: ya existe otra función en la sala {sala} el {fecha} a las {hora}.")
-            return False
+    # Obtener duración de la película para validar solapamiento
+    duracion_pelicula = peliculas.get(pelicula, {}).get("Duración", "0")
+    if isinstance(duracion_pelicula, str):
+        try:
+            duracion_pelicula = int(duracion_pelicula)
+        except:
+            duracion_pelicula = 0
+    
+    # Validar que no haya solapamientos usando función modular
+    # Pasar también el diccionario de películas para evitar leer el archivo múltiples veces
+    from validacion import validar_funcion_no_solapada
+    resultado_validacion, pelicula_solapada = validar_funcion_no_solapada(sala, fecha, hora, duracion_pelicula, funciones, peliculas)
+    if not resultado_validacion:
+        if pelicula_solapada:
+            print(f"No se puede cargar la función: ya existe otra función solapada en la sala {sala} el {fecha} a las {hora}.")
+            print(f"La función se solapa con la película '{pelicula_solapada}'.")
+        else:
+            print(f"No se puede cargar la función: ya existe otra función solapada en la sala {sala} el {fecha} a las {hora}.")
+        return False
 
     fecha_compacta = fecha.replace('-', '')
     conteo_existente = sum(
@@ -244,34 +334,6 @@ def generar_id_reserva():
     else:
         return f"R{siguiente}"
 
-#Funcion para verificar si el asiento existe
-def asiento_existe(funcion_id, fila, columna):
-    """
-    Función para verificar si una butaca existe para una función dada
-    """
-    if funcion_id not in funciones:
-        return False
-    butacas = funciones[funcion_id]["Butacas"]
-    total_filas = len(butacas)
-    total_cols = len(butacas[0]) if total_filas > 0 else 0
-    if fila < 1 or columna < 1:
-        return False
-    if fila > total_filas:
-        return False
-    if columna > total_cols:
-        return False
-    return True
-
-
-#Funcion para verificar si el asiento esta libre
-def asiento_esta_libre(funcion_id, fila, columna):
-    """
-    True si la butaca está 'Libre'. Índices 1-based.
-    """
-    butacas = funciones[funcion_id]["Butacas"]
-    return butacas[fila - 1][columna - 1] == "Libre"
-
-
 #Funcion para crear reserva
 def crear_reserva(usuario, funcion_id, fila, columna, precio_base=None):
     """
@@ -279,15 +341,19 @@ def crear_reserva(usuario, funcion_id, fila, columna, precio_base=None):
     Marca la butaca como 'Ocupada' y guarda la reserva en 'reservas'.
     Retorna el id de reserva si se crea, o None si falla.
     """
+    from validacion import validar_butaca_disponible, butaca_existe
+    
     if funcion_id not in funciones:
         print(f"La función '{funcion_id}' no existe.")
         return None
 
-    if not asiento_existe(funcion_id, fila, columna):
+    # Verificar que la butaca existe
+    if not butaca_existe(funcion_id, fila, columna, funciones):
         print("Butaca inexistente para esa función.")
         return None
 
-    if not asiento_esta_libre(funcion_id, fila, columna):
+    # Verificar que la butaca está libre
+    if not validar_butaca_disponible(funcion_id, fila, columna, funciones):
         print("La butaca ya está ocupada.")
         return None
     
@@ -390,16 +456,18 @@ def cambiar_butaca(reserva_id, nueva_fila, nueva_columna):
         return False
 
     # 4) Validar función y existencia de la nueva butaca
+    from validacion import validar_butaca_disponible, butaca_existe
+    
     if funcion_id not in funciones:
         print(f"La función '{funcion_id}' no existe.")
         return False
 
-    if not asiento_existe(funcion_id, nueva_fila, nueva_columna):
+    if not butaca_existe(funcion_id, nueva_fila, nueva_columna, funciones):
         print("La nueva butaca no existe para esta función.")
         return False
 
     # 5) Verificar disponibilidad de la nueva butaca
-    if not asiento_esta_libre(funcion_id, nueva_fila, nueva_columna):
+    if not validar_butaca_disponible(funcion_id, nueva_fila, nueva_columna, funciones):
         print("La nueva butaca está ocupada.")
         return False
 
@@ -438,8 +506,10 @@ def cancelar_compra(reserva_id):
     columna = reservas[reserva_id]["Butaca"]["Columna"]
 
     #4 Intentar liberar butaca en la función (si existe)
+    from validacion import butaca_existe
+    
     if funcion_id in funciones:
-        if asiento_existe(funcion_id, fila, columna):
+        if butaca_existe(funcion_id, fila, columna, funciones):
             funciones[funcion_id]["Butacas"][fila - 1][columna - 1] = "Libre"
         else:
             print("Atención: la butaca de la reserva no existe en la función (no se pudo liberar en la matriz).")
@@ -488,16 +558,22 @@ def guardar_datos():
     Funcion para guardar datos utilziando archivos JSON
     """
     try:
-        with open("admins.txt", "w", encoding="utf-8") as f:
+        # Usar rutas absolutas para consistencia
+        ruta_admins = os.path.join(os.path.dirname(__file__), "admins.txt")
+        ruta_peliculas = os.path.join(os.path.dirname(__file__), "peliculas.txt")
+        ruta_funciones = os.path.join(os.path.dirname(__file__), "funciones.txt")
+        ruta_reservas = os.path.join(os.path.dirname(__file__), "reservas.txt")
+        
+        with open(ruta_admins, "w", encoding="utf-8") as f:
             json.dump(admins, f, indent=4, ensure_ascii=False)
 
-        with open("peliculas.txt", "w", encoding="utf-8") as f:
+        with open(ruta_peliculas, "w", encoding="utf-8") as f:
             json.dump(peliculas, f, indent=4, ensure_ascii=False)
 
-        with open("funciones.txt", "w", encoding="utf-8") as f:
+        with open(ruta_funciones, "w", encoding="utf-8") as f:
             json.dump(funciones, f, indent=4, ensure_ascii=False)
 
-        with open("reservas.txt", "w", encoding="utf-8") as f:
+        with open(ruta_reservas, "w", encoding="utf-8") as f:
             json.dump(reservas, f, indent=4, ensure_ascii=False)
 
         print("Datos guardados.")
@@ -513,25 +589,31 @@ def cargar_datos():
     """
     global admins, peliculas, funciones, reservas
     try:
-        with open("admins.txt", "r", encoding="utf-8") as f:
+        # Usar la misma ruta que validacion.py para consistencia
+        ruta_admins = os.path.join(os.path.dirname(__file__), "admins.txt")
+        with open(ruta_admins, "r", encoding="utf-8") as f:
             admins = json.load(f)
     except FileNotFoundError:
         admins = {}
 
     try:
-        with open("peliculas.txt", "r", encoding="utf-8") as f:
+        # Usar rutas absolutas para consistencia
+        ruta_peliculas = os.path.join(os.path.dirname(__file__), "peliculas.txt")
+        with open(ruta_peliculas, "r", encoding="utf-8") as f:
             peliculas = json.load(f)
     except FileNotFoundError:
         peliculas = {}
 
     try:
-        with open("funciones.txt", "r", encoding="utf-8") as f:
+        ruta_funciones = os.path.join(os.path.dirname(__file__), "funciones.txt")
+        with open(ruta_funciones, "r", encoding="utf-8") as f:
             funciones = json.load(f)
     except FileNotFoundError:
         funciones = {}
 
     try:
-        with open("reservas.txt", "r", encoding="utf-8") as f:
+        ruta_reservas = os.path.join(os.path.dirname(__file__), "reservas.txt")
+        with open(ruta_reservas, "r", encoding="utf-8") as f:
             reservas = json.load(f)
     except FileNotFoundError:
         reservas = {}
@@ -545,7 +627,9 @@ def guardar_admins():
     Función para guardar la lista de administradores en su archivo JSON.
     """
     try:
-        with open("admins.txt", "w", encoding="utf-8") as f:
+        # Usar la misma ruta que validacion.py para consistencia
+        ruta_admins = os.path.join(os.path.dirname(__file__), "admins.txt")
+        with open(ruta_admins, "w", encoding="utf-8") as f:
             json.dump(admins, f, indent=4, ensure_ascii=False)
         return True
     except Exception as e:
@@ -570,23 +654,115 @@ def menu_gestion_peliculas():
         opcion = input("Seleccione una opción: ")
         
         if opcion == "1":
-            pelicula = input("Título de la película: ")
-            genero = input("Género: ")
-            duracion = input("Duración (minutos): ")
-            fecha = input("Fecha de estreno (DD-MM-YY): ")
-            agregar_pelicula(pelicula, genero, duracion, fecha)
-            pausar()
+            from validacion import validar_pelicula_existente, validar_datos_no_nulos
+            
+            # Validar título
+            bandera = True
+            while bandera:
+                pelicula = input("Título de la película: ").strip()
+                if not pelicula:
+                    print("ERROR: El título no puede estar vacío.")
+                    continue
+                if validar_pelicula_existente(pelicula, peliculas):
+                    print("ERROR: La película ya existe en el sistema.")
+                    continue
+                bandera = False
+            
+            # Validar género
+            bandera = True
+            while bandera:
+                genero = input("Género: ").strip()
+                if not genero:
+                    print("ERROR: El género no puede estar vacío.")
+                    continue
+                bandera = False
+            
+            # Validar duración
+            bandera = True
+            while bandera:
+                duracion_str = input("Duración (minutos): ").strip()
+                duracion = validar_numero_positivo(duracion_str, "La duración debe ser un número positivo.")
+                if duracion is None:
+                    continue
+                bandera = False
+            
+            # Validar fecha
+            bandera = True
+            while bandera:
+                fecha = input("Fecha de estreno (DD-MM-YY): ").strip()
+                if not fecha:
+                    print("ERROR: La fecha no puede estar vacía.")
+                    continue
+                if not validar_formato_fecha(fecha):
+                    print("ERROR: La fecha debe tener formato DD-MM-YY (ej: 15-11-25).")
+                    continue
+                bandera = False
+            
+            # Si todas las validaciones pasaron, agregar película
+            if agregar_pelicula(pelicula, genero, duracion, fecha):
+                pausar()
+            else:
+                pausar()
         
         elif opcion == "2":
-            pelicula = input("Película a modificar: ")
-            nuevo_genero = input("Nuevo género (Enter para no cambiar): ")
-            nueva_duracion = input("Nueva duración (Enter para no cambiar): ")
-            nueva_fecha = input("Nueva fecha (DD-MM-YY, Enter para no cambiar): ")
+            from validacion import validar_pelicula_existente
+            
+            # Validar que la película existe
+            bandera = True
+            while bandera:
+                pelicula = input("Película a modificar: ").strip()
+                if not pelicula:
+                    print("ERROR: El título no puede estar vacío.")
+                    continue
+                if not validar_pelicula_existente(pelicula, peliculas):
+                    print("ERROR: La película no existe en el sistema.")
+                    continue
+                bandera = False
+            
+            # Validar género (opcional)
+            nuevo_genero = None
+            nuevo_genero_str = input("Nuevo género (Enter para no cambiar): ").strip()
+            if nuevo_genero_str:
+                nuevo_genero = nuevo_genero_str
+            
+            # Validar duración (opcional)
+            nueva_duracion = None
+            nueva_duracion_str = input("Nueva duración (Enter para no cambiar): ").strip()
+            if nueva_duracion_str:
+                nueva_duracion = validar_numero_positivo(nueva_duracion_str, "La duración debe ser un número positivo.")
+                if nueva_duracion is None:
+                    nueva_duracion = None  # No modificar si es inválido
+            
+            # Validar fecha (opcional)
+            nueva_fecha = None
+            nueva_fecha_str = input("Nueva fecha (DD-MM-YY, Enter para no cambiar): ").strip()
+            if nueva_fecha_str:
+                if not validar_formato_fecha(nueva_fecha_str):
+                    print("ERROR: La fecha debe tener formato DD-MM-YY (ej: 15-11-25).")
+                    nueva_fecha = None  # No modificar si es inválido
+                else:
+                    nueva_fecha = nueva_fecha_str
+            
+            # Si todas las validaciones pasaron, modificar película
             modificar_pelicula(pelicula, nuevo_genero, nueva_duracion, nueva_fecha)
             pausar()
         
         elif opcion == "3":
-            pelicula = input("Película a eliminar: ")
+            from validacion import validar_pelicula_existente
+            
+            # Validar que la película existe
+            bandera = True
+            while bandera:
+                pelicula = input("Película a eliminar: ").strip()
+                if not pelicula:
+                    print("ERROR: El título no puede estar vacío.")
+                    continue
+                if not validar_pelicula_existente(pelicula, peliculas):
+                    print("ERROR: La película no existe en el sistema.")
+                    continue
+                bandera = False
+            
+            # Si la validación pasó, eliminar película
             eliminar_pelicula(pelicula)
             pausar()
         elif opcion == "4":
@@ -617,12 +793,69 @@ def menu_gestion_funciones():
         opcion = input("Seleccione una opción: ")
         
         if opcion == "1":
-            pelicula = input("Película: ")
-            fecha = input("Fecha (DD-MM-YY): ")
-            hora = input("Hora (HH:MM): ")
-            sala = input("Sala: ")
-            cargar_funcion(pelicula, fecha, hora, sala)
-            pausar()
+            from validacion import validar_pelicula_existente
+            
+            # Validar película
+            bandera = True
+            while bandera:
+                pelicula = input("Película (o -1 para volver): ").strip()
+                if pelicula == "-1":
+                    bandera = False
+                    break  # Salir del bucle y volver al menú
+                if not pelicula:
+                    print("ERROR: El título de la película no puede estar vacío.")
+                    continue
+                if not validar_pelicula_existente(pelicula, peliculas):
+                    print("ERROR: La película no existe en el sistema. Debe registrarla primero.")
+                    print("Ingrese -1 para volver al menú.")
+                    continue
+                bandera = False
+            
+            # Si el usuario salió con -1, continuar al siguiente ciclo del menú
+            if pelicula == "-1":
+                continue
+            
+            # Validar fecha
+            bandera = True
+            while bandera:
+                fecha = input("Fecha (DD-MM-YY): ").strip()
+                if not fecha:
+                    print("ERROR: La fecha no puede estar vacía.")
+                    continue
+                if not validar_formato_fecha(fecha):
+                    print("ERROR: La fecha debe tener formato DD-MM-YY (ej: 15-11-25).")
+                    continue
+                bandera = False
+            
+            # Validar hora
+            bandera = True
+            while bandera:
+                hora = input("Hora (HH:MM): ").strip()
+                if not hora:
+                    print("ERROR: La hora no puede estar vacía.")
+                    continue
+                if not validar_formato_hora(hora):
+                    print("ERROR: La hora debe tener formato HH:MM (ej: 18:30).")
+                    continue
+                bandera = False
+            
+            # Validar sala
+            bandera = True
+            while bandera:
+                sala_str = input("Sala: ").strip()
+                if not sala_str:
+                    print("ERROR: La sala no puede estar vacía.")
+                    continue
+                sala = validar_sala(sala_str)
+                if sala is None:
+                    continue
+                bandera = False
+            
+            # Si todas las validaciones pasaron, cargar función
+            if cargar_funcion(pelicula, fecha, hora, sala):
+                pausar()
+            else:
+                pausar()
         
         elif opcion == "2":
             consultar_funciones()
@@ -679,23 +912,149 @@ def menu_gestion_reservas():
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            usuario = input("Usuario (nombre o mail): ")
-            print("Formato de ID: pelicula_fechaCompacta_letra (ej.: Avatar_101024_a)")
-            funcion_id = input("ID de la función: ")
-            fila = int(input("Fila (número empezando en 1): "))
-            columna = int(input("Asiento (número empezando en 1): "))
+            from validacion import verificar_usuario_registrado, validar_butaca_disponible
             
+            # Validar usuario
+            bandera = True
+            while bandera:
+                usuario = input("Usuario (nombre o mail, o -1 para volver): ").strip()
+                if usuario == "-1":
+                    bandera = False
+                    break
+                if not usuario:
+                    print("ERROR: El usuario no puede estar vacío.")
+                    continue
+                if not verificar_usuario_registrado(usuario):
+                    print("ERROR: El usuario no está registrado en el sistema.")
+                    continue
+                bandera = False
+            
+            # Si el usuario salió con -1, continuar al siguiente ciclo del menú
+            if usuario == "-1":
+                continue
+            
+            # Validar función ID
+            bandera = True
+            while bandera:
+                print("Formato de ID: pelicula_fechaCompacta_letra (ej.: Avatar_101024_a)")
+                funcion_id = input("ID de la función (o -1 para volver): ").strip()
+                if funcion_id == "-1":
+                    bandera = False
+                    break
+                if not funcion_id:
+                    print("ERROR: El ID de función no puede estar vacío.")
+                    continue
+                if funcion_id not in funciones:
+                    print("ERROR: La función no existe en el sistema.")
+                    continue
+                bandera = False
+            
+            # Si el usuario salió con -1, continuar al siguiente ciclo del menú
+            if funcion_id == "-1":
+                continue
+            
+            # Validar fila, columna y disponibilidad de butaca
+            bandera = True
+            salir_butaca = False
+            while bandera:
+                # Validar fila
+                bandera_fila = True
+                while bandera_fila:
+                    fila_str = input("Fila (número empezando en 1, o -1 para volver): ").strip()
+                    if fila_str == "-1":
+                        bandera_fila = False
+                        salir_butaca = True
+                        break
+                    fila = validar_numero_positivo(fila_str, "La fila debe ser un número positivo.")
+                    if fila is None:
+                        continue
+                    bandera_fila = False
+                
+                # Si el usuario salió con -1, salir del bucle de butaca
+                if salir_butaca:
+                    bandera = False
+                    break
+                
+                # Validar columna
+                bandera_columna = True
+                while bandera_columna:
+                    columna_str = input("Asiento (número empezando en 1, o -1 para volver): ").strip()
+                    if columna_str == "-1":
+                        bandera_columna = False
+                        salir_butaca = True
+                        break
+                    columna = validar_numero_positivo(columna_str, "El asiento debe ser un número positivo.")
+                    if columna is None:
+                        continue
+                    bandera_columna = False
+                
+                # Si el usuario salió con -1, salir del bucle de butaca
+                if salir_butaca:
+                    bandera = False
+                    break
+                
+                # Validar que la butaca esté disponible
+                if not validar_butaca_disponible(funcion_id, fila, columna, funciones):
+                    print("ERROR: La butaca seleccionada no está disponible.")
+                    print("\nOpciones:")
+                    print("1. Elegir otra butaca")
+                    print("2. Volver al menú")
+                    opcion_butaca = input("Seleccione una opción: ").strip()
+                    if opcion_butaca == "2":
+                        bandera = False
+                        salir_butaca = True
+                        break  # Salir del bucle y volver al menú
+                    elif opcion_butaca == "1":
+                        continue  # Volver a pedir fila y columna
+                    else:
+                        print("Opción no válida. Volviendo al menú.")
+                        bandera = False
+                        salir_butaca = True
+                        break
+                else:
+                    bandera = False
+            
+            # Si el usuario eligió volver al menú, continuar al siguiente ciclo
+            if salir_butaca:
+                continue
+            
+            # Preguntar por precio
             print("\n¿Desea ingresar el precio manualmente o calcularlo automáticamente?")
             print("1. Calcular automáticamente")
             print("2. Ingresar manualmente")
-            opcion_precio = input("Seleccione una opción: ")
+            print("-1. Volver al menú")
+            opcion_precio = input("Seleccione una opción: ").strip()
             
+            if opcion_precio == "-1":
+                continue  # Volver al menú
+            
+            precio = None
             if opcion_precio == "2":
-                precio = float(input("Precio base: "))
-                crear_reserva(usuario, funcion_id, fila, columna, precio)
+                bandera = True
+                while bandera:
+                    precio_str = input("Precio base (o -1 para volver): ").strip()
+                    if precio_str == "-1":
+                        bandera = False
+                        break
+                    try:
+                        precio = float(precio_str)
+                        if precio <= 0:
+                            print("ERROR: El precio debe ser un número positivo.")
+                            continue
+                        bandera = False
+                    except ValueError:
+                        print("ERROR: Debe ingresar un número válido.")
+                        continue
+                
+                # Si el usuario salió con -1, continuar al siguiente ciclo del menú
+                if precio_str == "-1":
+                    continue
+            
+            # Si todas las validaciones pasaron, crear reserva
+            if crear_reserva(usuario, funcion_id, fila, columna, precio):
+                pausar()
             else:
-                crear_reserva(usuario, funcion_id, fila, columna)
-            pausar()
+                pausar()
         
         elif opcion == "2":
             print("Formato de ID: pelicula_fechaCompacta_letra (ej.: Avatar_101024_a)")
@@ -714,11 +1073,50 @@ def menu_gestion_reservas():
             pausar()
         
         elif opcion == "5":
-            reserva_id = input("ID de la reserva (ej.: R0001): ")
-            nueva_fila = int(input("Nueva fila (número empezando en 1): "))
-            nueva_col = int(input("Nuevo asiento (número empezando en 1): "))
-            cambiar_butaca(reserva_id, nueva_fila, nueva_col)
-            pausar()
+            from validacion import validar_butaca_disponible
+            
+            # Validar reserva ID
+            bandera = True
+            while bandera:
+                reserva_id = input("ID de la reserva (ej.: R0001): ").strip()
+                if not reserva_id:
+                    print("ERROR: El ID de reserva no puede estar vacío.")
+                    continue
+                if reserva_id not in reservas:
+                    print("ERROR: La reserva no existe en el sistema.")
+                    continue
+                bandera = False
+            
+            # Validar nueva fila
+            bandera = True
+            while bandera:
+                nueva_fila_str = input("Nueva fila (número empezando en 1): ").strip()
+                nueva_fila = validar_numero_positivo(nueva_fila_str, "La fila debe ser un número positivo.")
+                if nueva_fila is None:
+                    continue
+                bandera = False
+            
+            # Validar nueva columna
+            bandera = True
+            while bandera:
+                nueva_col_str = input("Nuevo asiento (número empezando en 1): ").strip()
+                nueva_col = validar_numero_positivo(nueva_col_str, "El asiento debe ser un número positivo.")
+                if nueva_col is None:
+                    continue
+                bandera = False
+            
+            # Validar que la nueva butaca esté disponible
+            funcion_id_reserva = reservas[reserva_id].get("FuncionID", "")
+            if funcion_id_reserva and not validar_butaca_disponible(funcion_id_reserva, nueva_fila, nueva_col, funciones):
+                print("ERROR: La nueva butaca no está disponible.")
+                pausar()
+                continue
+            
+            # Si todas las validaciones pasaron, cambiar butaca
+            if cambiar_butaca(reserva_id, nueva_fila, nueva_col):
+                pausar()
+            else:
+                pausar()
         
         elif opcion == "0":
             break
@@ -787,6 +1185,7 @@ def login_admin_menu():
         opcion = input("\nSeleccione una opción: ")
         
         if opcion == "1":
+            from validacion import validar_mail, validar_contrasena
             bandera = True
             while bandera:
                 clave_registro = input("Clave de registro (o -1 para volver): ")
@@ -795,22 +1194,74 @@ def login_admin_menu():
                 elif clave_registro != "Uade123":
                     print("Clave incorrecta.")
                 else:
-                    usuario = input("Usuario: ")
-                    contrasenia = input("Contraseña: ")
-                    mail = input("Mail: ")
-                    nombre = input("Nombre: ")
-                    apellido = input("Apellido: ")
-                    registrar_admin(usuario, contrasenia, mail, nombre, apellido)
-                    bandera = False
+                    # Validar usuario
+                    bandera_usuario = True
+                    while bandera_usuario:
+                        usuario = input("Usuario: ").strip()
+                        if not usuario:
+                            print("ERROR: El usuario no puede estar vacío.")
+                            continue
+                        if usuario in admins:
+                            print("ERROR: El usuario ya existe.")
+                            continue
+                        bandera_usuario = False
+                    
+                    # Validar contraseña
+                    bandera = True
+                    while bandera:
+                        contrasenia = input("Contraseña: ").strip()
+                        if not contrasenia:
+                            print("ERROR: La contraseña no puede estar vacía.")
+                            continue
+                        if not validar_contrasena(contrasenia):
+                            print("ERROR: La contraseña debe tener al menos 5 caracteres.")
+                            continue
+                        bandera = False
+                    
+                    # Validar mail
+                    bandera = True
+                    while bandera:
+                        mail = input("Mail: ").strip()
+                        if not mail:
+                            print("ERROR: El mail no puede estar vacío.")
+                            continue
+                        if not validar_mail(mail):
+                            print("ERROR: El mail debe tener un dominio válido (gmail, hotmail, outlook, yahoo, cineuade.com, etc.).")
+                            continue
+                        bandera = False
+                    
+                    # Validar nombre
+                    bandera = True
+                    while bandera:
+                        nombre = input("Nombre: ").strip()
+                        if not nombre:
+                            print("ERROR: El nombre no puede estar vacío.")
+                            continue
+                        bandera = False
+                    
+                    # Validar apellido
+                    bandera = True
+                    while bandera:
+                        apellido = input("Apellido: ").strip()
+                        if not apellido:
+                            print("ERROR: El apellido no puede estar vacío.")
+                            continue
+                        bandera = False
+                    
+                    # Si todas las validaciones pasaron, registrar
+                    if registrar_admin(usuario, contrasenia, mail, nombre, apellido):
+                        bandera = False
+                    else:
+                        bandera = False
         
         elif opcion == "2":
             bandera = True
             while bandera:
-                usuario = input("Usuario (o -1 para volver): ")
+                usuario = input("Usuario (o -1 para volver): ").strip()
                 if usuario == "-1":
                     bandera = False
                     continue
-                contrasenia = input("Contraseña: ")
+                contrasenia = input("Contraseña: ").strip()
                 if login_admin(usuario, contrasenia):
                     pausar()
                     mainAdmin()

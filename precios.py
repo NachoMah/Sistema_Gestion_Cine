@@ -1,4 +1,5 @@
 import json
+import os
 
 from clear import clear
 
@@ -21,7 +22,9 @@ def cargar_precios():
     """
     global precios
     try:
-        with open("precios.txt", "r", encoding="utf-8") as f:
+        # Usar ruta absoluta para consistencia
+        ruta_precios = os.path.join(os.path.dirname(__file__), "precios.txt")
+        with open(ruta_precios, "r", encoding="utf-8") as f:
             precios = json.load(f)
         print("Precios cargados correctamente.")
         return True
@@ -40,7 +43,9 @@ def guardar_precios():
     Guarda los precios en archivo
     """
     try:
-        with open("precios.txt", "w", encoding="utf-8") as f:
+        # Usar ruta absoluta para consistencia
+        ruta_precios = os.path.join(os.path.dirname(__file__), "precios.txt")
+        with open(ruta_precios, "w", encoding="utf-8") as f:
             json.dump(precios, f, indent=4, ensure_ascii=False)
         return True
     except Exception as e:
@@ -203,7 +208,9 @@ def cargar_promociones():
     """
     global promociones
     try:
-        with open("promociones.txt", "r", encoding="utf-8") as f:
+        # Usar ruta absoluta para consistencia
+        ruta_promociones = os.path.join(os.path.dirname(__file__), "promociones.txt")
+        with open(ruta_promociones, "r", encoding="utf-8") as f:
             promociones = json.load(f)
         print("Promociones cargadas correctamente.")
         return True
@@ -220,7 +227,9 @@ def guardar_promociones():
     Guarda las promociones en archivo
     """
     try:
-        with open("promociones.txt", "w", encoding="utf-8") as f:
+        # Usar ruta absoluta para consistencia
+        ruta_promociones = os.path.join(os.path.dirname(__file__), "promociones.txt")
+        with open(ruta_promociones, "w", encoding="utf-8") as f:
             json.dump(promociones, f, indent=4, ensure_ascii=False)
         return True
     except Exception as e:

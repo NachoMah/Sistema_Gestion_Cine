@@ -3,29 +3,89 @@ import json
 
 rutaUsuarios = os.path.join(os.path.dirname(__file__), "usuarios.txt")
 rutaPeliculas = os.path.join(os.path.dirname(__file__), "peliculas.txt")
+rutaAdmins = os.path.join(os.path.dirname(__file__), "admins.txt")
 
 def validar_usuario_y_contrasena(usuario, contrasena):
     """
-    Función encargada de validar las credenciales del administrador o usuario
+    Función encargada de validar las credenciales de usuario.
+    
+    Returns:
+        Diccionario del usuario si las credenciales son válidas, None si no son válidas, None si hay error
     """ 
     try:
+        # Limpiar espacios en blanco
+        usuario = usuario.strip() if usuario else ""
+        contrasena = contrasena.strip() if contrasena else ""
+        
+        if not usuario or not contrasena:
+            return None
+        
         with open(rutaUsuarios, "r", encoding="utf-8") as archivoUsuarios:
             usuarios = json.load(archivoUsuarios)
+        
+        # Verificar que el usuario existe
+        if usuario not in usuarios:
+            return None
+        
+        # Obtener la contraseña del usuario (puede estar como "contraseña" o "contrasena")
+        contrasena_guardada = usuarios[usuario].get("contraseña") or usuarios[usuario].get("contrasena")
+        
+        # Comparar contraseñas
+        if contrasena_guardada == contrasena:
+            return usuarios[usuario]
+        
+        return None
+        
+    except FileNotFoundError:
+        return None
     except Exception as e:
         print(f"ERROR: Error tipo: {e}")
-        return -1
+        return None
+
+
+def validar_admin_y_contrasena(usuario, contrasena):
+    """
+    Función encargada de validar las credenciales de administrador.
     
-    if (usuario in usuarios) and (usuarios[usuario].get("contrasena") == contrasena):
-        return usuarios[usuario]
-    
-    return None
+    Returns:
+        Diccionario del admin si las credenciales son válidas, None si no son válidas, None si hay error
+    """
+    try:
+        # Limpiar espacios en blanco
+        usuario = usuario.strip() if usuario else ""
+        contrasena = contrasena.strip() if contrasena else ""
+        
+        if not usuario or not contrasena:
+            return None
+        
+        with open(rutaAdmins, "r", encoding="utf-8") as archivoAdmins:
+            admins = json.load(archivoAdmins)
+        
+        # Verificar que el usuario existe
+        if usuario not in admins:
+            return None
+        
+        # Obtener la contraseña del admin (puede estar como "Contraseña" o "contraseña")
+        contrasena_guardada = admins[usuario].get("Contraseña") or admins[usuario].get("contraseña")
+        
+        # Comparar contraseñas
+        if contrasena_guardada == contrasena:
+            return admins[usuario]
+        
+        return None
+        
+    except FileNotFoundError:
+        return None
+    except Exception as e:
+        print(f"ERROR: Error tipo: {e}")
+        return None
 
 def validar_mail(mail):
     """
     Función encargada de verificar que el correo tenga un dominio válido.
     """ 
     
-    dominios =  ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "gmail.com.ar", "hotmail.com.ar"]
+    dominios =  ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "gmail.com.ar", "hotmail.com.ar", "cineuade.com"]
     
     if "@" not in mail:
         return False
@@ -46,7 +106,7 @@ def validar_contrasena(contrasena):
     """
     Funcion encaragada de verificar que la contraseña cumpla con el mínimo de caracteres.
     """
-    caracteresMinimos = 8
+    caracteresMinimos = 5
     if len(contrasena) < caracteresMinimos:
         return False
     return True
@@ -76,39 +136,242 @@ def validar_edad(usuario, pelicula):
     else:
         return False
 
-def validar_butaca_disponible(funcion, butaca):
+def butaca_existe(funcion_id, fila, columna, funciones):
+    """
+    Función auxiliar para verificar solo si la butaca existe (sin verificar disponibilidad).
+    
+    Args:
+        funcion_id: ID de la función
+        fila: Número de fila (1-based)
+        columna: Número de columna/asiento (1-based)
+        funciones: Diccionario con todas las funciones
+    
+    Returns:
+        True si la butaca existe, False en caso contrario
+    """
+    # Verificar que la función existe
+    if funcion_id not in funciones:
+        return False
+    
+    butacas = funciones[funcion_id].get("Butacas", [])
+    if not butacas:
+        return False
+    
+    total_filas = len(butacas)
+    total_cols = len(butacas[0]) if total_filas > 0 else 0
+    
+    # Validar que fila y columna estén en rango válido (1-based)
+    if fila < 1 or columna < 1:
+        return False
+    if fila > total_filas or columna > total_cols:
+        return False
+    
+    return True
+
+
+def validar_butaca_disponible(funcion_id, fila, columna, funciones):
     """
     Función encargada de verificar que la butaca esté libre en una función.
+    Combina la verificación de existencia y disponibilidad de la butaca.
+    
+    Args:
+        funcion_id: ID de la función
+        fila: Número de fila (1-based)
+        columna: Número de columna/asiento (1-based)
+        funciones: Diccionario con todas las funciones
+    
+    Returns:
+        True si la butaca existe y está libre, False en caso contrario
     """
+    # Primero verificar que existe
+    if not butaca_existe(funcion_id, fila, columna, funciones):
+        return False
+    
+    # Luego verificar que está libre (convertir a 0-based para acceder a la matriz)
+    butacas = funciones[funcion_id]["Butacas"]
+    estado_butaca = butacas[fila - 1][columna - 1]
+    if estado_butaca != "Libre":
+        return False
+    
+    return True
 
-    pass
-
-def validar_funcion_no_solapada(sala, fecha, hora):
+def validar_funcion_no_solapada(sala, fecha, hora, duracion_pelicula, funciones_dict=None, peliculas_dict=None):
     """
     Función encargada de verificar que no existan funciones solapadas en la misma sala y horario.
-    """
-    pass
-
-def validar_pelicula_existente(pelicula):
-    """
-    Función encargada de verificar que la película exista antes de asignarla a una función.
+    Considera la duración de la película para detectar solapamientos reales.
+    
+    Args:
+        sala: Número de sala (string)
+        fecha: Fecha de la función (DD-MM-YY)
+        hora: Hora de inicio (HH:MM)
+        duracion_pelicula: Duración de la película en minutos (int o string convertible)
+        funciones_dict: Diccionario de funciones (opcional). Si se proporciona, se usa en lugar de leer el archivo.
+        peliculas_dict: Diccionario de películas (opcional). Si se proporciona, se usa en lugar de leer el archivo.
+    
+    Returns:
+        Tupla (resultado, pelicula_solapada):
+        - (True, None) si no hay solapamiento
+        - (False, nombre_pelicula) si hay solapamiento, donde nombre_pelicula es el nombre de la película que causa el solapamiento
     """
     try:
-        with open("peliculas.txt", "r", encoding="utf-8") as archivoPelicula:
+        # Convertir duración a int si es string
+        if isinstance(duracion_pelicula, str):
+            try:
+                duracion_pelicula = int(duracion_pelicula)
+            except:
+                duracion_pelicula = 0
+        
+        # Si se proporciona el diccionario de funciones, usarlo directamente
+        if funciones_dict is not None:
+            funciones = funciones_dict
+        else:
+            # Si no se proporciona, leer del archivo
+            rutaFunciones = os.path.join(os.path.dirname(__file__), "funciones.txt")
+            with open(rutaFunciones, "r", encoding="utf-8") as archivoFunciones:
+                funciones = json.load(archivoFunciones)
+        
+        # Si se proporciona el diccionario de películas, usarlo directamente
+        if peliculas_dict is not None:
+            peliculas = peliculas_dict
+        else:
+            # Si no se proporciona, leer del archivo
+            with open(rutaPeliculas, "r", encoding="utf-8") as archivoPeliculas:
+                peliculas = json.load(archivoPeliculas)
+        
+        # Convertir sala a string para comparación consistente
+        sala = str(sala)
+        
+        # Calcular hora de fin de la nueva función
+        # Parsear hora de inicio (HH:MM)
+        partes_hora = hora.split(':')
+        if len(partes_hora) != 2:
+            return (False, "Función desconocida")
+        
+        try:
+            hora_inicio_nueva = int(partes_hora[0])
+            minuto_inicio_nueva = int(partes_hora[1])
+        except ValueError:
+            return (False, "Función desconocida")
+        
+        # Calcular minutos totales desde medianoche para inicio
+        minutos_inicio_nueva = hora_inicio_nueva * 60 + minuto_inicio_nueva
+        
+        # Calcular minutos totales desde medianoche para fin
+        minutos_fin_nueva = minutos_inicio_nueva + duracion_pelicula
+        
+        # Verificar solapamiento con cada función existente
+        for funcion_id, datos_funcion in funciones.items():
+            # Verificar misma sala y misma fecha
+            sala_funcion = str(datos_funcion.get("Sala", ""))
+            fecha_funcion = datos_funcion.get("Fecha", "")
+            
+            if sala_funcion != sala or fecha_funcion != fecha:
+                continue  # No es la misma sala/fecha, no puede haber solapamiento
+            
+            # Obtener hora de la función existente
+            hora_funcion = datos_funcion.get("Hora", "")
+            if not hora_funcion:
+                continue
+            
+            # Parsear hora de la función existente
+            partes_hora_existente = hora_funcion.split(':')
+            if len(partes_hora_existente) != 2:
+                continue
+            
+            try:
+                hora_inicio_existente = int(partes_hora_existente[0])
+                minuto_inicio_existente = int(partes_hora_existente[1])
+            except ValueError:
+                continue
+                
+            minutos_inicio_existente = hora_inicio_existente * 60 + minuto_inicio_existente
+            
+            # Obtener duración de la película de la función existente
+            pelicula_existente = datos_funcion.get("Película", "")
+            if not pelicula_existente:
+                # Si no hay película, hacer verificación simple (solo hora exacta)
+                if hora == hora_funcion:
+                    return (False, "Función desconocida")
+                continue
+            
+            # Buscar la película en el diccionario de películas
+            duracion_existente = 0
+            if pelicula_existente in peliculas:
+                duracion_existente_str = peliculas[pelicula_existente].get("Duración", "0")
+                try:
+                    duracion_existente = int(duracion_existente_str) if isinstance(duracion_existente_str, str) else duracion_existente_str
+                except (ValueError, TypeError):
+                    duracion_existente = 0
+            else:
+                # Si la película no se encuentra, hacer verificación simple (solo hora exacta)
+                if hora == hora_funcion:
+                    return (False, pelicula_existente)
+                continue
+            
+            minutos_fin_existente = minutos_inicio_existente + duracion_existente
+            
+            # Verificar solapamiento: dos funciones se solapan si:
+            # - La nueva empieza antes de que termine la existente Y
+            # - La nueva termina después de que empiece la existente
+            hay_solapamiento = (
+                minutos_inicio_nueva < minutos_fin_existente and
+                minutos_fin_nueva > minutos_inicio_existente
+            )
+            
+            if hay_solapamiento:
+                return (False, pelicula_existente)
+        
+        return (True, None)  # No hay solapamiento
+    
+    except Exception as e:
+        print(f"Error al validar solapamiento de funciones: {e}")
+        return (False, "Error desconocido")
+
+def validar_pelicula_existente(pelicula, peliculas_dict=None):
+    """
+    Función encargada de verificar que la película exista antes de asignarla a una función.
+    
+    Args:
+        pelicula: Nombre de la película a validar
+        peliculas_dict: Diccionario de películas (opcional). Si se proporciona, se usa en lugar de leer el archivo.
+    
+    Returns:
+        True si la película existe, False si no existe, -1 si hay error
+    """
+    try:
+        # Si se proporciona el diccionario, usarlo directamente (más eficiente)
+        if peliculas_dict is not None:
+            pelicula_sin_espacios = pelicula.strip()
+            # Buscar coincidencia exacta primero (más rápido)
+            if pelicula_sin_espacios in peliculas_dict:
+                return True
+            # Si no hay coincidencia exacta, buscar case-insensitive
+            for titulo in peliculas_dict.keys():
+                if pelicula_sin_espacios.lower() == titulo.lower():
+                    return True
+            return False
+        
+        # Si no se proporciona diccionario, leer del archivo
+        with open(rutaPeliculas, "r", encoding="utf-8") as archivoPelicula:
             peliculas = json.load(archivoPelicula)
             
-            peliculaSinEspacios = pelicula.strip()
+            pelicula_sin_espacios = pelicula.strip()
+            # Buscar coincidencia exacta primero
+            if pelicula_sin_espacios in peliculas:
+                return True
+            # Si no hay coincidencia exacta, buscar case-insensitive
             for titulo in peliculas.keys():
-                if peliculaSinEspacios.lower() == titulo.lower():
+                if pelicula_sin_espacios.lower() == titulo.lower():
                     return True
             return False
     
     except FileNotFoundError:
         print("ERROR: El archivo no se pudo encontrar. Intentelo más tarde")
+        return False
     
     except Exception as e:
         print(f"Error al validar película: {e}")
-        return -1
+        return False
         
 def validar_datos_no_nulos(datos):
     """
@@ -170,6 +433,24 @@ def manejar_entrada_invalida(entrada):
 
 def verificar_usuario_registrado(usuario):
     """
-    Función encargada de revisar si el usuario está registrado antes de realizar la compra
+    Función encargada de revisar si el usuario está registrado antes de realizar la compra.
+    Similar a validar_usuario_registrado() pero con propósito específico para compras.
+    
+    Args:
+        usuario: Mail o nombre de usuario a verificar
+    
+    Returns:
+        True si el usuario está registrado, False en caso contrario
     """
-    pass
+    try:
+        with open(rutaUsuarios, "r", encoding="utf-8") as archivoUsuarios:
+            usuarios = json.load(archivoUsuarios)
+            if usuario in usuarios:
+                return True
+            else:
+                return False
+    except FileNotFoundError:
+        return False
+    except Exception as e:
+        print(f"ERROR: Error del tipo: {e}")
+        return False

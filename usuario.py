@@ -22,6 +22,37 @@ def pausar():
     """
     input("\nPresione Enter para continuar...")
 
+# Funciones helper para validaciones de formato (específicas del contexto)
+def validar_numero_positivo(valor, mensaje_error="Debe ser un número positivo."):
+    """
+    Valida que el valor sea un número positivo.
+    Retorna el número si es válido, None en caso contrario.
+    """
+    try:
+        numero = int(valor.strip())
+        if numero <= 0:
+            print(f"ERROR: {mensaje_error}")
+            return None
+        return numero
+    except ValueError:
+        print("ERROR: Debe ingresar un número válido.")
+        return None
+
+def validar_seleccion_menu(valor, min_opcion, max_opcion):
+    """
+    Valida que la selección esté en el rango válido del menú.
+    Retorna el número si es válido, None en caso contrario.
+    """
+    try:
+        numero = int(valor.strip())
+        if not (min_opcion <= numero <= max_opcion):
+            print(f"ERROR: La opción debe estar entre {min_opcion} y {max_opcion}.")
+            return None
+        return numero
+    except ValueError:
+        print("ERROR: Debe ingresar un número válido.")
+        return None
+
 usuarios = {}
 
 #Funcion para registrar usuario
@@ -29,29 +60,30 @@ def registrar_usuario(mail, nombre, apellido, edad, contrasenia):
     """
     Función para registrar un nuevo usuario en el sistema.
     """
-    if not validacion.validar_mail(mail):
-        print("Mail inválido. Debe tener un dominio válido (gmail, yahoo, etc.)")
-        return False
-    
-    if not validacion.validar_contrasena(contrasenia):
-        print("Contraseña inválida. Debe tener al menos 8 caracteres.")
-        return False
-    
-    if not validacion.validar_datos_no_nulos([mail, nombre, apellido, edad, contrasenia]):
+    # Validar datos no nulos primero
+    datos = [mail, nombre, apellido, edad, contrasenia]
+    if not validacion.validar_datos_no_nulos(datos):
         print("ERROR: Todos los campos son obligatorios y no pueden estar vacíos.")
+        return False
+    
+    # Validar formato de mail
+    if not validacion.validar_mail(mail):
+        print("ERROR: El mail debe tener un dominio válido (gmail, hotmail, outlook, yahoo, etc.).")
+        return False
+    
+    # Validar contraseña
+    if not validacion.validar_contrasena(contrasenia):
+        print("ERROR: La contraseña debe tener al menos 5 caracteres.")
         return False
     
     nombre_usuario = mail
     
-    if validacion.validar_usuario_registrado(nombre_usuario):
+    # Validar que el usuario no exista (validación manual específica del contexto)
+    if nombre_usuario in usuarios:
         print("El usuario ya existe")
         return False
     
     try:
-        if nombre_usuario in usuarios:
-            print("El usuario ya existe")
-            return False
-        
         usuarios[nombre_usuario] = {
             "nombre": nombre,
             "apellido": apellido,
@@ -74,12 +106,12 @@ def login_usuario(usuario, contrasena):
     """
     Función para iniciar sesión verificando usuario y contraseña.
     """
+    from validacion import validar_usuario_y_contrasena
+    
     try:
-        if usuario not in usuarios:
-            print("El usuario no existe.")
-            return False
-        if usuarios[usuario]["contraseña"] != contrasena:
-            print("Contraseña incorrecta.")
+        resultado = validar_usuario_y_contrasena(usuario, contrasena)
+        if resultado is None:
+            print("Usuario o contraseña incorrectos.")
             return False
         print(f"¡Bienvenido {usuario}!")
         return True
@@ -187,14 +219,51 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
     Función para registrar la compra de una entrada y generar una reserva.
     """
     try:
+        # Validar que la función existe
+        if funcion_id not in funciones:
+            print("ERROR: La función no existe.")
+            return False
+        
         datos_funcion = funciones[funcion_id]
-        pelicula = datos_funcion["Película"]
+        pelicula_nombre = datos_funcion["Película"]
         fila, columna = butaca  # Índices 0-based recibidos del menú
         
+        # Convertir a 1-based para validaciones
+        fila_1based = fila + 1
+        columna_1based = columna + 1
         
-        if not validacion.validar_edad(usuario, pelicula):
-            print("No tenés la edad suficiente para ver esta película.")
+        # Validar que el usuario esté registrado
+        if not validacion.verificar_usuario_registrado(usuario):
+            print("ERROR: Usuario no registrado en el sistema.")
             return False
+        
+        # Validar que la butaca esté disponible
+        if not validacion.validar_butaca_disponible(funcion_id, fila_1based, columna_1based, funciones):
+            print("ERROR: La butaca seleccionada no está disponible.")
+            return False
+        
+        # Validar edad (si la película tiene clasificación)
+        try:
+            # Cargar datos de la película
+            ruta_peliculas = os.path.join(os.path.dirname(__file__), "peliculas.txt")
+            with open(ruta_peliculas, "r", encoding="utf-8") as f:
+                peliculas = json.load(f)
+            
+            pelicula_datos = peliculas.get(pelicula_nombre, {})
+            
+            # Si la película tiene clasificación, validar edad
+            if "Clasificación" in pelicula_datos or "clasificacion" in pelicula_datos:
+                clasificacion = pelicula_datos.get("Clasificación") or pelicula_datos.get("clasificacion", "")
+                if clasificacion:
+                    usuario_datos = usuarios.get(usuario, {})
+                    pelicula_con_clasificacion = {"clasificacion": clasificacion}
+                    
+                    if not validacion.validar_edad(usuario_datos, pelicula_con_clasificacion):
+                        print("ERROR: No cumple con la edad mínima requerida para esta película.")
+                        return False
+        except Exception as e:
+            # Si hay error al validar edad, continuar (no bloquear la compra)
+            pass
         
         # Marcar butaca como ocupada
         funciones[funcion_id]["Butacas"][fila][columna] = "Ocupada"
@@ -204,10 +273,6 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
         
         # Generar ID de reserva
         reserva_id = generar_id_reserva(reservas)
-        
-        # Convertir índices a 1-based para el sistema de reservas (formato admin)
-        fila_1based = fila + 1
-        columna_1based = columna + 1
         
         # Crear reserva en el sistema de admin
         reservas[reserva_id] = {
@@ -223,7 +288,7 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
         
         # Agregar a la lista de reservas del usuario (para compatibilidad)
         usuarios[usuario]["reservas"].append({
-            "pelicula": pelicula,
+            "pelicula": pelicula_nombre,
             "funcion_id": funcion_id,
             "butaca": f"F{fila_1based}-A{columna_1based}",
             "reserva_id": reserva_id
@@ -232,7 +297,7 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
         # Guardar usuarios actualizados
         guardar_usuarios()
 
-        print(f"Entrada comprada para '{pelicula}' - Butaca F{fila_1based}-A{columna_1based} - Reserva ID: {reserva_id}")
+        print(f"Entrada comprada para '{pelicula_nombre}' - Butaca F{fila_1based}-A{columna_1based} - Reserva ID: {reserva_id}")
         return True
 
     except Exception as e:
@@ -295,11 +360,45 @@ def modificar_datos_usuario(usuario, datos_nuevos):
             print("El usuario no existe.")
             return None
         
+        # Validar datos modificados
+        if "mail" in datos_nuevos and datos_nuevos["mail"]:
+            nuevo_mail = datos_nuevos["mail"].strip()
+            if nuevo_mail:
+                # Validar formato de mail
+                if not validacion.validar_mail(nuevo_mail):
+                    print("ERROR: El mail debe tener un dominio válido (gmail, hotmail, outlook, yahoo, etc.).")
+                    return None
+                # Validar que el nuevo mail no esté en uso
+                if nuevo_mail in usuarios and nuevo_mail != usuario:
+                    print("ERROR: El mail ingresado ya está en uso por otro usuario.")
+                    return None
+        
+        if "contraseña" in datos_nuevos and datos_nuevos["contraseña"]:
+            nueva_contrasenia = datos_nuevos["contraseña"].strip()
+            if nueva_contrasenia:
+                # Validar contraseña
+                if not validacion.validar_contrasena(nueva_contrasenia):
+                    print("ERROR: La contraseña debe tener al menos 5 caracteres.")
+                    return None
+        
+        # Validar que los datos no sean nulos/vacíos
+        datos_a_validar = [v for v in datos_nuevos.values() if v]  # Solo los que tienen valor
+        if datos_a_validar and not validacion.validar_datos_no_nulos(datos_a_validar):
+            print("ERROR: Los campos no pueden estar vacíos.")
+            return None
+        
         nuevo_usuario = usuario
         # Si se cambia el mail, mover los datos a la nueva clave
         if "mail" in datos_nuevos:
             nuevo_mail = datos_nuevos["mail"].strip()
             if nuevo_mail and nuevo_mail != usuario:
+                # Actualizar referencias en reservas si es necesario
+                reservas = cargar_reservas()
+                for reserva_id, datos_reserva in reservas.items():
+                    if datos_reserva.get("Usuario") == usuario:
+                        datos_reserva["Usuario"] = nuevo_mail
+                guardar_reservas(reservas)
+                
                 usuarios[nuevo_mail] = usuarios.pop(usuario)
                 usuario = nuevo_usuario = nuevo_mail
         
@@ -385,7 +484,9 @@ def cargar_funciones():
     Función para cargar desde archivo las funciones de cine.
     """
     try:
-        with open("funciones.txt", "r", encoding="utf-8") as f:
+        # Usar ruta absoluta para consistencia
+        ruta_funciones = os.path.join(os.path.dirname(__file__), "funciones.txt")
+        with open(ruta_funciones, "r", encoding="utf-8") as f:
             funciones = json.load(f)
         return funciones
     except FileNotFoundError:
@@ -400,7 +501,9 @@ def guardar_funciones(funciones):
     Función para guardar en archivo las funciones de cine.
     """
     try:
-        with open("funciones.txt", "w", encoding="utf-8") as f:
+        # Usar ruta absoluta para consistencia
+        ruta_funciones = os.path.join(os.path.dirname(__file__), "funciones.txt")
+        with open(ruta_funciones, "w", encoding="utf-8") as f:
             json.dump(funciones, f, indent=4, ensure_ascii=False)
         return True
     except Exception as e:
@@ -414,7 +517,9 @@ def cargar_usuarios():
     """
     global usuarios
     try:
-        with open("usuarios.txt", "r", encoding="utf-8") as f:
+        # Usar la misma ruta que validacion.py para consistencia
+        ruta_usuarios = os.path.join(os.path.dirname(__file__), "usuarios.txt")
+        with open(ruta_usuarios, "r", encoding="utf-8") as f:
             usuarios = json.load(f)
         
         # Sincronizar reservas del usuario con el sistema de reservas de admin
@@ -447,7 +552,9 @@ def guardar_usuarios():
     Función para guardar los datos de usuarios en archivo.
     """
     try:
-        with open("usuarios.txt", "w", encoding="utf-8") as f:
+        # Usar la misma ruta que validacion.py para consistencia
+        ruta_usuarios = os.path.join(os.path.dirname(__file__), "usuarios.txt")
+        with open(ruta_usuarios, "w", encoding="utf-8") as f:
             json.dump(usuarios, f, indent=4, ensure_ascii=False)
         return True
     except Exception as e:
@@ -460,7 +567,9 @@ def cargar_peliculas():
     Función para cargar películas desde archivo en formato de usuario.
     """
     try:
-        with open("peliculas.txt", "r", encoding="utf-8") as f:
+        # Usar ruta absoluta para consistencia
+        ruta_peliculas = os.path.join(os.path.dirname(__file__), "peliculas.txt")
+        with open(ruta_peliculas, "r", encoding="utf-8") as f:
             peliculas_admin = json.load(f)
         
         # Convertir formato admin a formato usuario
@@ -485,7 +594,9 @@ def cargar_reservas():
     Función para cargar todas las reservas registradas desde archivo.
     """
     try:
-        with open("reservas.txt", "r", encoding="utf-8") as f:
+        # Usar ruta absoluta para consistencia
+        ruta_reservas = os.path.join(os.path.dirname(__file__), "reservas.txt")
+        with open(ruta_reservas, "r", encoding="utf-8") as f:
             reservas = json.load(f)
         return reservas
     except FileNotFoundError:
@@ -500,7 +611,9 @@ def guardar_reservas(reservas):
     Función para guardar las reservas actualizadas en archivo.
     """
     try:
-        with open("reservas.txt", "w", encoding="utf-8") as f:
+        # Usar ruta absoluta para consistencia
+        ruta_reservas = os.path.join(os.path.dirname(__file__), "reservas.txt")
+        with open(ruta_reservas, "w", encoding="utf-8") as f:
             json.dump(reservas, f, indent=4, ensure_ascii=False)
         return True
     except Exception as e:
@@ -571,6 +684,16 @@ def mainUsuario(usuario_actual):
                         coincidencias.append((datos.get("Película", ""), datos.get("Hora", ""), datos.get("Sala", ""), fid))
                 if not coincidencias:
                     print(f"No hay funciones disponibles el {fecha.strip()}.")
+                    print("\nOpciones:")
+                    print("1. Intentar con otra fecha")
+                    print("-1. Volver al menú")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        pass  # Continuar al pausar() y volver al menú
+                    elif opcion_error == "1":
+                        continue  # Volver a pedir fecha
+                    else:
+                        print("Opción no válida. Volviendo al menú.")
                 else:
                     coincidencias.sort(key=lambda x: (x[0], x[1], x[2]))
                     print(f"\nFunciones disponibles el {fecha.strip()}:")
@@ -595,20 +718,67 @@ def mainUsuario(usuario_actual):
                                         coincidencias_compra.append((datos.get("Hora", ""), datos.get("Sala", ""), fid))
                             if not coincidencias_compra:
                                 print("No se encontraron funciones para esa película en la fecha indicada.")
+                                print("\nOpciones:")
+                                print("1. Intentar con otra película")
+                                print("-1. Volver al menú")
+                                opcion_error = input("Seleccione una opción: ").strip()
+                                if opcion_error == "-1":
+                                    break
+                                elif opcion_error == "1":
+                                    continue  # Volver a pedir película
+                                else:
+                                    print("Opción no válida. Volviendo al menú.")
+                                    break
                             else:
                                 coincidencias_compra.sort(key=lambda x: (x[0], x[1]))
                                 print("\nFunciones encontradas:")
                                 for idx, (hora, sala, fid) in enumerate(coincidencias_compra, 1):
                                     print(f"{idx}. Hora {hora} | Sala {sala} | ID {fid}")
-                                seleccion = int(input("Seleccione una función (número): "))
-                                if 1 <= seleccion <= len(coincidencias_compra):
-                                    funcion_id = coincidencias_compra[seleccion - 1][2]
-                                    resultado_consulta = consultar_butacas(funcion_id, funciones)
-                                    if resultado_consulta:
-                                        fila = int(input("Fila (número): ")) - 1
-                                        columna = int(input("Columna (número): ")) - 1
-                                        if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
-                                            guardar_funciones(funciones)
+                                bandera = True
+                                while bandera:
+                                    seleccion_str = input("Seleccione una función (número): ").strip()
+                                    seleccion = validar_seleccion_menu(seleccion_str, 1, len(coincidencias_compra))
+                                    if seleccion is None:
+                                        continue
+                                    bandera = False
+                                
+                                funcion_id = coincidencias_compra[seleccion - 1][2]
+                                resultado_consulta = consultar_butacas(funcion_id, funciones)
+                                if resultado_consulta:
+                                    # Validar fila
+                                    bandera = True
+                                    while bandera:
+                                        fila_str = input("Fila (número): ").strip()
+                                        fila = validar_numero_positivo(fila_str, "La fila debe ser un número positivo.")
+                                        if fila is None:
+                                            continue
+                                        bandera = False
+                                    
+                                    # Validar columna
+                                    bandera = True
+                                    while bandera:
+                                        columna_str = input("Columna (número): ").strip()
+                                        columna = validar_numero_positivo(columna_str, "La columna debe ser un número positivo.")
+                                        if columna is None:
+                                            continue
+                                        bandera = False
+                                    
+                                    # Convertir a 0-based para la función
+                                    resultado_compra = comprar_entrada(usuario_actual, funcion_id, (fila - 1, columna - 1), funciones)
+                                    if resultado_compra:
+                                        guardar_funciones(funciones)
+                                    else:
+                                        print("\nOpciones:")
+                                        print("1. Intentar con otra butaca")
+                                        print("-1. Volver al menú")
+                                        opcion_error = input("Seleccione una opción: ").strip()
+                                        if opcion_error == "-1":
+                                            break
+                                        elif opcion_error == "1":
+                                            continue  # Volver a pedir fila y columna
+                                        else:
+                                            print("Opción no válida. Volviendo al menú.")
+                                            break
                             break
                         elif opcion_funciones == "2":
                             break
@@ -633,27 +803,50 @@ def mainUsuario(usuario_actual):
                 print("\nFunciones encontradas:")
                 for idx, (hora, sala, fid) in enumerate(coincidencias, 1):
                     print(f"{idx}. Hora {hora} | Sala {sala} | ID {fid}")
-                seleccion = int(input("Seleccione una función (número): "))
-                if 1 <= seleccion <= len(coincidencias):
-                    funcion_id = coincidencias[seleccion - 1][2]
-                    resultado_consulta = consultar_butacas(funcion_id, funciones)
-                    if resultado_consulta:
-                        sub_menu_activo = True
-                        while sub_menu_activo:
-                            print("\nOpciones disponibles:")
-                            print("1. Comprar entrada")
-                            print("2. Volver al menú principal")
-                            eleccion = input("Seleccione una opción: ")
-                            if eleccion == "1":
-                                fila = int(input("Fila (número): ")) - 1
-                                columna = int(input("Columna (número): ")) - 1
-                                if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
-                                    guardar_funciones(funciones)
-                                sub_menu_activo = False
-                            elif eleccion == "2":
-                                sub_menu_activo = False
-                            else:
-                                print("Opción no válida. Intente nuevamente.")
+                bandera = True
+                while bandera:
+                    seleccion_str = input("Seleccione una función (número): ").strip()
+                    seleccion = validar_seleccion_menu(seleccion_str, 1, len(coincidencias))
+                    if seleccion is None:
+                        continue
+                    bandera = False
+                
+                funcion_id = coincidencias[seleccion - 1][2]
+                resultado_consulta = consultar_butacas(funcion_id, funciones)
+                if resultado_consulta:
+                    sub_menu_activo = True
+                    while sub_menu_activo:
+                        print("\nOpciones disponibles:")
+                        print("1. Comprar entrada")
+                        print("2. Volver al menú principal")
+                        eleccion = input("Seleccione una opción: ").strip()
+                        if eleccion == "1":
+                            # Validar fila
+                            bandera = True
+                            while bandera:
+                                fila_str = input("Fila (número): ").strip()
+                                fila = validar_numero_positivo(fila_str, "La fila debe ser un número positivo.")
+                                if fila is None:
+                                    continue
+                                bandera = False
+                            
+                            # Validar columna
+                            bandera = True
+                            while bandera:
+                                columna_str = input("Columna (número): ").strip()
+                                columna = validar_numero_positivo(columna_str, "La columna debe ser un número positivo.")
+                                if columna is None:
+                                    continue
+                                bandera = False
+                            
+                            # Convertir a 0-based para la función
+                            if comprar_entrada(usuario_actual, funcion_id, (fila - 1, columna - 1), funciones):
+                                guardar_funciones(funciones)
+                            sub_menu_activo = False
+                        elif eleccion == "2":
+                            sub_menu_activo = False
+                        else:
+                            print("Opción no válida. Intente nuevamente.")
             pausar()
 
         elif opcion == "5":
@@ -671,15 +864,70 @@ def mainUsuario(usuario_actual):
                 print("\nFunciones encontradas:")
                 for idx, (hora, sala, fid) in enumerate(coincidencias, 1):
                     print(f"{idx}. Hora {hora} | Sala {sala} | ID {fid}")
-                seleccion = int(input("Seleccione una función (número): "))
-                if 1 <= seleccion <= len(coincidencias):
-                    funcion_id = coincidencias[seleccion - 1][2]
-                    resultado_consulta = consultar_butacas(funcion_id, funciones)
-                    if resultado_consulta:
-                        fila = int(input("Fila (número): ")) - 1
-                        columna = int(input("Columna (número): ")) - 1
-                        if comprar_entrada(usuario_actual, funcion_id, (fila, columna), funciones):
-                            guardar_funciones(funciones)  # Guardar cambios después de comprar
+                bandera = True
+                while bandera:
+                    seleccion_str = input("Seleccione una función (número): ").strip()
+                    seleccion = validar_seleccion_menu(seleccion_str, 1, len(coincidencias))
+                    if seleccion is None:
+                        continue
+                    bandera = False
+                
+                funcion_id = coincidencias[seleccion - 1][2]
+                resultado_consulta = consultar_butacas(funcion_id, funciones)
+                if resultado_consulta:
+                    # Validar fila
+                    bandera = True
+                    while bandera:
+                        fila_str = input("Fila (número): ").strip()
+                        fila = validar_numero_positivo(fila_str, "La fila debe ser un número positivo.")
+                        if fila is None:
+                            continue
+                        bandera = False
+                    
+                    # Validar columna
+                    bandera = True
+                    while bandera:
+                        columna_str = input("Columna (número): ").strip()
+                        columna = validar_numero_positivo(columna_str, "La columna debe ser un número positivo.")
+                        if columna is None:
+                            continue
+                        bandera = False
+                    
+                    # Convertir a 0-based para la función
+                    resultado_compra = comprar_entrada(usuario_actual, funcion_id, (fila - 1, columna - 1), funciones)
+                    if resultado_compra:
+                        guardar_funciones(funciones)  # Guardar cambios después de comprar
+                    else:
+                        print("\nOpciones:")
+                        print("1. Intentar con otra butaca")
+                        print("-1. Volver al menú")
+                        opcion_error = input("Seleccione una opción: ").strip()
+                        if opcion_error == "-1":
+                            pass  # Continuar al pausar() y volver al menú
+                        elif opcion_error == "1":
+                            # Volver a pedir fila y columna
+                            bandera_fila = True
+                            while bandera_fila:
+                                fila_str = input("Fila (número): ").strip()
+                                fila = validar_numero_positivo(fila_str, "La fila debe ser un número positivo.")
+                                if fila is None:
+                                    continue
+                                bandera_fila = False
+                            
+                            bandera_col = True
+                            while bandera_col:
+                                columna_str = input("Columna (número): ").strip()
+                                columna = validar_numero_positivo(columna_str, "La columna debe ser un número positivo.")
+                                if columna is None:
+                                    continue
+                                bandera_col = False
+                            
+                            # Intentar comprar de nuevo
+                            resultado_compra = comprar_entrada(usuario_actual, funcion_id, (fila - 1, columna - 1), funciones)
+                            if resultado_compra:
+                                guardar_funciones(funciones)
+                        else:
+                            print("Opción no válida. Volviendo al menú.")
             pausar()
 
         elif opcion == "6":
@@ -781,22 +1029,82 @@ def login_usuario_menu():
         opcion = input("\nSeleccione una opción: ")
 
         if opcion == "1":
-            mail = input("Ingrese su mail: ")
-            nombre = input("Ingrese su nombre: ")
-            apellido = input("Ingrese su apellido: ")
-            edad = input("Ingrese su edad: ")
-            contrasenia = input("Ingrese su contraseña: ")
-            registrar_usuario(mail, nombre, apellido, edad, contrasenia)
-            pausar()
+            # Validar mail
+            bandera = True
+            while bandera:
+                mail = input("Ingrese su mail: ").strip()
+                if not mail:
+                    print("ERROR: El mail no puede estar vacío.")
+                    continue
+                if not validacion.validar_mail(mail):
+                    print("ERROR: El mail debe tener un dominio válido (gmail, hotmail, outlook, yahoo, cineuade.com, etc.).")
+                    continue
+                if mail in usuarios:
+                    print("ERROR: El mail ya está registrado.")
+                    continue
+                bandera = False
+            
+            # Validar nombre
+            bandera = True
+            while bandera:
+                nombre = input("Ingrese su nombre: ").strip()
+                if not nombre:
+                    print("ERROR: El nombre no puede estar vacío.")
+                    continue
+                bandera = False
+            
+            # Validar apellido
+            bandera = True
+            while bandera:
+                apellido = input("Ingrese su apellido: ").strip()
+                if not apellido:
+                    print("ERROR: El apellido no puede estar vacío.")
+                    continue
+                bandera = False
+            
+            # Validar edad
+            bandera = True
+            while bandera:
+                edad_str = input("Ingrese su edad: ").strip()
+                if not edad_str:
+                    print("ERROR: La edad no puede estar vacía.")
+                    continue
+                try:
+                    edad = int(edad_str)
+                    if edad < 0 or edad > 120:
+                        print("ERROR: La edad debe ser un número válido entre 0 y 120.")
+                        continue
+                    bandera = False
+                except ValueError:
+                    print("ERROR: La edad debe ser un número válido.")
+                    continue
+            
+            # Validar contraseña
+            bandera = True
+            while bandera:
+                contrasenia = input("Ingrese su contraseña: ").strip()
+                if not contrasenia:
+                    print("ERROR: La contraseña no puede estar vacía.")
+                    continue
+                if not validacion.validar_contrasena(contrasenia):
+                    print("ERROR: La contraseña debe tener al menos 5 caracteres.")
+                    continue
+                bandera = False
+            
+            # Si todas las validaciones pasaron, registrar
+            if registrar_usuario(mail, nombre, apellido, edad, contrasenia):
+                pausar()
+            else:
+                pausar()
 
         elif opcion == "2":
             bandera = True
             while bandera:
-                usuario = input("Mail (o -1 para volver): ")
+                usuario = input("Mail (o -1 para volver): ").strip()
                 if usuario == "-1":
                     bandera = False
                     continue
-                contrasenia = input("Contraseña: ")
+                contrasenia = input("Contraseña: ").strip()
                 if login_usuario(usuario, contrasenia):  
                     print("Inicio de sesión exitoso.")
                     pausar()

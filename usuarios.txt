@@ -6,5 +6,30 @@
         "mail": "jorge@gmail.com",
         "contraseña": "12345678",
         "reservas": []
+    },
+    "juann.selva@gmail.com": {
+        "nombre": "juan",
+        "apellido": "selva",
+        "edad": 22,
+        "mail": "juann.selva@gmail.com",
+        "contraseña": "123456",
+        "reservas": [
+            {
+                "funcion_id": "Titanic_131125_b",
+                "butaca": "F6-A6",
+                "reserva_id": "R0135"
+            },
+            {
+                "funcion_id": "Titanic_131125_b",
+                "butaca": "F6-A5",
+                "reserva_id": "R0136"
+            },
+            {
+                "pelicula": "Baby Miko",
+                "funcion_id": "Baby Miko_271125_a",
+                "butaca": "F1-A1",
+                "reserva_id": "R0137"
+            }
+        ]
     }
 }

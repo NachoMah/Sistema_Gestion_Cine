@@ -1,20 +1,26 @@
 {
     "admin1": {
         "Contraseña": "123",
-        "Mail": "admin1@cine.com",
+        "Mail": "admin1@cineuade.com",
         "Nombre": "juan",
         "Apellido": "selva"
     },
     "admin2": {
         "Contraseña": "123",
-        "Mail": "admin2@cine.com",
+        "Mail": "admin2@cineuade.com",
         "Nombre": "pepe",
         "Apellido": "fernandez"
     },
     "admin3": {
         "Contraseña": "123",
-        "Mail": "admin3@cine.com",
+        "Mail": "admin3@cineuade.com",
         "Nombre": "si",
         "Apellido": "si"
+    },
+    "admin67": {
+        "Contraseña": "admin67",
+        "Mail": "admin@cineuade.com",
+        "Nombre": "juan",
+        "Apellido": "miko"
     }
 }

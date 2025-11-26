@@ -63,5 +63,10 @@
         "Género": "musical",
         "Duración": "128",
         "Fecha": "10-11-25"
+    },
+    "Baby Miko": {
+        "Género": "comedia",
+        "Duración": 121,
+        "Fecha": "27-11-25"
     }
 }

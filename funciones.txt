@@ -838,5 +838,61 @@
                 "Libre"
             ]
         ]
+    },
+    "Baby Miko_271125_a": {
+        "Película": "Baby Miko",
+        "Fecha": "27-11-25",
+        "Hora": "18:00",
+        "Sala": "1",
+        "Butacas": [
+            [
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
     }
 }

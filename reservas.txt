@@ -1358,5 +1358,15 @@
         },
         "Precio": 0,
         "Estado": "Activa"
+    },
+    "R0137": {
+        "Usuario": "juann.selva@gmail.com",
+        "FuncionID": "Baby Miko_271125_a",
+        "Butaca": {
+            "Fila": 1,
+            "Columna": 1
+        },
+        "Precio": 0,
+        "Estado": "Activa"
     }
 }
