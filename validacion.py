@@ -146,7 +146,17 @@ def confirmar_accion(accion):
     """
     Función encargada de pedir confirmación antes de ejecutar una acción crítica.
     """
-    pass
+    print(f"¿Confirma que desea {accion}? (S/N): ")
+    respuesta = input().strip().upper()
+
+    while respuesta not in ("S", "N"):
+        print("Respuesta inválida. Ingrese 'S' para Sí o 'N' para No.")
+        respuesta = input("¿Confirma? (S/N): ").strip().upper()
+
+    if respuesta == "S":
+        return True
+    else:
+        return False
 
 def manejar_entrada_invalida(entrada):
     """ 
