@@ -64,9 +64,19 @@
         "Duración": "128",
         "Fecha": "10-11-25"
     },
-    "the fast and the furious": {
+    "Chiqui Mafia": {
+        "Género": "mafia",
+        "Duración": 777,
+        "Fecha": "27-11-25"
+    },
+    "Sapardo": {
+        "Género": "comedia",
+        "Duración": 89,
+        "Fecha": "26-06-11"
+    },
+    "Batman": {
         "Género": "accion",
         "Duración": 122,
-        "Fecha": "11-02-04"
+        "Fecha": "24-03-22"
     }
 }

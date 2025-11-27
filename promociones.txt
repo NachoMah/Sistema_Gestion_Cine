@@ -1,1 +1,6 @@
-{}
+{
+    "2x1": {
+        "Tipo": "2x1",
+        "Condición": "Pagando en efectivo todos los miercoles"
+    }
+}

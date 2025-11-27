@@ -513,3 +513,37 @@ def verificar_usuario_registrado(usuario):
     except Exception as e:
         print(f"ERROR: Error del tipo: {e}")
         return False
+
+def validar_titulo_pelicula(titulo):
+    """
+    Función encargada de validar que el título de la película cumpla con los requisitos:
+    - Debe tener al menos 2 caracteres
+    - No puede ser solamente un carácter especial
+    
+    Args:
+        titulo: String con el título de la película a validar
+    
+    Returns:
+        True si el título es válido, False en caso contrario
+    """
+    if not titulo or not titulo.strip():
+        return False
+    
+    titulo_limpio = titulo.strip()
+    
+    # Verificar que tenga al menos 2 caracteres
+    if len(titulo_limpio) < 2:
+        return False
+    
+    # Verificar que no sea solo un carácter especial
+    # Contar cuántos caracteres son letras o números
+    caracteres_validos = 0
+    for caracter in titulo_limpio:
+        if caracter.isalnum():  # Letra o número
+            caracteres_validos += 1
+    
+    # Debe tener al menos un carácter alfanumérico
+    if caracteres_validos == 0:
+        return False
+    
+    return True

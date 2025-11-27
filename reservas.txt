@@ -1353,18 +1353,8 @@
         "Usuario": "juann.selva@gmail.com",
         "FuncionID": "Titanic_131125_b",
         "Butaca": {
-            "Fila": 6,
+            "Fila": 5,
             "Columna": 5
-        },
-        "Precio": 0,
-        "Estado": "Activa"
-    },
-    "R0137": {
-        "Usuario": "juann.selva@gmail.com",
-        "FuncionID": "Baby Miko_271125_a",
-        "Butaca": {
-            "Fila": 4,
-            "Columna": 3
         },
         "Precio": 0,
         "Estado": "Activa"
@@ -1378,5 +1368,35 @@
         },
         "Precio": 10000.0,
         "Estado": "Cancelada"
+    },
+    "R0139": {
+        "Usuario": "juani@gmail.com",
+        "FuncionID": "Chiqui Mafia_281125_a",
+        "Butaca": {
+            "Fila": 3,
+            "Columna": 3
+        },
+        "Precio": 15000,
+        "Estado": "Activa"
+    },
+    "R0140": {
+        "Usuario": "juani@gmail.com",
+        "FuncionID": "Sapardp_281125_a",
+        "Butaca": {
+            "Fila": 4,
+            "Columna": 4
+        },
+        "Precio": 7600.0,
+        "Estado": "Activa"
+    },
+    "R0141": {
+        "Usuario": "sapito@gmail.com",
+        "FuncionID": "Sapardp_281125_a",
+        "Butaca": {
+            "Fila": 2,
+            "Columna": 3
+        },
+        "Precio": 7600.0,
+        "Estado": "Activa"
     }
 }

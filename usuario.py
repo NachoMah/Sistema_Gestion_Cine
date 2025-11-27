@@ -863,9 +863,48 @@ def mainUsuario(usuario_actual):
                 else:
                     bandera = False
             
-            # Solo pedir fecha si la película existe
-            fecha = input("Ingrese la fecha (DD-MM-YY) o presione \"Enter\" para ver todos los horarios: ")
-            fecha = fecha if fecha.strip() else None
+            # Validar fecha si la película existe
+            from admin import validar_formato_fecha
+            bandera = True
+            fecha = None
+            salir_fecha = False
+            while bandera:
+                fecha_input = input("Ingrese la fecha (DD-MM-YY) o presione \"Enter\" para ver todos los horarios, -1 para cancelar: ").strip()
+                
+                # Opción de cancelar
+                if fecha_input == "-1":
+                    salir_fecha = True
+                    bandera = False
+                # Si está vacío, omitir el filtro de fecha (ver todos los horarios)
+                elif not fecha_input:
+                    fecha = None
+                    bandera = False
+                else:
+                    # Validar formato de fecha
+                    if not validar_formato_fecha(fecha_input):
+                        print("ERROR: La fecha debe tener formato DD-MM-YY (ej: 15-11-25).")
+                        print("Opciones:")
+                        print("1. Intentar nuevamente")
+                        print("-1. Cancelar")
+                        opcion_error = input("Seleccione una opción: ").strip()
+                        if opcion_error == "-1":
+                            salir_fecha = True
+                            bandera = False
+                        elif opcion_error == "1":
+                            continue
+                        else:
+                            print("ERROR: Opción no válida. Cancelando.")
+                            salir_fecha = True
+                            bandera = False
+                    else:
+                        fecha = fecha_input
+                        bandera = False
+            
+            # Si el usuario canceló, continuar al siguiente ciclo
+            if salir_fecha:
+                continue
+            
+            # Mostrar horarios
             ver_horarios_pelicula(pelicula, fecha, funciones)
             pausar()
 
@@ -919,87 +958,89 @@ def mainUsuario(usuario_actual):
                         print(f"\n{pelicula}:")
                         pelicula_actual = pelicula
                     print(f"- Hora {hora} | Sala {sala} | ID: {fid}")
-                    while True:
-                        print("\nOpciones:")
-                        print("1. Comprar entrada")
-                        print("2. Volver al menú")
-                        opcion_funciones = input("Seleccione una opción: ")
-                        if opcion_funciones == "1":
-                            pelicula_compra = input("Ingrese el título de la película: ")
-                            fecha_compra = fecha.strip()
-                            coincidencias_compra = []
-                            if pelicula_compra.strip():
-                                for fid, datos in funciones.items():
-                                    if str(datos.get("Película", "")).strip().lower() == pelicula_compra.strip().lower() and datos.get("Fecha") == fecha_compra:
-                                        coincidencias_compra.append((datos.get("Hora", ""), datos.get("Sala", ""), fid))
-                            if not coincidencias_compra:
-                                print("No se encontraron funciones para esa película en la fecha indicada.")
-                                print("\nOpciones:")
-                                print("1. Intentar con otra película")
-                                print("-1. Volver al menú")
-                                opcion_error = input("Seleccione una opción: ").strip()
-                                if opcion_error == "-1":
-                                    break
-                                elif opcion_error == "1":
-                                    continue  # Volver a pedir película
-                                else:
-                                    print("Opción no válida. Volviendo al menú.")
-                                    break
+                
+                # Mostrar menú de opciones una sola vez después de mostrar todas las funciones
+                while True:
+                    print("\nOpciones:")
+                    print("1. Comprar entrada")
+                    print("2. Volver al menú")
+                    opcion_funciones = input("Seleccione una opción: ")
+                    if opcion_funciones == "1":
+                        pelicula_compra = input("Ingrese el título de la película: ")
+                        fecha_compra = fecha.strip()
+                        coincidencias_compra = []
+                        if pelicula_compra.strip():
+                            for fid, datos in funciones.items():
+                                if str(datos.get("Película", "")).strip().lower() == pelicula_compra.strip().lower() and datos.get("Fecha") == fecha_compra:
+                                    coincidencias_compra.append((datos.get("Hora", ""), datos.get("Sala", ""), fid))
+                        if not coincidencias_compra:
+                            print("No se encontraron funciones para esa película en la fecha indicada.")
+                            print("\nOpciones:")
+                            print("1. Intentar con otra película")
+                            print("-1. Volver al menú")
+                            opcion_error = input("Seleccione una opción: ").strip()
+                            if opcion_error == "-1":
+                                break
+                            elif opcion_error == "1":
+                                continue  # Volver a pedir película
                             else:
-                                coincidencias_compra.sort(key=lambda x: (x[0], x[1]))
-                                print("\nFunciones encontradas:")
-                                for idx, (hora, sala, fid) in enumerate(coincidencias_compra, 1):
-                                    print(f"{idx}. Hora {hora} | Sala {sala} | ID {fid}")
+                                print("Opción no válida. Volviendo al menú.")
+                                break
+                        else:
+                            coincidencias_compra.sort(key=lambda x: (x[0], x[1]))
+                            print("\nFunciones encontradas:")
+                            for idx, (hora, sala, fid) in enumerate(coincidencias_compra, 1):
+                                print(f"{idx}. Hora {hora} | Sala {sala} | ID {fid}")
+                            bandera = True
+                            while bandera:
+                                seleccion_str = input("Seleccione una función (número): ").strip()
+                                seleccion = validar_seleccion_menu(seleccion_str, 1, len(coincidencias_compra))
+                                if seleccion is None:
+                                    continue
+                                bandera = False
+                            
+                            funcion_id = coincidencias_compra[seleccion - 1][2]
+                            resultado_consulta = consultar_butacas(funcion_id, funciones)
+                            if resultado_consulta:
+                                # Validar fila
                                 bandera = True
                                 while bandera:
-                                    seleccion_str = input("Seleccione una función (número): ").strip()
-                                    seleccion = validar_seleccion_menu(seleccion_str, 1, len(coincidencias_compra))
-                                    if seleccion is None:
+                                    fila_str = input("Fila (número): ").strip()
+                                    fila = validar_numero_positivo(fila_str, "La fila debe ser un número positivo.")
+                                    if fila is None:
                                         continue
                                     bandera = False
                                 
-                                funcion_id = coincidencias_compra[seleccion - 1][2]
-                                resultado_consulta = consultar_butacas(funcion_id, funciones)
-                                if resultado_consulta:
-                                    # Validar fila
-                                    bandera = True
-                                    while bandera:
-                                        fila_str = input("Fila (número): ").strip()
-                                        fila = validar_numero_positivo(fila_str, "La fila debe ser un número positivo.")
-                                        if fila is None:
-                                            continue
-                                        bandera = False
-                                    
-                                    # Validar columna
-                                    bandera = True
-                                    while bandera:
-                                        columna_str = input("Columna (número): ").strip()
-                                        columna = validar_numero_positivo(columna_str, "La columna debe ser un número positivo.")
-                                        if columna is None:
-                                            continue
-                                        bandera = False
-                                    
-                                    # Convertir a 0-based para la función
-                                    resultado_compra = comprar_entrada(usuario_actual, funcion_id, (fila - 1, columna - 1), funciones)
-                                    if resultado_compra:
-                                        guardar_funciones(funciones)
+                                # Validar columna
+                                bandera = True
+                                while bandera:
+                                    columna_str = input("Columna (número): ").strip()
+                                    columna = validar_numero_positivo(columna_str, "La columna debe ser un número positivo.")
+                                    if columna is None:
+                                        continue
+                                    bandera = False
+                                
+                                # Convertir a 0-based para la función
+                                resultado_compra = comprar_entrada(usuario_actual, funcion_id, (fila - 1, columna - 1), funciones)
+                                if resultado_compra:
+                                    guardar_funciones(funciones)
+                                else:
+                                    print("\nOpciones:")
+                                    print("1. Intentar con otra butaca")
+                                    print("-1. Volver al menú")
+                                    opcion_error = input("Seleccione una opción: ").strip()
+                                    if opcion_error == "-1":
+                                        break
+                                    elif opcion_error == "1":
+                                        continue  # Volver a pedir fila y columna
                                     else:
-                                        print("\nOpciones:")
-                                        print("1. Intentar con otra butaca")
-                                        print("-1. Volver al menú")
-                                        opcion_error = input("Seleccione una opción: ").strip()
-                                        if opcion_error == "-1":
-                                            break
-                                        elif opcion_error == "1":
-                                            continue  # Volver a pedir fila y columna
-                                        else:
-                                            print("Opción no válida. Volviendo al menú.")
-                                            break
-                            break
-                        elif opcion_funciones == "2":
-                            break
-                        else:
-                            print("Opción no válida.")
+                                        print("Opción no válida. Volviendo al menú.")
+                                        break
+                        break
+                    elif opcion_funciones == "2":
+                        break
+                    else:
+                        print("Opción no válida.")
             pausar()
 
         elif opcion == "4":
@@ -1046,16 +1087,49 @@ def mainUsuario(usuario_actual):
             from admin import validar_formato_fecha
             bandera = True
             fecha = None
+            salir_fecha = False
             while bandera:
-                fecha_str = input("Ingrese la fecha (DD-MM-YY): ").strip()
-                if not fecha_str:
+                fecha_str = input("Ingrese la fecha (DD-MM-YY, -1 para cancelar): ").strip()
+                if fecha_str == "-1":
+                    salir_fecha = True
+                    bandera = False
+                elif not fecha_str:
                     print("ERROR: La fecha no puede estar vacía.")
-                    continue
-                if not validar_formato_fecha(fecha_str):
+                    print("Opciones:")
+                    print("1. Intentar nuevamente")
+                    print("-1. Cancelar")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        salir_fecha = True
+                        bandera = False
+                    elif opcion_error == "1":
+                        continue
+                    else:
+                        print("ERROR: Opción no válida. Cancelando.")
+                        salir_fecha = True
+                        bandera = False
+                elif not validar_formato_fecha(fecha_str):
                     print("ERROR: La fecha debe tener formato DD-MM-YY (ej: 15-11-25).")
-                    continue
-                fecha = fecha_str
-                bandera = False
+                    print("Opciones:")
+                    print("1. Intentar nuevamente")
+                    print("-1. Cancelar")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        salir_fecha = True
+                        bandera = False
+                    elif opcion_error == "1":
+                        continue
+                    else:
+                        print("ERROR: Opción no válida. Cancelando.")
+                        salir_fecha = True
+                        bandera = False
+                else:
+                    fecha = fecha_str
+                    bandera = False
+            
+            # Si el usuario canceló, continuar al siguiente ciclo
+            if salir_fecha:
+                continue
             
             coincidencias = []
             if pelicula and fecha:
@@ -1085,13 +1159,35 @@ def mainUsuario(usuario_actual):
                     print(f"{idx}. Hora {hora} | Sala {sala} | ID {fid}")
                 bandera_seleccion = True
                 seleccion = None
+                salir_seleccion = False
                 while bandera_seleccion:
-                    seleccion_str = input("Seleccione una función (número): ").strip()
-                    seleccion = validar_seleccion_menu(seleccion_str, 1, len(coincidencias))
-                    if seleccion is None:
-                        print("ERROR: Debe seleccionar un número válido de la lista.")
-                        continue
-                    bandera_seleccion = False
+                    seleccion_str = input("Seleccione una función (número, -1 para cancelar): ").strip()
+                    if seleccion_str == "-1":
+                        salir_seleccion = True
+                        bandera_seleccion = False
+                    else:
+                        seleccion = validar_seleccion_menu(seleccion_str, 1, len(coincidencias))
+                        if seleccion is None:
+                            print("ERROR: Debe seleccionar un número válido de la lista.")
+                            print("Opciones:")
+                            print("1. Intentar nuevamente")
+                            print("-1. Cancelar")
+                            opcion_error = input("Seleccione una opción: ").strip()
+                            if opcion_error == "-1":
+                                salir_seleccion = True
+                                bandera_seleccion = False
+                            elif opcion_error == "1":
+                                continue
+                            else:
+                                print("ERROR: Opción no válida. Cancelando.")
+                                salir_seleccion = True
+                                bandera_seleccion = False
+                        else:
+                            bandera_seleccion = False
+                
+                # Si el usuario canceló, continuar al siguiente ciclo
+                if salir_seleccion:
+                    continue
                 
                 funcion_id = coincidencias[seleccion - 1][2]
                 resultado_consulta = consultar_butacas(funcion_id, funciones)
@@ -1110,27 +1206,98 @@ def mainUsuario(usuario_actual):
                         if eleccion == "1":
                             # Validar fila con rango de matriz
                             bandera = True
+                            salir_compra = False
                             while bandera:
-                                fila_str = input(f"Fila (número entre 1 y {max_filas}): ").strip()
-                                fila = validar_numero_positivo(fila_str, "La fila debe ser un número positivo.")
-                                if fila is None:
-                                    continue
-                                if fila < 1 or fila > max_filas:
-                                    print(f"ERROR: La fila debe estar entre 1 y {max_filas}.")
-                                    continue
-                                bandera = False
+                                fila_str = input(f"Fila (número entre 1 y {max_filas}, -1 para cancelar): ").strip()
+                                if fila_str == "-1":
+                                    salir_compra = True
+                                    bandera = False
+                                else:
+                                    try:
+                                        fila = int(fila_str)
+                                        if fila < 1 or fila > max_filas:
+                                            print(f"ERROR: La fila debe estar entre 1 y {max_filas}.")
+                                            print("Opciones:")
+                                            print("1. Intentar nuevamente")
+                                            print("-1. Cancelar")
+                                            opcion_error = input("Seleccione una opción: ").strip()
+                                            if opcion_error == "-1":
+                                                salir_compra = True
+                                                bandera = False
+                                            elif opcion_error == "1":
+                                                continue
+                                            else:
+                                                print("ERROR: Opción no válida. Cancelando.")
+                                                salir_compra = True
+                                                bandera = False
+                                        else:
+                                            bandera = False
+                                    except ValueError:
+                                        print(f"ERROR: Debe ingresar un número válido entre 1 y {max_filas}.")
+                                        print("Opciones:")
+                                        print("1. Intentar nuevamente")
+                                        print("-1. Cancelar")
+                                        opcion_error = input("Seleccione una opción: ").strip()
+                                        if opcion_error == "-1":
+                                            salir_compra = True
+                                            bandera = False
+                                        elif opcion_error == "1":
+                                            continue
+                                        else:
+                                            print("ERROR: Opción no válida. Cancelando.")
+                                            salir_compra = True
+                                            bandera = False
+                            
+                            # Si el usuario canceló, volver al submenú
+                            if salir_compra:
+                                continue
                             
                             # Validar columna con rango de matriz
                             bandera = True
                             while bandera:
-                                columna_str = input(f"Columna (número entre 1 y {max_columnas}): ").strip()
-                                columna = validar_numero_positivo(columna_str, "La columna debe ser un número positivo.")
-                                if columna is None:
-                                    continue
-                                if columna < 1 or columna > max_columnas:
-                                    print(f"ERROR: La columna debe estar entre 1 y {max_columnas}.")
-                                    continue
-                                bandera = False
+                                columna_str = input(f"Columna (número entre 1 y {max_columnas}, -1 para cancelar): ").strip()
+                                if columna_str == "-1":
+                                    salir_compra = True
+                                    bandera = False
+                                else:
+                                    try:
+                                        columna = int(columna_str)
+                                        if columna < 1 or columna > max_columnas:
+                                            print(f"ERROR: La columna debe estar entre 1 y {max_columnas}.")
+                                            print("Opciones:")
+                                            print("1. Intentar nuevamente")
+                                            print("-1. Cancelar")
+                                            opcion_error = input("Seleccione una opción: ").strip()
+                                            if opcion_error == "-1":
+                                                salir_compra = True
+                                                bandera = False
+                                            elif opcion_error == "1":
+                                                continue
+                                            else:
+                                                print("ERROR: Opción no válida. Cancelando.")
+                                                salir_compra = True
+                                                bandera = False
+                                        else:
+                                            bandera = False
+                                    except ValueError:
+                                        print(f"ERROR: Debe ingresar un número válido entre 1 y {max_columnas}.")
+                                        print("Opciones:")
+                                        print("1. Intentar nuevamente")
+                                        print("-1. Cancelar")
+                                        opcion_error = input("Seleccione una opción: ").strip()
+                                        if opcion_error == "-1":
+                                            salir_compra = True
+                                            bandera = False
+                                        elif opcion_error == "1":
+                                            continue
+                                        else:
+                                            print("ERROR: Opción no válida. Cancelando.")
+                                            salir_compra = True
+                                            bandera = False
+                            
+                            # Si el usuario canceló, volver al submenú
+                            if salir_compra:
+                                continue
                             
                             # Convertir a 0-based para la función
                             if comprar_entrada(usuario_actual, funcion_id, (fila - 1, columna - 1), funciones):
@@ -1296,19 +1463,114 @@ def mainUsuario(usuario_actual):
         elif opcion == "7":
             # Validar género (opcional)
             genero = None
+            salir_genero = False
             bandera = True
             while bandera:
-                genero_str = input("Género (Enter para omitir): ").strip()
-                if not genero_str:
-                    # Si está vacío, omitir el filtro
+                genero_str_input = input("Género (Enter para omitir, -1 para volver al menú): ")
+                
+                # Validar que no sea solo espacios en blanco (antes de strip)
+                if genero_str_input and genero_str_input.isspace():
+                    print("ERROR: El género no puede ser solo espacios en blanco.")
+                    print("Opciones:")
+                    print("1. Intentar nuevamente")
+                    print("-1. Volver al menú")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        salir_genero = True
+                        bandera = False
+                        break
+                    elif opcion_error == "1":
+                        continue
+                    else:
+                        print("ERROR: Opción no válida. Volviendo al menú.")
+                        salir_genero = True
+                        bandera = False
+                        break
+                
+                genero_str = genero_str_input.strip()
+                
+                # Opción de salir
+                if genero_str == "-1":
+                    salir_genero = True
                     bandera = False
                     break
-                # Validar que solo contenga letras
+                
+                # Si está vacío después de strip, omitir el filtro
+                if not genero_str:
+                    bandera = False
+                    break
+                    print("ERROR: El género no puede ser solo espacios en blanco.")
+                    print("Opciones:")
+                    print("1. Intentar nuevamente")
+                    print("-1. Volver al menú")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        salir_genero = True
+                        bandera = False
+                        break
+                    elif opcion_error == "1":
+                        continue
+                    else:
+                        print("ERROR: Opción no válida. Volviendo al menú.")
+                        salir_genero = True
+                        bandera = False
+                        break
+                
+                # Validar que solo contenga letras (no números)
                 if not validacion.validar_solo_letras(genero_str):
                     print("ERROR: El género solo puede contener letras, espacios y guiones. No se permiten números.")
-                    continue
+                    print("Opciones:")
+                    print("1. Intentar nuevamente")
+                    print("-1. Volver al menú")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        salir_genero = True
+                        bandera = False
+                        break
+                    elif opcion_error == "1":
+                        continue
+                    else:
+                        print("ERROR: Opción no válida. Volviendo al menú.")
+                        salir_genero = True
+                        bandera = False
+                        break
+                
+                # Validar que el género exista en las películas disponibles
+                peliculas_disponibles = cargar_peliculas()
+                generos_existentes = set()
+                for pelicula_data in peliculas_disponibles:
+                    genero_pelicula = pelicula_data.get("genero", "").strip().lower()
+                    if genero_pelicula:
+                        generos_existentes.add(genero_pelicula)
+                
+                genero_normalizado = genero_str.strip().lower()
+                if genero_normalizado not in generos_existentes:
+                    print(f"ERROR: El género '{genero_str}' no existe en el sistema.")
+                    if generos_existentes:
+                        print(f"Géneros disponibles: {', '.join(sorted(generos_existentes))}")
+                    print("\nOpciones:")
+                    print("1. Intentar con otro género")
+                    print("-1. Volver al menú")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        salir_genero = True
+                        bandera = False
+                        break
+                    elif opcion_error == "1":
+                        continue
+                    else:
+                        print("ERROR: Opción no válida. Volviendo al menú.")
+                        salir_genero = True
+                        bandera = False
+                        break
+                
+                # Si todas las validaciones pasaron
                 genero = genero_str
                 bandera = False
+            
+            # Si el usuario eligió volver al menú, continuar al siguiente ciclo
+            if salir_genero:
+                continue
             
             # Validar duración máxima (opcional)
             max_duracion = None
@@ -1349,28 +1611,176 @@ def mainUsuario(usuario_actual):
                 print("2. Volver al menú")
                 opcion_datos = input("Seleccione una opción: ")
                 if opcion_datos == "1":
-                    print("Modificar datos personales (dejar en blanco para no cambiar):")
-                    nuevo_mail = input("Nuevo mail: ")
-                    nuevo_nombre = input("Nuevo nombre: ")
-                    nuevo_apellido = input("Nuevo apellido: ")
-                    nueva_contrasenia = input("Nueva contraseña: ")
+                    print("Modificar datos personales (dejar en blanco para no cambiar, -1 para cancelar):")
                     datos_nuevos = {}
-                    if nuevo_mail.strip():
-                        datos_nuevos["mail"] = nuevo_mail.strip().lower()  # Normalizar a minúsculas
-                    if nuevo_nombre.strip():
-                        if not validacion.validar_solo_letras(nuevo_nombre.strip()):
-                            print("ERROR: El nombre solo puede contener letras, espacios y guiones. No se permiten números.")
-                            pausar()
-                            continue
-                        datos_nuevos["nombre"] = nuevo_nombre.strip()
-                    if nuevo_apellido.strip():
-                        if not validacion.validar_solo_letras(nuevo_apellido.strip()):
-                            print("ERROR: El apellido solo puede contener letras, espacios y guiones. No se permiten números.")
-                            pausar()
-                            continue
-                        datos_nuevos["apellido"] = nuevo_apellido.strip()
-                    if nueva_contrasenia.strip():
-                        datos_nuevos["contraseña"] = nueva_contrasenia.strip()
+                    salir_modificacion = False
+                    
+                    # Validar nuevo mail
+                    bandera = True
+                    while bandera:
+                        nuevo_mail_input = input("Nuevo mail: ").strip()
+                        if nuevo_mail_input == "-1":
+                            salir_modificacion = True
+                            bandera = False
+                        elif not nuevo_mail_input:
+                            # Si está vacío, omitir el cambio
+                            bandera = False
+                        else:
+                            nuevo_mail = nuevo_mail_input.lower()
+                            # Validar formato de mail
+                            if not validacion.validar_mail(nuevo_mail):
+                                print("ERROR: El mail debe tener un dominio válido (gmail, hotmail, outlook, yahoo, cineuade.com, etc.).")
+                                print("Opciones:")
+                                print("1. Intentar nuevamente")
+                                print("-1. Cancelar modificación")
+                                opcion_error = input("Seleccione una opción: ").strip()
+                                if opcion_error == "-1":
+                                    salir_modificacion = True
+                                    bandera = False
+                                elif opcion_error == "1":
+                                    continue
+                                else:
+                                    print("ERROR: Opción no válida. Cancelando modificación.")
+                                    salir_modificacion = True
+                                    bandera = False
+                            else:
+                                # Validar que el nuevo mail no esté en uso (búsqueda case-insensitive)
+                                # Cargar usuarios para validar
+                                cargar_usuarios()
+                                mail_en_uso = False
+                                for usuario_key in usuarios.keys():
+                                    if usuario_key.lower() == nuevo_mail and usuario_key.lower() != usuario_actual.lower():
+                                        mail_en_uso = True
+                                        break
+                                if mail_en_uso:
+                                    print("ERROR: El mail ingresado ya está en uso por otro usuario.")
+                                    print("Opciones:")
+                                    print("1. Intentar con otro mail")
+                                    print("-1. Cancelar modificación")
+                                    opcion_error = input("Seleccione una opción: ").strip()
+                                    if opcion_error == "-1":
+                                        salir_modificacion = True
+                                        bandera = False
+                                    elif opcion_error == "1":
+                                        continue
+                                    else:
+                                        print("ERROR: Opción no válida. Cancelando modificación.")
+                                        salir_modificacion = True
+                                        bandera = False
+                                else:
+                                    datos_nuevos["mail"] = nuevo_mail
+                                    bandera = False
+                    
+                    # Si el usuario canceló, continuar al siguiente ciclo
+                    if salir_modificacion:
+                        continue
+                    
+                    # Validar nuevo nombre
+                    bandera = True
+                    while bandera:
+                        nuevo_nombre_input = input("Nuevo nombre: ").strip()
+                        if nuevo_nombre_input == "-1":
+                            salir_modificacion = True
+                            bandera = False
+                        elif not nuevo_nombre_input:
+                            # Si está vacío, omitir el cambio
+                            bandera = False
+                        else:
+                            # Validar que solo contenga letras
+                            if not validacion.validar_solo_letras(nuevo_nombre_input):
+                                print("ERROR: El nombre solo puede contener letras, espacios y guiones. No se permiten números.")
+                                print("Opciones:")
+                                print("1. Intentar nuevamente")
+                                print("-1. Cancelar modificación")
+                                opcion_error = input("Seleccione una opción: ").strip()
+                                if opcion_error == "-1":
+                                    salir_modificacion = True
+                                    bandera = False
+                                elif opcion_error == "1":
+                                    continue
+                                else:
+                                    print("ERROR: Opción no válida. Cancelando modificación.")
+                                    salir_modificacion = True
+                                    bandera = False
+                            else:
+                                datos_nuevos["nombre"] = nuevo_nombre_input
+                                bandera = False
+                    
+                    # Si el usuario canceló, continuar al siguiente ciclo
+                    if salir_modificacion:
+                        continue
+                    
+                    # Validar nuevo apellido
+                    bandera = True
+                    while bandera:
+                        nuevo_apellido_input = input("Nuevo apellido: ").strip()
+                        if nuevo_apellido_input == "-1":
+                            salir_modificacion = True
+                            bandera = False
+                        elif not nuevo_apellido_input:
+                            # Si está vacío, omitir el cambio
+                            bandera = False
+                        else:
+                            # Validar que solo contenga letras
+                            if not validacion.validar_solo_letras(nuevo_apellido_input):
+                                print("ERROR: El apellido solo puede contener letras, espacios y guiones. No se permiten números.")
+                                print("Opciones:")
+                                print("1. Intentar nuevamente")
+                                print("-1. Cancelar modificación")
+                                opcion_error = input("Seleccione una opción: ").strip()
+                                if opcion_error == "-1":
+                                    salir_modificacion = True
+                                    bandera = False
+                                elif opcion_error == "1":
+                                    continue
+                                else:
+                                    print("ERROR: Opción no válida. Cancelando modificación.")
+                                    salir_modificacion = True
+                                    bandera = False
+                            else:
+                                datos_nuevos["apellido"] = nuevo_apellido_input
+                                bandera = False
+                    
+                    # Si el usuario canceló, continuar al siguiente ciclo
+                    if salir_modificacion:
+                        continue
+                    
+                    # Validar nueva contraseña
+                    bandera = True
+                    while bandera:
+                        nueva_contrasenia_input = input("Nueva contraseña: ").strip()
+                        if nueva_contrasenia_input == "-1":
+                            salir_modificacion = True
+                            bandera = False
+                        elif not nueva_contrasenia_input:
+                            # Si está vacío, omitir el cambio
+                            bandera = False
+                        else:
+                            # Validar que la contraseña tenga al menos 5 caracteres
+                            if not validacion.validar_contrasena(nueva_contrasenia_input):
+                                print("ERROR: La contraseña debe tener al menos 5 caracteres.")
+                                print("Opciones:")
+                                print("1. Intentar nuevamente")
+                                print("-1. Cancelar modificación")
+                                opcion_error = input("Seleccione una opción: ").strip()
+                                if opcion_error == "-1":
+                                    salir_modificacion = True
+                                    bandera = False
+                                elif opcion_error == "1":
+                                    continue
+                                else:
+                                    print("ERROR: Opción no válida. Cancelando modificación.")
+                                    salir_modificacion = True
+                                    bandera = False
+                            else:
+                                datos_nuevos["contraseña"] = nueva_contrasenia_input
+                                bandera = False
+                    
+                    # Si el usuario canceló, continuar al siguiente ciclo
+                    if salir_modificacion:
+                        continue
+                    
+                    # Si hay datos para modificar, confirmar y guardar
                     if datos_nuevos:
                         # Mostrar resumen de cambios
                         cambios_texto = ", ".join([f"{k}: {v}" for k, v in datos_nuevos.items()])

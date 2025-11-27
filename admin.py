@@ -15,23 +15,44 @@ def validar_formato_fecha(fecha):
     Valida que la fecha tenga formato DD-MM-YY.
     Retorna True si es válido, False en caso contrario.
     Solo acepta números en los campos de día, mes y año.
+    Maneja todos los errores posibles para evitar que el código se rompa.
+    Acepta fechas con 1 o 2 dígitos para día y mes, pero siempre 2 dígitos para año.
     """
-    if not fecha or not fecha.strip():
-        return False
-    
     try:
-        partes = fecha.strip().split('-')
+        # Convertir a string y limpiar espacios
+        fecha_str = str(fecha).strip() if fecha else ""
+        if not fecha_str:
+            return False
+        
+        # Verificar que tenga exactamente 2 guiones
+        if fecha_str.count('-') != 2:
+            return False
+        
+        # Dividir por guiones
+        partes = fecha_str.split('-')
         if len(partes) != 3:
             return False
         
-        # Verificar que cada parte contenga solo dígitos
-        if not (partes[0].isdigit() and partes[1].isdigit() and partes[2].isdigit()):
+        # Limpiar cada parte de espacios
+        dia_str = partes[0].strip()
+        mes_str = partes[1].strip()
+        anio_str = partes[2].strip()
+        
+        # Verificar que cada parte no esté vacía
+        if not dia_str or not mes_str or not anio_str:
             return False
         
-        dia, mes, anio = int(partes[0]), int(partes[1]), int(partes[2])
+        # Verificar que cada parte contenga solo dígitos
+        if not (dia_str.isdigit() and mes_str.isdigit() and anio_str.isdigit()):
+            return False
         
-        # Validar que el día tenga 2 dígitos, mes tenga 2 dígitos y año tenga 2 dígitos
-        if not (len(partes[0]) == 2 and len(partes[1]) == 2 and len(partes[2]) == 2):
+        # Convertir a enteros
+        dia = int(dia_str)
+        mes = int(mes_str)
+        anio = int(anio_str)
+        
+        # Validar que el año tenga 2 dígitos (requisito del formato YY)
+        if len(anio_str) != 2:
             return False
         
         # Validar rangos básicos
@@ -39,7 +60,8 @@ def validar_formato_fecha(fecha):
             return False
         
         return True
-    except (ValueError, IndexError):
+    except:
+        # Capturar cualquier excepción para evitar que el código se rompa
         return False
 
 def validar_formato_hora(hora):
@@ -359,14 +381,24 @@ def cargar_funcion(pelicula, fecha, hora, sala):
             print(f"No se puede cargar la función: ya existe otra función solapada en la sala {sala} el {fecha} a las {hora}.")
         return False
 
-    fecha_compacta = fecha.replace('-', '')
-    conteo_existente = sum(
-        1
-        for datos in funciones.values()
-        if str(datos.get("Película", "")).strip().lower() == pelicula_normalizada and datos.get("Fecha") == fecha
-    )
-    sufijo = chr(ord('a') + conteo_existente)
-    clave_nueva = f"{pelicula_clave_original}_{fecha_compacta}_{sufijo}"
+    # Generar fecha compacta de forma segura
+    try:
+        fecha_compacta = fecha.replace('-', '') if fecha else ''
+    except Exception:
+        print("ERROR: Error al procesar la fecha. Por favor, intente nuevamente.")
+        return False
+    
+    try:
+        conteo_existente = sum(
+            1
+            for datos in funciones.values()
+            if str(datos.get("Película", "")).strip().lower() == pelicula_normalizada and datos.get("Fecha") == fecha
+        )
+        sufijo = chr(ord('a') + conteo_existente)
+        clave_nueva = f"{pelicula_clave_original}_{fecha_compacta}_{sufijo}"
+    except Exception as e:
+        print(f"ERROR: Error al generar el ID de la función. Por favor, intente nuevamente.")
+        return False
 
     if clave_nueva in funciones:
         print("Error interno: ya existe una función con ese identificador. Intente nuevamente.")
@@ -855,7 +887,7 @@ def menu_gestion_peliculas():
         opcion = input("Seleccione una opción: ")
         
         if opcion == "1":
-            from validacion import validar_pelicula_existente, validar_datos_no_nulos
+            from validacion import validar_pelicula_existente, validar_datos_no_nulos, validar_titulo_pelicula
             
             # Validar título
             bandera = True
@@ -863,6 +895,9 @@ def menu_gestion_peliculas():
                 pelicula = input("Título de la película: ").strip()
                 if not pelicula:
                     print("ERROR: El título no puede estar vacío.")
+                    continue
+                if not validar_titulo_pelicula(pelicula):
+                    print("ERROR: El título debe tener al menos 2 caracteres y no puede ser solamente un carácter especial.")
                     continue
                 if validar_pelicula_existente(pelicula, peliculas):
                     print("ERROR: La película ya existe en el sistema.")
@@ -1057,7 +1092,7 @@ def menu_gestion_funciones():
             if pelicula == "-1":
                 continue
             
-            # Validar fecha
+            # Validar fecha (usando exactamente la misma validación que en cargar película)
             bandera = True
             while bandera:
                 fecha = input("Fecha (DD-MM-YY): ").strip()
@@ -1147,7 +1182,6 @@ def menu_gestion_funciones():
                 continue
             
             # Validar fecha
-            from admin import validar_formato_fecha
             bandera = True
             fecha = None
             while bandera:
@@ -1371,8 +1405,36 @@ def menu_gestion_reservas():
             pausar()
         
         elif opcion == "3":
-            usuario = input("Usuario (nombre o mail): ")
-            consultar_reservas_por_usuario(usuario)
+            from validacion import verificar_usuario_registrado
+            
+            bandera = True
+            while bandera:
+                usuario = input("Usuario (nombre o mail): ").strip()
+                if not usuario:
+                    print("ERROR: El usuario no puede estar vacío.")
+                    continue
+                
+                # Validar que el usuario existe
+                if not verificar_usuario_registrado(usuario):
+                    print(f"ERROR: El usuario '{usuario}' no existe en el sistema.")
+                    print("\nOpciones:")
+                    print("1. Intentar con otro usuario")
+                    print("-1. Volver al menú")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        bandera = False
+                        break
+                    elif opcion_error == "1":
+                        continue
+                    else:
+                        print("ERROR: Opción no válida. Volviendo al menú.")
+                        bandera = False
+                        break
+                else:
+                    # Usuario existe, buscar sus reservas
+                    consultar_reservas_por_usuario(usuario)
+                    bandera = False
+            
             pausar()
         
         elif opcion == "4":
@@ -1395,27 +1457,50 @@ def menu_gestion_reservas():
                     continue
                 bandera = False
             
-            # Validar nueva fila
+            # Obtener las dimensiones de la matriz de butacas de la función
+            funcion_id_reserva = reservas[reserva_id].get("FuncionID", "")
+            if funcion_id_reserva not in funciones:
+                print("ERROR: La función asociada a esta reserva no existe.")
+                pausar()
+                continue
+            
+            butacas_funcion = funciones[funcion_id_reserva].get("Butacas", [])
+            if not butacas_funcion:
+                print("ERROR: No hay butacas disponibles para esta función.")
+                pausar()
+                continue
+            
+            total_filas = len(butacas_funcion)
+            total_cols = len(butacas_funcion[0]) if total_filas > 0 else 0
+            
+            # Validar nueva fila con validación inmediata del rango
             bandera = True
             while bandera:
                 nueva_fila_str = input("Nueva fila (número empezando en 1): ").strip()
                 nueva_fila = validar_numero_positivo(nueva_fila_str, "La fila debe ser un número positivo.")
                 if nueva_fila is None:
                     continue
+                # Validar que la fila esté dentro del rango de la matriz
+                if nueva_fila < 1 or nueva_fila > total_filas:
+                    print(f"ERROR: La fila debe estar entre 1 y {total_filas}. Ingrese un número válido.")
+                    continue
                 bandera = False
             
-            # Validar nueva columna
+            # Validar nueva columna con validación inmediata del rango
             bandera = True
             while bandera:
                 nueva_col_str = input("Nuevo asiento (número empezando en 1): ").strip()
                 nueva_col = validar_numero_positivo(nueva_col_str, "El asiento debe ser un número positivo.")
                 if nueva_col is None:
                     continue
+                # Validar que la columna esté dentro del rango de la matriz
+                if nueva_col < 1 or nueva_col > total_cols:
+                    print(f"ERROR: El asiento debe estar entre 1 y {total_cols}. Ingrese un número válido.")
+                    continue
                 bandera = False
             
             # Validar que la nueva butaca esté disponible
-            funcion_id_reserva = reservas[reserva_id].get("FuncionID", "")
-            if funcion_id_reserva and not validar_butaca_disponible(funcion_id_reserva, nueva_fila, nueva_col, funciones):
+            if not validar_butaca_disponible(funcion_id_reserva, nueva_fila, nueva_col, funciones):
                 print("ERROR: La nueva butaca no está disponible.")
                 pausar()
                 continue
@@ -1586,7 +1671,6 @@ def login_admin_menu():
                     continue
                 contrasenia = input("Contraseña: ").strip()
                 if login_admin(usuario, contrasenia):
-                    pausar()
                     mainAdmin()
                     return
                 else:

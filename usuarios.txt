@@ -21,24 +21,13 @@
             },
             {
                 "funcion_id": "Titanic_131125_b",
-                "butaca": "F6-A5",
+                "butaca": "F5-A5",
                 "reserva_id": "R0136"
-            },
-            {
-                "funcion_id": "Baby Miko_271125_a",
-                "butaca": "F4-A3",
-                "reserva_id": "R0137"
             },
             {
                 "funcion_id": "Gladiador_271125_a",
                 "butaca": "F3-A5",
                 "reserva_id": "R0138"
-            },
-            {
-                "pelicula": "Baby Miko",
-                "funcion_id": "Baby Miko_271125_a",
-                "butaca": "F2-A5",
-                "reserva_id": "R0139"
             }
         ]
     },

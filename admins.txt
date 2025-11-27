@@ -28,5 +28,23 @@
         "Mail": "admintest@cineuade.com",
         "Nombre": "juan",
         "Apellido": "selva"
+    },
+    "admin68": {
+        "Contraseña": "admin68",
+        "Mail": "admin@cineuade.com",
+        "Nombre": "juan",
+        "Apellido": "selva"
+    },
+    "admin44": {
+        "Contraseña": "admin44",
+        "Mail": "admin44@cineuade.com",
+        "Nombre": "admin",
+        "Apellido": "cuarenteycuatro"
+    },
+    "admin0": {
+        "Contraseña": "admin0",
+        "Mail": "admin0@cineuade.com",
+        "Nombre": "admin",
+        "Apellido": "no"
     }
 }

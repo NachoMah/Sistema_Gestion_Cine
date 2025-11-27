@@ -1,5 +1,5 @@
 {
-    "precio_base": 7500.0,
+    "precio_base": 7600.0,
     "precio_3D": 15500.0,
     "precio_VIP": 15000,
     "descuento_estudiante": 0.15,
