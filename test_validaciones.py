@@ -519,6 +519,67 @@ class TestValidaciones(unittest.TestCase):
         args = mock_print.call_args[0][0]
         self.assertIn("abc123", args)
 
+class TestCasosLimite(unittest.TestCase):
+    """
+    Tests en casos especiales
+    """
+    def test_validar_mail_gmail_argentina(self):
+        """
+        Test: mail con dominio .com.ar
+        """
+        self.assertTrue(validacion.validar_mail("usuario@gmail.com.ar"))
+    
+    def test_validar_contrasena_con_espacios(self):
+        """
+        Test: contraseña con espacios cuenta caracteres correctamente
+        """
+        self.assertTrue(validacion.validar_contrasena("12 45"))
+    
+    def test_validar_edad_limite_exacto(self):
+        """
+        Test: edad exacta en el límite de clasificación
+        """
+        usuario = {"edad": 13}
+        pelicula = {"clasificacion": "+13"}
+        self.assertTrue(validacion.validar_edad(usuario, pelicula))
+    
+    def test_butaca_existe_coordenadas_negativas(self):
+        """
+        Test: coordenadas negativas de butaca
+        """
+        funciones_test = {
+            "test": {
+                "Butacas": [["Libre", "Libre"], ["Libre", "Libre"]]
+            }
+        }
+        self.assertFalse(validacion.butaca_existe("test", -1, 1, funciones_test))
+        self.assertFalse(validacion.butaca_existe("test", 1, -1, funciones_test))
+    
+    def test_validar_funcion_solapada_duracion_cero(self):
+        """
+        Test: función con duración 0 no debería causar problemas
+        """
+        funciones = {}
+        peliculas = {}
+        resultado, pelicula = validacion.validar_funcion_no_solapada(
+            "1", "15-12-24", "18:00", 0, funciones, peliculas
+        )
+        self.assertTrue(resultado)
+    
+    def test_validar_datos_no_nulos_con_numeros(self):
+        """
+        Test: datos no nulos con valores numéricos
+        """
+        datos = ["Juan", 25, "juan@gmail.com"]
+        self.assertTrue(validacion.validar_datos_no_nulos(datos))
+    
+    def test_validar_pelicula_con_caracteres_especiales(self):
+        """
+        Test: película con caracteres especiales en el nombre
+        """
+        peliculas = {"Película: La Aventura": {"Género": "Aventura"}}
+        self.assertTrue(validacion.validar_pelicula_existente("Película: La Aventura", peliculas))
+
 class TestConDatosReales(unittest.TestCase):
     """
     Tests utilizando los datos reales del sistema.
