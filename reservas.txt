@@ -1363,10 +1363,20 @@
         "Usuario": "juann.selva@gmail.com",
         "FuncionID": "Baby Miko_271125_a",
         "Butaca": {
-            "Fila": 1,
-            "Columna": 1
+            "Fila": 4,
+            "Columna": 3
         },
         "Precio": 0,
         "Estado": "Activa"
+    },
+    "R0138": {
+        "Usuario": "juann.selva@gmail.com",
+        "FuncionID": "Gladiador_271125_a",
+        "Butaca": {
+            "Fila": 3,
+            "Columna": 5
+        },
+        "Precio": 10000.0,
+        "Estado": "Cancelada"
     }
 }

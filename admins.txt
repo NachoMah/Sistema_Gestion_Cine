@@ -22,5 +22,11 @@
         "Mail": "admin@cineuade.com",
         "Nombre": "juan",
         "Apellido": "miko"
+    },
+    "admintest": {
+        "Contraseña": "12345",
+        "Mail": "admintest@cineuade.com",
+        "Nombre": "juan",
+        "Apellido": "selva"
     }
 }

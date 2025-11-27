@@ -846,7 +846,119 @@
         "Sala": "1",
         "Butacas": [
             [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
                 "Ocupada",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Ocupada",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "the fast and the furious_271115_a": {
+        "Película": "the fast and the furious",
+        "Fecha": "27-11-15",
+        "Hora": "18:30",
+        "Sala": "3",
+        "Butacas": [
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ],
+            [
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre",
+                "Libre"
+            ]
+        ]
+    },
+    "Gladiador_271125_a": {
+        "Película": "Gladiador",
+        "Fecha": "27-11-25",
+        "Hora": "18:30",
+        "Sala": "3",
+        "Butacas": [
+            [
+                "Libre",
                 "Libre",
                 "Libre",
                 "Libre",

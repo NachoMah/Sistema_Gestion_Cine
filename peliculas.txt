@@ -64,9 +64,9 @@
         "Duración": "128",
         "Fecha": "10-11-25"
     },
-    "Baby Miko": {
-        "Género": "comedia",
-        "Duración": 121,
-        "Fecha": "27-11-25"
+    "the fast and the furious": {
+        "Género": "accion",
+        "Duración": 122,
+        "Fecha": "11-02-04"
     }
 }

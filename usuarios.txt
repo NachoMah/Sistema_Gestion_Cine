@@ -25,11 +25,29 @@
                 "reserva_id": "R0136"
             },
             {
+                "funcion_id": "Baby Miko_271125_a",
+                "butaca": "F4-A3",
+                "reserva_id": "R0137"
+            },
+            {
+                "funcion_id": "Gladiador_271125_a",
+                "butaca": "F3-A5",
+                "reserva_id": "R0138"
+            },
+            {
                 "pelicula": "Baby Miko",
                 "funcion_id": "Baby Miko_271125_a",
-                "butaca": "F1-A1",
-                "reserva_id": "R0137"
+                "butaca": "F2-A5",
+                "reserva_id": "R0139"
             }
         ]
+    },
+    "juan@gmail.com": {
+        "nombre": "juan",
+        "apellido": "selva",
+        "edad": 22,
+        "mail": "juan@gmail.com",
+        "contraseña": "12345",
+        "reservas": []
     }
 }

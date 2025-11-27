@@ -169,10 +169,26 @@ def ver_horarios_pelicula(pelicula, fecha=None, funciones_dict=None):
                     })
 
         if not resultados:
-            if fecha:
-                print(f"No hay funciones para '{pelicula}' el {fecha}.")
+            # Verificar si la película existe en el sistema
+            peliculas = cargar_peliculas()
+            pelicula_existe = False
+            pelicula_normalizada = pelicula.strip().lower()
+            titulo_original = pelicula.strip()
+            
+            for pelicula_data in peliculas:
+                if pelicula_data.get("titulo", "").lower() == pelicula_normalizada:
+                    pelicula_existe = True
+                    titulo_original = pelicula_data.get("titulo", pelicula.strip())
+                    break
+            
+            if not pelicula_existe:
+                print(f"ERROR: La película '{pelicula}' no existe en el sistema.")
             else:
-                print(f"No hay funciones programadas para '{pelicula}'.")
+                # La película existe pero no tiene funciones
+                if fecha:
+                    print(f"No hay funciones para '{titulo_original}' el {fecha}.")
+                else:
+                    print(f"No hay funciones programadas para '{titulo_original}'.")
             return []
 
         resultados.sort(key=lambda x: (x["fecha"], x["hora"], x["sala"]))
@@ -220,10 +236,6 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
     """
     Función para registrar la compra de una entrada y generar una reserva.
     """
-    if not validacion.confirmar_accion(f"comprar la entrada en la butaca {butaca}"):
-        print("Compra cancelada.")
-        return False
-    
     try:
         # Validar que la función existe
         if funcion_id not in funciones:
@@ -232,11 +244,39 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
         
         datos_funcion = funciones[funcion_id]
         pelicula_nombre = datos_funcion["Película"]
+        
+        # Validar que la película de la función aún existe en el sistema
+        ruta_peliculas = os.path.join(os.path.dirname(__file__), "peliculas.txt")
+        try:
+            with open(ruta_peliculas, "r", encoding="utf-8") as f:
+                peliculas = json.load(f)
+            
+            # Buscar la película (case-insensitive)
+            pelicula_existe = False
+            pelicula_normalizada = pelicula_nombre.strip().lower()
+            for pelicula_key in peliculas.keys():
+                if pelicula_key.lower() == pelicula_normalizada:
+                    pelicula_existe = True
+                    break
+            
+            if not pelicula_existe:
+                print(f"ERROR: La película '{pelicula_nombre}' asociada a esta función ya no existe en el sistema.")
+                print("No se puede realizar la compra para una función de una película eliminada.")
+                return False
+        except Exception as e:
+            print(f"ERROR: No se pudo validar la existencia de la película. Error: {e}")
+            return False
+        
         fila, columna = butaca  # Índices 0-based recibidos del menú
         
-        # Convertir a 1-based para validaciones
+        # Convertir a 1-based para validaciones y visualización
         fila_1based = fila + 1
         columna_1based = columna + 1
+        
+        # Confirmar compra con valores 1-based para mostrar correctamente
+        if not validacion.confirmar_accion(f"comprar la entrada en la butaca F{fila_1based}-A{columna_1based}"):
+            print("Compra cancelada.")
+            return False
         
         # Validar que el usuario esté registrado
         if not validacion.verificar_usuario_registrado(usuario):
@@ -247,6 +287,62 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
         if not validacion.validar_butaca_disponible(funcion_id, fila_1based, columna_1based, funciones):
             print("ERROR: La butaca seleccionada no está disponible.")
             return False
+        
+        # Calcular precio de la entrada
+        from precios import calcular_precio_entrada, cargar_precios
+        
+        # Cargar precios
+        cargar_precios()
+        
+        # Preguntar tipo de entrada
+        print("\n--- Tipo de Entrada ---")
+        print("1. Normal (2D)")
+        print("2. 3D")
+        print("3. VIP")
+        bandera_tipo = True
+        tipo_entrada = "normal"
+        while bandera_tipo:
+            opcion_tipo = input("Seleccione el tipo de entrada: ").strip()
+            if opcion_tipo == "1":
+                tipo_entrada = "normal"
+                bandera_tipo = False
+            elif opcion_tipo == "2":
+                tipo_entrada = "3D"
+                bandera_tipo = False
+            elif opcion_tipo == "3":
+                tipo_entrada = "VIP"
+                bandera_tipo = False
+            else:
+                print("ERROR: Opción no válida. Intente nuevamente.")
+        
+        # Preguntar si aplica promoción o entrada especial
+        print("\n--- Promoción o Entrada Especial ---")
+        print("1. Sin promoción/descuento")
+        print("2. Entrada para niños (menores de 12 años)")
+        print("3. Entrada para jubilados")
+        print("4. Entrada para estudiantes")
+        bandera_descuento = True
+        descuento = None
+        while bandera_descuento:
+            opcion_descuento = input("Seleccione una opción: ").strip()
+            if opcion_descuento == "1":
+                descuento = None
+                bandera_descuento = False
+            elif opcion_descuento == "2":
+                descuento = "niños"
+                bandera_descuento = False
+            elif opcion_descuento == "3":
+                descuento = "jubilado"
+                bandera_descuento = False
+            elif opcion_descuento == "4":
+                descuento = "estudiante"
+                bandera_descuento = False
+            else:
+                print("ERROR: Opción no válida. Intente nuevamente.")
+        
+        # Calcular precio automáticamente
+        precio_calculado = calcular_precio_entrada(tipo_entrada, descuento)
+        print(f"\n✓ Precio calculado: ${precio_calculado}")
         
         # Validar edad (si la película tiene clasificación)
         try:
@@ -262,14 +358,27 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
                 clasificacion = pelicula_datos.get("Clasificación") or pelicula_datos.get("clasificacion", "")
                 if clasificacion:
                     usuario_datos = usuarios.get(usuario, {})
+                    
+                    # Verificar que el usuario tenga edad registrada
+                    if "edad" not in usuario_datos:
+                        print("ERROR: No se puede validar la edad. El usuario no tiene edad registrada.")
+                        return False
+                    
                     pelicula_con_clasificacion = {"clasificacion": clasificacion}
                     
                     if not validacion.validar_edad(usuario_datos, pelicula_con_clasificacion):
                         print("ERROR: No cumple con la edad mínima requerida para esta película.")
                         return False
+        except FileNotFoundError:
+            print("ERROR: No se pudo validar la edad. Archivo de películas no encontrado.")
+            return False
+        except json.JSONDecodeError:
+            print("ERROR: No se pudo validar la edad. Error al leer el archivo de películas.")
+            return False
         except Exception as e:
-            # Si hay error al validar edad, continuar (no bloquear la compra)
-            pass
+            # Si hay error al validar edad, bloquear la compra por seguridad
+            print(f"ERROR: No se pudo validar la edad. Error: {e}")
+            return False
         
         # Marcar butaca como ocupada
         funciones[funcion_id]["Butacas"][fila][columna] = "Ocupada"
@@ -285,7 +394,7 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
             "Usuario": usuario,
             "FuncionID": funcion_id,
             "Butaca": {"Fila": fila_1based, "Columna": columna_1based},
-            "Precio": 0,  # Se puede agregar precio después si es necesario
+            "Precio": precio_calculado,  # Precio real calculado
             "Estado": "Activa"
         }
         
@@ -297,13 +406,29 @@ def comprar_entrada(usuario, funcion_id, butaca, funciones):
             "pelicula": pelicula_nombre,
             "funcion_id": funcion_id,
             "butaca": f"F{fila_1based}-A{columna_1based}",
-            "reserva_id": reserva_id
+            "reserva_id": reserva_id,
+            "precio": precio_calculado
         })
         
         # Guardar usuarios actualizados
         guardar_usuarios()
 
-        print(f"Entrada comprada para '{pelicula_nombre}' - Butaca F{fila_1based}-A{columna_1based} - Reserva ID: {reserva_id}")
+        # Generar comprobante automáticamente
+        compra_comprobante = {
+            "reserva_id": reserva_id,
+            "usuario": usuario,
+            "pelicula": pelicula_nombre,
+            "fecha": datos_funcion.get("Fecha", "N/A"),
+            "hora": datos_funcion.get("Hora", "N/A"),
+            "sala": datos_funcion.get("Sala", "N/A"),
+            "butaca": f"F{fila_1based}-A{columna_1based}",
+            "tipo_entrada": tipo_entrada,
+            "descuento": descuento,
+            "precio": precio_calculado
+        }
+        generar_comprobante(compra_comprobante)
+
+        print(f"Entrada comprada para '{pelicula_nombre}' - Butaca F{fila_1based}-A{columna_1based} - Precio: ${precio_calculado} - Reserva ID: {reserva_id}")
         return True
 
     except Exception as e:
@@ -479,10 +604,29 @@ def generar_comprobante(compra):
     Función para generar un comprobante en formato .txt de una compra.
     """
     try:
-        nombre_archivo = f"comprobante_{compra['pelicula']}.txt"
-        with open(nombre_archivo, "w", encoding="utf-8") as archivo:
-            json.dump(compra, archivo, indent=4, ensure_ascii=False)
-        print(f"Comprobante generado: {nombre_archivo}")
+        # Usar ruta absoluta para guardar en la carpeta TPO
+        ruta_comprobante = os.path.join(os.path.dirname(__file__), f"comprobante_{compra['reserva_id']}.txt")
+        
+        with open(ruta_comprobante, "w", encoding="utf-8") as archivo:
+            archivo.write("=" * 50 + "\n")
+            archivo.write("        COMPROBANTE DE COMPRA\n")
+            archivo.write("=" * 50 + "\n\n")
+            archivo.write(f"ID de Reserva: {compra['reserva_id']}\n")
+            archivo.write(f"Usuario: {compra['usuario']}\n")
+            archivo.write(f"Película: {compra['pelicula']}\n")
+            archivo.write(f"Fecha: {compra['fecha']}\n")
+            archivo.write(f"Hora: {compra['hora']}\n")
+            archivo.write(f"Sala: {compra['sala']}\n")
+            archivo.write(f"Butaca: {compra['butaca']}\n")
+            archivo.write(f"Tipo de Entrada: {compra.get('tipo_entrada', 'Normal')}\n")
+            if compra.get('descuento'):
+                archivo.write(f"Descuento Aplicado: {compra['descuento']}\n")
+            archivo.write(f"Precio: ${compra['precio']}\n")
+            archivo.write("\n" + "=" * 50 + "\n")
+            archivo.write("        ¡Gracias por su compra!\n")
+            archivo.write("=" * 50 + "\n")
+        
+        print(f"✓ Comprobante generado: comprobante_{compra['reserva_id']}.txt")
         return True
     except Exception as e:
         print(f"Error al generar comprobante: {e}")
@@ -680,40 +824,101 @@ def mainUsuario(usuario_actual):
             pausar()
         
         elif opcion == "2":
-            pelicula = input("Ingrese el título de la película: ")
+            # Validar nombre de película inmediatamente después del Enter
+            bandera = True
+            while bandera:
+                pelicula = input("Ingrese el título de la película: ").strip()
+                if not pelicula:
+                    print("ERROR: El título de la película no puede estar vacío.")
+                    continue
+                
+                # Cargar películas para validar existencia
+                peliculas = cargar_peliculas()
+                pelicula_existe = False
+                pelicula_normalizada = pelicula.lower()
+                
+                # Verificar si la película existe (búsqueda case-insensitive)
+                for pelicula_data in peliculas:
+                    if pelicula_data.get("titulo", "").lower() == pelicula_normalizada:
+                        pelicula_existe = True
+                        # Usar el título original de la película
+                        pelicula = pelicula_data.get("titulo", pelicula)
+                        break
+                
+                if not pelicula_existe:
+                    print(f"ERROR: La película '{pelicula}' no existe en el sistema.")
+                    print("\nOpciones:")
+                    print("1. Intentar con otra película")
+                    print("-1. Volver al menú")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        bandera = False
+                        continue
+                    elif opcion_error == "1":
+                        continue  # Volver a pedir película
+                    else:
+                        print("Opción no válida. Volviendo al menú.")
+                        bandera = False
+                        continue
+                else:
+                    bandera = False
+            
+            # Solo pedir fecha si la película existe
             fecha = input("Ingrese la fecha (DD-MM-YY) o presione \"Enter\" para ver todos los horarios: ")
             fecha = fecha if fecha.strip() else None
             ver_horarios_pelicula(pelicula, fecha, funciones)
             pausar()
 
         elif opcion == "3":
-            fecha = input("Ingrese la fecha (DD-MM-YY): ")
-            coincidencias = []
-            if fecha.strip():
+            # Validar fecha con opción de reintentar
+            from admin import validar_formato_fecha
+            bandera_fecha = True
+            while bandera_fecha:
+                bandera = True
+                fecha = None
+                while bandera:
+                    fecha_str = input("Ingrese la fecha (DD-MM-YY): ").strip()
+                    if not fecha_str:
+                        print("ERROR: La fecha no puede estar vacía.")
+                        continue
+                    if not validar_formato_fecha(fecha_str):
+                        print("ERROR: La fecha debe tener formato DD-MM-YY (ej: 15-11-25).")
+                        continue
+                    fecha = fecha_str
+                    bandera = False
+                
+                coincidencias = []
                 for fid, datos in funciones.items():
-                    if datos.get("Fecha") == fecha.strip():
+                    if datos.get("Fecha") == fecha:
                         coincidencias.append((datos.get("Película", ""), datos.get("Hora", ""), datos.get("Sala", ""), fid))
+                
                 if not coincidencias:
-                    print(f"No hay funciones disponibles el {fecha.strip()}.")
+                    print(f"No hay funciones disponibles el {fecha}.")
                     print("\nOpciones:")
                     print("1. Intentar con otra fecha")
                     print("-1. Volver al menú")
                     opcion_error = input("Seleccione una opción: ").strip()
                     if opcion_error == "-1":
-                        pass  # Continuar al pausar() y volver al menú
+                        bandera_fecha = False
+                        break
                     elif opcion_error == "1":
                         continue  # Volver a pedir fecha
                     else:
-                        print("Opción no válida. Volviendo al menú.")
+                        print("ERROR: Opción no válida. Intente nuevamente.")
+                        continue  # Volver a mostrar opciones
                 else:
-                    coincidencias.sort(key=lambda x: (x[0], x[1], x[2]))
-                    print(f"\nFunciones disponibles el {fecha.strip()}:")
-                    pelicula_actual = None
-                    for pelicula, hora, sala, fid in coincidencias:
-                        if pelicula != pelicula_actual:
-                            print(f"\n{pelicula}:")
-                            pelicula_actual = pelicula
-                        print(f"- Hora {hora} | Sala {sala} | ID: {fid}")
+                    bandera_fecha = False
+            
+            # Si se encontraron coincidencias, mostrarlas
+            if coincidencias:
+                coincidencias.sort(key=lambda x: (x[0], x[1], x[2]))
+                print(f"\nFunciones disponibles el {fecha}:")
+                pelicula_actual = None
+                for pelicula, hora, sala, fid in coincidencias:
+                    if pelicula != pelicula_actual:
+                        print(f"\n{pelicula}:")
+                        pelicula_actual = pelicula
+                    print(f"- Hora {hora} | Sala {sala} | ID: {fid}")
                     while True:
                         print("\nOpciones:")
                         print("1. Comprar entrada")
@@ -795,36 +1000,107 @@ def mainUsuario(usuario_actual):
                             break
                         else:
                             print("Opción no válida.")
-            else:
-                print("Debe ingresar una fecha.")
             pausar()
 
         elif opcion == "4":
-            pelicula = input("Ingrese el título de la película: ")
-            fecha = input("Ingrese la fecha (DD-MM-YY): ")
+            # Validar película
+            bandera = True
+            pelicula = None
+            while bandera:
+                pelicula = input("Ingrese el título de la película: ").strip()
+                if not pelicula:
+                    print("ERROR: El título de la película no puede estar vacío.")
+                    continue
+                # Verificar si la película existe
+                peliculas = cargar_peliculas()
+                pelicula_existe = False
+                pelicula_normalizada = pelicula.lower()
+                for pelicula_data in peliculas:
+                    if pelicula_data.get("titulo", "").lower() == pelicula_normalizada:
+                        pelicula_existe = True
+                        pelicula = pelicula_data.get("titulo", pelicula)
+                        break
+                if not pelicula_existe:
+                    print(f"ERROR: La película '{pelicula}' no existe en el sistema.")
+                    print("\nOpciones:")
+                    print("1. Intentar con otra película")
+                    print("-1. Volver al menú")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        bandera = False
+                        break
+                    elif opcion_error == "1":
+                        continue
+                    else:
+                        print("Opción no válida. Volviendo al menú.")
+                        bandera = False
+                        break
+                else:
+                    bandera = False
+            
+            if pelicula is None:
+                pausar()
+                continue
+            
+            # Validar fecha
+            from admin import validar_formato_fecha
+            bandera = True
+            fecha = None
+            while bandera:
+                fecha_str = input("Ingrese la fecha (DD-MM-YY): ").strip()
+                if not fecha_str:
+                    print("ERROR: La fecha no puede estar vacía.")
+                    continue
+                if not validar_formato_fecha(fecha_str):
+                    print("ERROR: La fecha debe tener formato DD-MM-YY (ej: 15-11-25).")
+                    continue
+                fecha = fecha_str
+                bandera = False
+            
             coincidencias = []
-            if pelicula.strip() and fecha.strip():
+            if pelicula and fecha:
                 for fid, datos in funciones.items():
-                    if str(datos.get("Película", "")).strip().lower() == pelicula.strip().lower() and datos.get("Fecha") == fecha.strip():
+                    if str(datos.get("Película", "")).strip().lower() == pelicula.strip().lower() and datos.get("Fecha") == fecha:
                         coincidencias.append((datos.get("Hora", ""), datos.get("Sala", ""), fid))
+            
             if not coincidencias:
                 print("No se encontraron funciones para esa película en la fecha indicada.")
+                print("\nOpciones:")
+                print("1. Intentar con otra película/fecha")
+                print("-1. Volver al menú")
+                opcion_error = input("Seleccione una opción: ").strip()
+                if opcion_error == "-1":
+                    pausar()
+                    continue
+                elif opcion_error == "1":
+                    continue  # Volver al inicio de la opción 4
+                else:
+                    print("ERROR: Opción no válida. Volviendo al menú.")
+                    pausar()
+                    continue
             else:
                 coincidencias.sort(key=lambda x: (x[0], x[1]))
                 print("\nFunciones encontradas:")
                 for idx, (hora, sala, fid) in enumerate(coincidencias, 1):
                     print(f"{idx}. Hora {hora} | Sala {sala} | ID {fid}")
-                bandera = True
-                while bandera:
+                bandera_seleccion = True
+                seleccion = None
+                while bandera_seleccion:
                     seleccion_str = input("Seleccione una función (número): ").strip()
                     seleccion = validar_seleccion_menu(seleccion_str, 1, len(coincidencias))
                     if seleccion is None:
+                        print("ERROR: Debe seleccionar un número válido de la lista.")
                         continue
-                    bandera = False
+                    bandera_seleccion = False
                 
                 funcion_id = coincidencias[seleccion - 1][2]
                 resultado_consulta = consultar_butacas(funcion_id, funciones)
                 if resultado_consulta:
+                    # Obtener dimensiones de la matriz de butacas
+                    butacas = funciones[funcion_id]["Butacas"]
+                    max_filas = len(butacas)
+                    max_columnas = len(butacas[0]) if butacas else 0
+                    
                     sub_menu_activo = True
                     while sub_menu_activo:
                         print("\nOpciones disponibles:")
@@ -832,21 +1108,27 @@ def mainUsuario(usuario_actual):
                         print("2. Volver al menú principal")
                         eleccion = input("Seleccione una opción: ").strip()
                         if eleccion == "1":
-                            # Validar fila
+                            # Validar fila con rango de matriz
                             bandera = True
                             while bandera:
-                                fila_str = input("Fila (número): ").strip()
+                                fila_str = input(f"Fila (número entre 1 y {max_filas}): ").strip()
                                 fila = validar_numero_positivo(fila_str, "La fila debe ser un número positivo.")
                                 if fila is None:
                                     continue
+                                if fila < 1 or fila > max_filas:
+                                    print(f"ERROR: La fila debe estar entre 1 y {max_filas}.")
+                                    continue
                                 bandera = False
                             
-                            # Validar columna
+                            # Validar columna con rango de matriz
                             bandera = True
                             while bandera:
-                                columna_str = input("Columna (número): ").strip()
+                                columna_str = input(f"Columna (número entre 1 y {max_columnas}): ").strip()
                                 columna = validar_numero_positivo(columna_str, "La columna debe ser un número positivo.")
                                 if columna is None:
+                                    continue
+                                if columna < 1 or columna > max_columnas:
+                                    print(f"ERROR: La columna debe estar entre 1 y {max_columnas}.")
                                     continue
                                 bandera = False
                             
@@ -857,19 +1139,85 @@ def mainUsuario(usuario_actual):
                         elif eleccion == "2":
                             sub_menu_activo = False
                         else:
-                            print("Opción no válida. Intente nuevamente.")
+                            print("ERROR: Opción no válida. Intente nuevamente.")
             pausar()
 
         elif opcion == "5":
-            pelicula = input("Ingrese el título de la película: ")
-            fecha = input("Ingrese la fecha (DD-MM-YY): ")
+            # Validar película
+            bandera = True
+            pelicula = None
+            while bandera:
+                pelicula = input("Ingrese el título de la película: ").strip()
+                if not pelicula:
+                    print("ERROR: El título de la película no puede estar vacío.")
+                    continue
+                # Verificar si la película existe
+                peliculas = cargar_peliculas()
+                pelicula_existe = False
+                pelicula_normalizada = pelicula.lower()
+                for pelicula_data in peliculas:
+                    if pelicula_data.get("titulo", "").lower() == pelicula_normalizada:
+                        pelicula_existe = True
+                        pelicula = pelicula_data.get("titulo", pelicula)
+                        break
+                if not pelicula_existe:
+                    print(f"ERROR: La película '{pelicula}' no existe en el sistema.")
+                    print("\nOpciones:")
+                    print("1. Intentar con otra película")
+                    print("-1. Volver al menú")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        bandera = False
+                        break
+                    elif opcion_error == "1":
+                        continue
+                    else:
+                        print("Opción no válida. Volviendo al menú.")
+                        bandera = False
+                        break
+                else:
+                    bandera = False
+            
+            if pelicula is None:
+                pausar()
+                continue
+            
+            # Validar fecha
+            from admin import validar_formato_fecha
+            bandera = True
+            fecha = None
+            while bandera:
+                fecha_str = input("Ingrese la fecha (DD-MM-YY): ").strip()
+                if not fecha_str:
+                    print("ERROR: La fecha no puede estar vacía.")
+                    continue
+                if not validar_formato_fecha(fecha_str):
+                    print("ERROR: La fecha debe tener formato DD-MM-YY (ej: 15-11-25).")
+                    continue
+                fecha = fecha_str
+                bandera = False
+            
             coincidencias = []
-            if pelicula.strip() and fecha.strip():
+            if pelicula and fecha:
                 for fid, datos in funciones.items():
-                    if str(datos.get("Película", "")).strip().lower() == pelicula.strip().lower() and datos.get("Fecha") == fecha.strip():
+                    if str(datos.get("Película", "")).strip().lower() == pelicula.strip().lower() and datos.get("Fecha") == fecha:
                         coincidencias.append((datos.get("Hora", ""), datos.get("Sala", ""), fid))
+            
             if not coincidencias:
                 print("No se encontraron funciones para esa película en la fecha indicada.")
+                print("\nOpciones:")
+                print("1. Intentar con otra película/fecha")
+                print("-1. Volver al menú")
+                opcion_error = input("Seleccione una opción: ").strip()
+                if opcion_error == "-1":
+                    pausar()
+                    continue
+                elif opcion_error == "1":
+                    continue  # Volver al inicio de la opción 5
+                else:
+                    print("ERROR: Opción no válida. Volviendo al menú.")
+                    pausar()
+                    continue
             else:
                 coincidencias.sort(key=lambda x: (x[0], x[1]))
                 print("\nFunciones encontradas:")
@@ -946,16 +1294,44 @@ def mainUsuario(usuario_actual):
             pausar()
 
         elif opcion == "7":
-            genero = input("Género (Enter para omitir): ")
-            max_duracion = input("Duración máxima en minutos (Enter para omitir): ")
+            # Validar género (opcional)
+            genero = None
+            bandera = True
+            while bandera:
+                genero_str = input("Género (Enter para omitir): ").strip()
+                if not genero_str:
+                    # Si está vacío, omitir el filtro
+                    bandera = False
+                    break
+                # Validar que solo contenga letras
+                if not validacion.validar_solo_letras(genero_str):
+                    print("ERROR: El género solo puede contener letras, espacios y guiones. No se permiten números.")
+                    continue
+                genero = genero_str
+                bandera = False
+            
+            # Validar duración máxima (opcional)
+            max_duracion = None
+            bandera = True
+            while bandera:
+                max_duracion_str = input("Duración máxima en minutos (Enter para omitir): ").strip()
+                if not max_duracion_str:
+                    # Si está vacío, omitir el filtro
+                    bandera = False
+                    break
+                # Validar que sea un número positivo
+                max_duracion = validar_numero_positivo(max_duracion_str, "La duración máxima debe ser un número positivo.")
+                if max_duracion is None:
+                    continue
+                bandera = False
+            
+            # Construir filtros
             filtros = {}
-            if genero.strip():
-                filtros["genero"] = genero.strip()
-            if max_duracion.strip():
-                try:
-                    filtros["max_duracion"] = int(max_duracion.strip())
-                except ValueError:
-                    print("Duración inválida. Se omitirá este filtro.")
+            if genero:
+                filtros["genero"] = genero
+            if max_duracion:
+                filtros["max_duracion"] = max_duracion
+            
             buscar_peliculas(filtros)
             pausar()
 
@@ -1157,7 +1533,46 @@ def login_usuario_menu():
             pausar()
         
         elif opcion == "4":
-            pelicula = input("Ingrese el título de la película: ")
+            # Validar nombre de película inmediatamente después del Enter
+            bandera = True
+            while bandera:
+                pelicula = input("Ingrese el título de la película: ").strip()
+                if not pelicula:
+                    print("ERROR: El título de la película no puede estar vacío.")
+                    continue
+                
+                # Cargar películas para validar existencia
+                peliculas = cargar_peliculas()
+                pelicula_existe = False
+                pelicula_normalizada = pelicula.lower()
+                
+                # Verificar si la película existe (búsqueda case-insensitive)
+                for pelicula_data in peliculas:
+                    if pelicula_data.get("titulo", "").lower() == pelicula_normalizada:
+                        pelicula_existe = True
+                        # Usar el título original de la película
+                        pelicula = pelicula_data.get("titulo", pelicula)
+                        break
+                
+                if not pelicula_existe:
+                    print(f"ERROR: La película '{pelicula}' no existe en el sistema.")
+                    print("\nOpciones:")
+                    print("1. Intentar con otra película")
+                    print("-1. Volver al menú")
+                    opcion_error = input("Seleccione una opción: ").strip()
+                    if opcion_error == "-1":
+                        bandera = False
+                        continue
+                    elif opcion_error == "1":
+                        continue  # Volver a pedir película
+                    else:
+                        print("Opción no válida. Volviendo al menú.")
+                        bandera = False
+                        continue
+                else:
+                    bandera = False
+            
+            # Solo pedir fecha si la película existe
             fecha = input("Ingrese la fecha (DD-MM-YY) o presione \"Enter\" para ver todos los horarios: ")
             fecha = fecha if fecha.strip() else None
             ver_horarios_pelicula(pelicula, fecha, funciones)
