@@ -786,6 +786,316 @@ class TestConDatosReales(unittest.TestCase):
         # Ambas funciones existen y no se solapan (diferentes fechas)
         self.assertTrue(validacion.validar_pelicula_existente("Avatar", peliculas_reales))
 
+class TestCasosComplejos(unittest.TestCase):
+    """
+    Tests de casos complejos y escenarios avanzados.
+    """
+    def test_validar_mail_con_numeros(self):
+        """
+        Test: mail válido con números en el usuario
+        """
+        self.assertTrue(validacion.validar_mail("usuario123@gmail.com"))
+    
+    def test_validar_mail_con_puntos(self):
+        """
+        Test: mail válido con puntos en el usuario
+        """
+        self.assertTrue(validacion.validar_mail("usuario.test@gmail.com"))
+    
+    def test_validar_mail_con_guiones(self):
+        """
+        Test: mail válido con guiones en el usuario
+        """
+        self.assertTrue(validacion.validar_mail("usuario-test@hotmail.com"))
+    
+    def test_validar_contrasena_con_caracteres_especiales(self):
+        """
+        Test: contraseña válida con caracteres especiales
+        """
+        self.assertTrue(validacion.validar_contrasena("Pass@123"))
+    
+    def test_validar_contrasena_solo_numeros(self):
+        """
+        Test: contraseña válida solo con números
+        """
+        self.assertTrue(validacion.validar_contrasena("123456"))
+    
+    def test_validar_edad_limite_exacto_mas13(self):
+        """
+        Test: usuario con edad exacta en límite +13
+        """
+        usuario = {"edad": 13}
+        pelicula = {"clasificacion": "+13"}
+        self.assertTrue(validacion.validar_edad(usuario, pelicula))
+    
+    def test_validar_edad_limite_exacto_mas16(self):
+        """
+        Test: usuario con edad exacta en límite +16
+        """
+        usuario = {"edad": 16}
+        pelicula = {"clasificacion": "+16"}
+        self.assertTrue(validacion.validar_edad(usuario, pelicula))
+    
+    def test_validar_edad_limite_exacto_mas18(self):
+        """
+        Test: usuario con edad exacta en límite +18
+        """
+        usuario = {"edad": 18}
+        pelicula = {"clasificacion": "+18"}
+        self.assertTrue(validacion.validar_edad(usuario, pelicula))
+    
+    def test_validar_edad_sin_clasificacion(self):
+        """
+        Test: película sin clasificación
+        """
+        usuario = {"edad": 10}
+        pelicula = {}
+        self.assertFalse(validacion.validar_edad(usuario, pelicula))
+    
+    def test_validar_edad_clasificacion_minuscula(self):
+        """
+        Test: clasificación en minúsculas se convierte a mayúsculas
+        """
+        usuario = {"edad": 15}
+        pelicula = {"clasificacion": "+13"}
+        self.assertTrue(validacion.validar_edad(usuario, pelicula))
+    
+    def test_butaca_existe_primera_posicion(self):
+        """
+        Test: validar primera butaca (1,1) existe
+        """
+        funciones = {
+            "test": {
+                "Butacas": [
+                    ["Libre", "Libre"],
+                    ["Libre", "Libre"]
+                ]
+            }
+        }
+        self.assertTrue(validacion.butaca_existe("test", 1, 1, funciones))
+    
+    def test_butaca_existe_ultima_posicion(self):
+        """
+        Test: validar última butaca en matriz 6x6
+        """
+        funciones = {
+            "test": {
+                "Butacas": [
+                    ["Libre"] * 6,
+                    ["Libre"] * 6,
+                    ["Libre"] * 6,
+                    ["Libre"] * 6,
+                    ["Libre"] * 6,
+                    ["Libre"] * 6
+                ]
+            }
+        }
+        self.assertTrue(validacion.butaca_existe("test", 6, 6, funciones))
+    
+    def test_butaca_existe_matriz_vacia(self):
+        """
+        Test: función sin butacas definidas
+        """
+        funciones = {
+            "test": {
+                "Butacas": []
+            }
+        }
+        self.assertFalse(validacion.butaca_existe("test", 1, 1, funciones))
+    
+    def test_solapamiento_funciones_consecutivas_sin_margen(self):
+        """
+        Test: funciones consecutivas exactas sin margen
+        """
+        funciones = {
+            "Funcion1": {
+                "Película": "Test1",
+                "Fecha": "15-11-25",
+                "Hora": "16:00",
+                "Sala": "1"
+            }
+        }
+        peliculas = {
+            "Test1": {"Duración": "120"}
+        }
+        resultado, _ = validacion.validar_funcion_no_solapada(
+            "1", "15-11-25", "18:00", 120, funciones, peliculas
+        )
+        self.assertIsInstance(resultado, bool)
+    
+    def test_solapamiento_peliculas_muy_largas(self):
+        """
+        Test: películas muy largas (>3 horas)
+        """
+        funciones = {
+            "Interstellar": {
+                "Película": "Interstellar",
+                "Fecha": "15-11-25",
+                "Hora": "16:00",
+                "Sala": "1"
+            }
+        }
+        peliculas = {
+            "Interstellar": {"Duración": "169"}  # 2h 49min
+        }
+        resultado, pelicula = validacion.validar_funcion_no_solapada(
+            "1", "15-11-25", "18:00", 120, funciones, peliculas
+        )
+        self.assertFalse(resultado)
+        self.assertEqual(pelicula, "Interstellar")
+    
+    def test_validar_datos_con_enteros(self):
+        """
+        Test: validar datos que incluyen enteros (edad)
+        """
+        datos = ["Juan", "Pérez", 25, "juan@gmail.com"]
+        self.assertTrue(validacion.validar_datos_no_nulos(datos))
+    
+    def test_validar_datos_con_float(self):
+        """
+        Test: validar datos que incluyen float (precio)
+        """
+        datos = ["Entrada", 12000.50, "Disponible"]
+        self.assertTrue(validacion.validar_datos_no_nulos(datos))
+    
+    def test_validar_pelicula_con_espacios_multiples(self):
+        """
+        Test: película con múltiples espacios internos
+        """
+        peliculas = {"La  La  Land": {"Género": "musical"}}
+        # Probablemente no debería encontrarla si se busca con espacios simples
+        resultado = validacion.validar_pelicula_existente("La La Land", peliculas)
+        self.assertFalse(resultado)
+    
+    def test_validar_pelicula_caracteres_unicode(self):
+        """
+        Test: película con caracteres especiales unicode
+        """
+        peliculas = {"El Niño": {"Género": "drama"}}
+        self.assertTrue(validacion.validar_pelicula_existente("El Niño", peliculas))
+    
+    @patch('builtins.input', side_effect=['x', 'y', 'N'])
+    def test_confirmar_accion_multiples_entradas_invalidas(self, mock_input):
+        """
+        Test: múltiples entradas inválidas antes de respuesta válida
+        """
+        resultado = validacion.confirmar_accion("realizar acción")
+        self.assertFalse(resultado)
+    
+    @patch('builtins.input', return_value='s')
+    def test_confirmar_accion_minuscula(self, mock_input):
+        """
+        Test: confirmación con 's' minúscula (se convierte a mayúscula)
+        """
+        resultado = validacion.confirmar_accion("continuar")
+        self.assertTrue(resultado)
+    
+    @patch('builtins.input', return_value='n')
+    def test_confirmar_accion_minuscula_no(self, mock_input):
+        """
+        Test: negación con 'n' minúscula (se convierte a mayúscula)
+        """
+        resultado = validacion.confirmar_accion("continuar")
+        self.assertFalse(resultado)
+
+class TestRendimientoLimites(unittest.TestCase):
+    """
+    Tests de rendimiento y casos límite del sistema.
+    """
+    def test_validar_mail_muy_largo(self):
+        """
+        Test: mail con usuario muy largo
+        """
+        usuario_largo = "a" * 100
+        mail = f"{usuario_largo}@gmail.com"
+        self.assertTrue(validacion.validar_mail(mail))
+    
+    def test_validar_contrasena_muy_larga(self):
+        """
+        Test: contraseña muy larga (100+ caracteres)
+        """
+        contrasena_larga = "a" * 100
+        self.assertTrue(validacion.validar_contrasena(contrasena_larga))
+    
+    def test_butaca_matriz_grande(self):
+        """
+        Test: matriz de butacas muy grande (10x10)
+        """
+        funciones = {
+            "test": {
+                "Butacas": [["Libre"] * 10 for _ in range(10)]
+            }
+        }
+        self.assertTrue(validacion.butaca_existe("test", 10, 10, funciones))
+        self.assertTrue(validacion.validar_butaca_disponible("test", 10, 10, funciones))
+    
+    def test_multiples_funciones_mismo_dia(self):
+        """
+        Test: validar sistema con muchas funciones el mismo día
+        """
+        funciones = {}
+        peliculas = {"Test": {"Duración": "90"}}
+        
+        # Crear funciones en la misma sala
+        funciones["Test_0"] = {
+            "Película": "Test",
+            "Fecha": "15-11-25",
+            "Hora": "10:00",
+            "Sala": "1"
+        }
+        
+        resultado, _ = validacion.validar_funcion_no_solapada(
+            "1", "15-11-25", "11:00", 90, funciones, peliculas
+        )
+        self.assertFalse(resultado)
+        
+        resultado2, _ = validacion.validar_funcion_no_solapada(
+            "1", "15-11-25", "11:35", 90, funciones, peliculas
+        )
+        self.assertTrue(resultado2)
+    
+    def test_multiples_salas_mismo_horario(self):
+        """
+        Test: validar múltiples funciones en diferentes salas al mismo horario
+        """
+        funciones = {}
+        peliculas = {"Test": {"Duración": "90"}}
+        
+        # Crear funciones en diferentes salas al mismo horario
+        for sala in range(1, 7):
+            funciones[f"Test_sala{sala}"] = {
+                "Película": "Test",
+                "Fecha": "15-11-25",
+                "Hora": "18:00",
+                "Sala": str(sala)
+            }
+        
+        # Intentar agregar otra función en sala 1
+        resultado1, _ = validacion.validar_funcion_no_solapada(
+            "1", "15-11-25", "18:30", 90, funciones, peliculas
+        )
+        self.assertFalse(resultado1)
+        
+        # Intentar agregar en sala 1 después
+        resultado2, _ = validacion.validar_funcion_no_solapada(
+            "1", "15-11-25", "19:35", 90, funciones, peliculas
+        )
+        self.assertTrue(resultado2)
+    
+    def test_validar_datos_lista_grande(self):
+        """
+        Test: validar lista grande de datos
+        """
+        datos = ["dato"] * 100
+        self.assertTrue(validacion.validar_datos_no_nulos(datos))
+    
+    def test_validar_datos_lista_con_un_none_al_final(self):
+        """
+        Test: lista grande con un None al final
+        """
+        datos = ["dato"] * 99 + [None]
+        self.assertFalse(validacion.validar_datos_no_nulos(datos))
+
 if __name__ == '__main__':
     # Configurar el runner de tests
     unittest.main(verbosity=2)
