@@ -519,6 +519,273 @@ class TestValidaciones(unittest.TestCase):
         args = mock_print.call_args[0][0]
         self.assertIn("abc123", args)
 
+class TestConDatosReales(unittest.TestCase):
+    """
+    Tests utilizando los datos reales del sistema.
+    """
+    @patch('builtins.open', new_callable=mock_open)
+    @patch('json.load')
+    def test_validar_admin_real_admin1(self, mock_json_load, mock_file):
+        """
+        Test: validar admin real del sistema (admin1)
+        """
+        admins_reales = {
+            "admin1": {
+                "Contraseña": "123",
+                "Mail": "admin1@cineuade.com",
+                "Nombre": "juan",
+                "Apellido": "selva"
+            }
+        }
+        mock_json_load.return_value = admins_reales
+        resultado = validacion.validar_admin_y_contrasena("admin1", "123")
+        self.assertIsNotNone(resultado)
+        self.assertEqual(resultado["Nombre"], "juan")
+    
+    @patch('builtins.open', new_callable=mock_open)
+    @patch('json.load')
+    def test_validar_usuario_real_jorge(self, mock_json_load, mock_file):
+        """
+        Test: validar usuario real del sistema (jorge@gmail.com)
+        """
+        usuarios_reales = {
+            "jorge@gmail.com": {
+                "nombre": "jorge",
+                "apellido": "jorge",
+                "edad": "21",
+                "mail": "jorge@gmail.com",
+                "contraseña": "12345678",
+                "reservas": []
+            }
+        }
+        mock_json_load.return_value = usuarios_reales
+        resultado = validacion.validar_usuario_y_contrasena("jorge@gmail.com", "12345678")
+        self.assertIsNotNone(resultado)
+        self.assertEqual(resultado["nombre"], "jorge")
+    
+    @patch('builtins.open', new_callable=mock_open)
+    @patch('json.load')
+    def test_validar_usuario_real_juan_selva(self, mock_json_load, mock_file):
+        """
+        Test: validar usuario real con reservas (juann.selva@gmail.com)
+        """
+        usuarios_reales = {
+            "juann.selva@gmail.com": {
+                "nombre": "juan",
+                "apellido": "selva",
+                "edad": 22,
+                "mail": "juann.selva@gmail.com",
+                "contraseña": "123456",
+                "reservas": [
+                    {
+                        "funcion_id": "Titanic_131125_b",
+                        "butaca": "F6-A6",
+                        "reserva_id": "R0135"
+                    }
+                ]
+            }
+        }
+        mock_json_load.return_value = usuarios_reales
+        resultado = validacion.validar_usuario_y_contrasena("juann.selva@gmail.com", "123456")
+        self.assertIsNotNone(resultado)
+        self.assertEqual(len(resultado["reservas"]), 1)
+    
+    def test_validar_pelicula_real_avatar(self):
+        """
+        Test: validar película real del sistema (Avatar)
+        """
+        peliculas_reales = {
+            "Avatar": {
+                "Género": "ciencia ficcion",
+                "Duración": "132",
+                "Fecha": "10-11-25"
+            }
+        }
+        resultado = validacion.validar_pelicula_existente("Avatar", peliculas_reales)
+        self.assertTrue(resultado)
+    
+    def test_validar_pelicula_real_gladiador(self):
+        """
+        Test: validar película real del sistema (Gladiador)
+        """
+        peliculas_reales = {
+            "Gladiador": {
+                "Género": "accion",
+                "Duración": "124",
+                "Fecha": "10-11-25"
+            }
+        }
+        resultado = validacion.validar_pelicula_existente("Gladiador", peliculas_reales)
+        self.assertTrue(resultado)
+    
+    def test_validar_pelicula_real_baby_miko(self):
+        """
+        Test: validar película con duración numérica (Baby Miko)
+        """
+        peliculas_reales = {
+            "Baby Miko": {
+                "Género": "comedia",
+                "Duración": 121,  # Duración como int, no string
+                "Fecha": "27-11-25"
+            }
+        }
+        resultado = validacion.validar_pelicula_existente("Baby Miko", peliculas_reales)
+        self.assertTrue(resultado)
+    
+    def test_butaca_real_ocupada_avatar(self):
+        """
+        Test: validar butaca ocupada real en Avatar_131125_a
+        """
+        funciones_reales = {
+            "Avatar_131125_a": {
+                "Película": "Avatar",
+                "Fecha": "13-11-25",
+                "Hora": "16:00",
+                "Sala": "1",
+                "Butacas": [
+                    ["Ocupada", "Ocupada", "Ocupada", "Ocupada", "Libre", "Libre"],
+                    ["Ocupada", "Ocupada", "Ocupada", "Libre", "Libre", "Libre"],
+                    ["Libre", "Libre", "Libre", "Libre", "Libre", "Libre"],
+                    ["Libre", "Libre", "Libre", "Libre", "Libre", "Libre"],
+                    ["Libre", "Libre", "Libre", "Libre", "Libre", "Libre"],
+                    ["Libre", "Libre", "Libre", "Libre", "Libre", "Libre"]
+                ]
+            }
+        }
+        # Butaca F1-A1 está ocupada
+        resultado = validacion.validar_butaca_disponible("Avatar_131125_a", 1, 1, funciones_reales)
+        self.assertFalse(resultado)
+    
+    def test_butaca_real_libre_avatar(self):
+        """
+        Test: validar butaca libre real en Avatar_131125_a
+        """
+        funciones_reales = {
+            "Avatar_131125_a": {
+                "Película": "Avatar",
+                "Fecha": "13-11-25",
+                "Hora": "16:00",
+                "Sala": "1",
+                "Butacas": [
+                    ["Ocupada", "Ocupada", "Ocupada", "Ocupada", "Libre", "Libre"],
+                    ["Ocupada", "Ocupada", "Ocupada", "Libre", "Libre", "Libre"],
+                    ["Libre", "Libre", "Libre", "Libre", "Libre", "Libre"],
+                    ["Libre", "Libre", "Libre", "Libre", "Libre", "Libre"],
+                    ["Libre", "Libre", "Libre", "Libre", "Libre", "Libre"],
+                    ["Libre", "Libre", "Libre", "Libre", "Libre", "Libre"]
+                ]
+            }
+        }
+        # Butaca F1-A5 está libre
+        resultado = validacion.validar_butaca_disponible("Avatar_131125_a", 1, 5, funciones_reales)
+        self.assertTrue(resultado)
+    
+    def test_funcion_real_gladiador_completa(self):
+        """
+        Test: validar función completamente ocupada (Gladiador_151125_c)
+        """
+        funciones_reales = {
+            "Gladiador_151125_c": {
+                "Película": "Gladiador",
+                "Fecha": "15-11-25",
+                "Hora": "18:30",
+                "Sala": "3",
+                "Butacas": [
+                    ["Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada"],
+                    ["Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada"],
+                    ["Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada"],
+                    ["Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada"],
+                    ["Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada"],
+                    ["Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada", "Ocupada"]
+                ]
+            }
+        }
+        # Todas las butacas están ocupadas
+        for fila in range(1, 7):
+            for col in range(1, 7):
+                resultado = validacion.validar_butaca_disponible("Gladiador_151125_c", fila, col, funciones_reales)
+                self.assertFalse(resultado)
+    
+    def test_solapamiento_real_avatar_misma_sala(self):
+        """
+        Test: detectar solapamiento entre dos funciones de Avatar en sala 1
+        """
+        funciones_reales = {
+            "Avatar_131125_a": {
+                "Película": "Avatar",
+                "Fecha": "13-11-25",
+                "Hora": "16:00",
+                "Sala": "1",
+                "Butacas": []
+            }
+        }
+        peliculas_reales = {
+            "Avatar": {
+                "Duración": "132"
+            }
+        }
+        # Intentar agregar función que se solapa (16:00 + 132 min = 18:12)
+        resultado, pelicula = validacion.validar_funcion_no_solapada(
+            "1", "13-11-25", "17:00", 120, funciones_reales, peliculas_reales
+        )
+        self.assertFalse(resultado)
+        self.assertEqual(pelicula, "Avatar")
+    
+    def test_no_solapamiento_real_diferentes_salas(self):
+        """
+        Test: no hay solapamiento entre funciones en diferentes salas
+        """
+        funciones_reales = {
+            "Avatar_131125_a": {
+                "Película": "Avatar",
+                "Fecha": "13-11-25",
+                "Hora": "16:00",
+                "Sala": "1",
+                "Butacas": []
+            },
+            "Titanic_131125_b": {
+                "Película": "Titanic",
+                "Fecha": "13-11-25",
+                "Hora": "17:45",
+                "Sala": "2",
+                "Butacas": []
+            }
+        }
+        peliculas_reales = {
+            "Avatar": {"Duración": "132"},
+            "Titanic": {"Duración": "107"}
+        }
+        # Función en sala 3 no se solapa con sala 1 y 2
+        resultado, pelicula = validacion.validar_funcion_no_solapada(
+            "3", "13-11-25", "17:00", 120, funciones_reales, peliculas_reales
+        )
+        self.assertTrue(resultado)
+        self.assertIsNone(pelicula)
+    
+    def test_multiples_funciones_misma_pelicula(self):
+        """
+        Test: validar múltiples funciones de la misma película en diferentes horarios
+        """
+        funciones_reales = {
+            "Avatar_141125_a": {
+                "Película": "Avatar",
+                "Fecha": "14-11-25",
+                "Hora": "16:00",
+                "Sala": "1"
+            },
+            "Avatar_151125_a": {
+                "Película": "Avatar",
+                "Fecha": "15-11-25",
+                "Hora": "16:00",
+                "Sala": "1"
+            }
+        }
+        peliculas_reales = {
+            "Avatar": {"Duración": "132"}
+        }
+        # Ambas funciones existen y no se solapan (diferentes fechas)
+        self.assertTrue(validacion.validar_pelicula_existente("Avatar", peliculas_reales))
+
 if __name__ == '__main__':
     # Configurar el runner de tests
     unittest.main(verbosity=2)
